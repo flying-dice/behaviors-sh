@@ -52,20 +52,35 @@ async function runHeadless(opts: CliOptions): Promise<void> {
     hostname: opts.host,
     embeddedAssets: assets,
   })
-
-  const shutdown = async (code = 0) => {
-    try {
-      await running.stop()
-    } catch {}
-    process.exit(code)
-  }
-  process.on('SIGINT', () => shutdown(130))
-  process.on('SIGTERM', () => shutdown(143))
-
+  trapSignals(() => { try { running.stop() } catch {} })
   console.log(`[cli] headless mode — serving at ${running.url} (Ctrl+C to stop)`)
 }
 
-// TODO: 8 - SRP: runWebview conflates port discovery, server polling, process lifecycle, and webview management
+function trapSignals(cleanup: () => void): void {
+  const shutdown = (code: number) => { cleanup(); process.exit(code) }
+  process.on('SIGINT', () => shutdown(130))
+  process.on('SIGTERM', () => shutdown(143))
+}
+
+interface ManagedChild {
+  url: string
+  kill: () => void
+}
+
+async function spawnServerChild(opts: { host: string; port: number }): Promise<ManagedChild> {
+  const { host, port } = opts
+  const url = `http://${host}:${port}`
+  const isCompiled = !import.meta.url.endsWith('.ts')
+  const childArgs = ['--headless', '--port', String(port), '--host', host]
+  const cmd = isCompiled
+    ? [process.execPath, ...childArgs]
+    : [process.execPath, process.argv[1]!, ...childArgs]
+  const child = Bun.spawn(cmd, { stdout: 'inherit', stderr: 'inherit' })
+  const kill = () => { try { child.kill() } catch {} }
+  await waitForUrl(`${url}/api/health`)
+  return { url, kill }
+}
+
 async function runWebview(opts: CliOptions): Promise<void> {
   let Webview: typeof import('webview-bun').Webview
   try {
@@ -77,39 +92,17 @@ async function runWebview(opts: CliOptions): Promise<void> {
     return
   }
 
-  // Webview's native event loop blocks the JS thread on macOS (Cocoa requires
-  // the main thread), so run the server in a child process. Re-spawn this same
-  // entry point with --headless; works in both dev (bun src/index.ts) and the
-  // compiled binary (./behaviors-ui).
   const host = opts.host ?? '127.0.0.1'
   const port = opts.port ?? pickFreePort()
-  const url = `http://${host}:${port}`
-
-  const isCompiled = !import.meta.url.endsWith('.ts')
-  const childArgs = ['--headless', '--port', String(port), '--host', host]
-  const cmd = isCompiled
-    ? [process.execPath, ...childArgs]
-    : [process.execPath, process.argv[1]!, ...childArgs]
-
-  const child = Bun.spawn(cmd, { stdout: 'inherit', stderr: 'inherit' })
-
-  const shutdown = (code = 0) => {
-    try {
-      child.kill()
-    } catch {}
-    process.exit(code)
-  }
-  process.on('SIGINT', () => shutdown(130))
-  process.on('SIGTERM', () => shutdown(143))
-
+  let server: ManagedChild
   try {
-    await waitForUrl(`${url}/api/health`)
+    server = await spawnServerChild({ host, port })
   } catch (err) {
     console.error('[cli]', (err as Error).message)
-    shutdown(1)
-    return
+    process.exit(1)
   }
-  console.log(`[cli] server (child) listening on ${url}`)
+  trapSignals(server.kill)
+  console.log(`[cli] server (child) listening on ${server.url}`)
 
   const w = new Webview(opts.devtools ?? false, {
     width: opts.width,
@@ -117,11 +110,12 @@ async function runWebview(opts: CliOptions): Promise<void> {
     hint: 0,
   })
   w.title = opts.title
-  w.navigate(url)
+  w.navigate(server.url)
   try {
     w.run()
   } finally {
-    shutdown(0)
+    server.kill()
+    process.exit(0)
   }
 }
 
