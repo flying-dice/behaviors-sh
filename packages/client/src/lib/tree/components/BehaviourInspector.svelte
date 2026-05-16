@@ -16,6 +16,7 @@
   import NumberStepper from './NumberStepper.svelte';
   import type { TreeSummary } from '$lib/workspace/store.svelte';
   import { refToTreeId, treeIdToRef } from '../ref';
+  import type { CompositeType } from '../tree-ops';
   import { kindOf, KIND_META, nodeColor } from '../behaviour-layout';
 
   interface Props {
@@ -25,13 +26,13 @@
     onSetName: (v: string) => void;
     onSetDescription: (v: string) => void;
     onSetRetries: (text: string) => void;
-    onSetCompositeType: (t: 'sequence' | 'selector' | 'parallel') => void;
+    onSetCompositeType: (t: CompositeType) => void;
     onSetRef: (v: string) => void;
     onAddStep: (kind: 'evaluate' | 'instruct') => void;
     onRemoveStep: (idx: number) => void;
     onMoveStep: (from: number, to: number) => void;
     onSetStepBody: (idx: number, value: string) => void;
-    onWrap: (t: 'sequence' | 'selector' | 'parallel') => void;
+    onWrap: (t: CompositeType) => void;
     onConvertToRef: () => void;
     onConvertRefToAction: () => void;
     onOpenLinkedTree: (id: string) => void;
@@ -86,7 +87,7 @@
     if (!id) return null;
     return trees.find((t) => t.id === id)?.name ?? id;
   });
-  const selCompositeType = $derived.by<'sequence' | 'selector' | 'parallel' | null>(() => {
+  const selCompositeType = $derived.by<CompositeType | null>(() => {
     if (!node || '$ref' in node || node.type === 'action') return null;
     return node.type;
   });

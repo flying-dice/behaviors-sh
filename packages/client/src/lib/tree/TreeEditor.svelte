@@ -31,6 +31,7 @@
     setStepBody,
     updateAt,
     wrap,
+  type CompositeType,
   } from './tree-ops';
 
   interface Props {
@@ -153,14 +154,14 @@
   function onSetName(v: string) { patchSelected((n) => setName(n, v)); }
   function onSetDescription(v: string) { patchSelected((n) => setDescription(n, v)); }
   function onSetRetries(v: string) { patchSelected((n) => setRetries(n, v)); }
-  function onSetCompositeType(v: 'sequence' | 'selector' | 'parallel') { patchSelected((n) => setCompositeType(n, v)); }
+  function onSetCompositeType(v: CompositeType) { patchSelected((n) => setCompositeType(n, v)); }
   function onSetRef(v: string) { patchSelected((n) => setRef(n, v)); }
   function onAddStep(kind: 'evaluate' | 'instruct') { patchSelected((n) => addStep(n, kind)); }
   function onRemoveStep(idx: number) { patchSelected((n) => removeStep(n, idx)); }
   function onMoveStep(from: number, to: number) { patchSelected((n) => moveStep(n, from, to)); }
   function onSetStepBody(idx: number, value: string) { patchSelected((n) => setStepBody(n, idx, value)); }
 
-  function onWrap(type: 'sequence' | 'selector' | 'parallel') {
+  function onWrap(type: CompositeType) {
     if (!selectedNode || selected == null) return;
     const wrapperName =
       'name' in selectedNode ? `${selectedNode.name}-wrapper` : 'wrapper';

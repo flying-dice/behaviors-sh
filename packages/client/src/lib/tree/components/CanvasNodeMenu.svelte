@@ -1,5 +1,6 @@
 <script lang="ts">
   import { makeTid } from "$lib/utils";
+  import type { CompositeType } from '../tree-ops';
   import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
   import PlusIcon from '@lucide/svelte/icons/plus';
   import ChevronUp from '@lucide/svelte/icons/chevron-up';
@@ -21,7 +22,7 @@
     onAddSibling: () => void;
     onMoveUp: () => void;
     onMoveDown: () => void;
-    onWrap: (t: 'sequence' | 'selector' | 'parallel') => void;
+    onWrap: (t: CompositeType) => void;
     onConvertToRef: () => void;
     onConvertRefToAction: () => void;
     onDelete: () => void;

@@ -1,6 +1,6 @@
 import { stepKind, type ActionNode, type BehaviourNode, type RefNode, type Step } from '@behaviors-ui/behavior-spec';
 
-// TODO: 7 - Extract CompositeType = 'sequence' | 'selector' | 'parallel' and use it across tree-ops, Inspector, CanvasNodeMenu
+export type CompositeType = 'sequence' | 'selector' | 'parallel';
 export type Path = number[];
 
 export function isLeaf(node: BehaviourNode): node is ActionNode | RefNode {
@@ -104,7 +104,7 @@ export function move(
 export function wrap(
     root: BehaviourNode,
     path: Path,
-    compositeType: 'sequence' | 'selector' | 'parallel',
+    compositeType: CompositeType,
     wrapperName: string,
 ): BehaviourNode {
     return updateAt(root, path, (node) => ({
@@ -124,7 +124,7 @@ export function defaultAction(name = 'step'): BehaviourNode {
     };
 }
 
-export function defaultComposite(type: 'sequence' | 'selector' | 'parallel', name: string): BehaviourNode {
+export function defaultComposite(type: CompositeType, name: string): BehaviourNode {
     return { type, name, children: [defaultAction()] };
 }
 
@@ -152,7 +152,7 @@ export function setRetries(node: BehaviourNode, text: string): BehaviourNode {
     return { ...node, retries: parsed };
 }
 
-export function setCompositeType(node: BehaviourNode, type: 'sequence' | 'selector' | 'parallel'): BehaviourNode {
+export function setCompositeType(node: BehaviourNode, type: CompositeType): BehaviourNode {
     if ('$ref' in node || node.type === 'action') return node;
     return { ...node, type };
 }
