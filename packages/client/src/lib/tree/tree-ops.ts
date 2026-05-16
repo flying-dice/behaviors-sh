@@ -1,5 +1,6 @@
 import { stepKind, type ActionNode, type BehaviourNode, type RefNode, type Step } from '@behaviors-ui/behavior-spec';
 
+// TODO: 7 - Extract CompositeType = 'sequence' | 'selector' | 'parallel' and use it across tree-ops, Inspector, CanvasNodeMenu
 export type Path = number[];
 
 export function isLeaf(node: BehaviourNode): node is ActionNode | RefNode {

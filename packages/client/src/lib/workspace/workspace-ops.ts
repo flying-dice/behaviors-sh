@@ -48,6 +48,7 @@ export function deleteTreeIn(ws: Workspace, id: string): Workspace {
     return withTrees(ws, rest);
 }
 
+// TODO: 8 - Use treeIdToRef from ../tree/ref.ts instead of hardcoding the prefix string
 export function findTreeRefsIn(ws: Workspace, id: string): string[] {
     const target = `#/components/trees/${id}`;
     const hits: string[] = [];

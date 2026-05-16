@@ -5,14 +5,10 @@
   import { Badge } from '$lib/components/ui/badge';
   import { Button } from '$lib/components/ui/button';
   import { ScrollArea } from '$lib/components/ui/scroll-area';
-  import * as Dialog from '$lib/components/ui/dialog';
-  import { Input } from '$lib/components/ui/input';
-  import { Label } from '$lib/components/ui/label';
   import Search from '@lucide/svelte/icons/search';
   import PlusIcon from '@lucide/svelte/icons/plus';
   import Boxes from '@lucide/svelte/icons/boxes';
   import FolderPlus from '@lucide/svelte/icons/folder-plus';
-  import Trash2 from '@lucide/svelte/icons/trash-2';
   import HardDrive from '@lucide/svelte/icons/hard-drive';
   import Globe from '@lucide/svelte/icons/globe';
   import FileUp from '@lucide/svelte/icons/file-up';
@@ -20,7 +16,8 @@
   import NewWorkspaceDialog from './components/NewWorkspaceDialog.svelte';
   import ImportTreeDialog from './components/ImportTreeDialog.svelte';
   import NewTreeDialog from './components/NewTreeDialog.svelte';
-  import DanglingRefsWarning from './components/DanglingRefsWarning.svelte';
+  import RenameTreeDialog from './components/RenameTreeDialog.svelte';
+  import DeleteTreeDialog from './components/DeleteTreeDialog.svelte';
   import Kbd from './components/Kbd.svelte';
   import * as ws from '$lib/workspace/store.svelte';
 
@@ -90,57 +87,21 @@
     }
   }
 
-  // ---- Rename dialog ----------------------------------------------------
+  // ---- Rename / Delete dialogs -------------------------------------------
 
   let renameOpen = $state(false);
-  let renameOldId = $state('');
-  let renameNewId = $state('');
-  let renameError = $state('');
-  const renameRefHits = $derived(
-    renameOldId ? ws.findTreeRefs(renameOldId) : ([] as string[]),
-  );
+  let renameTarget = $state('');
+  let deleteOpen = $state(false);
+  let deleteTarget = $state('');
 
   function askRename(id: string) {
-    renameOldId = id;
-    renameNewId = id;
-    renameError = '';
+    renameTarget = id;
     renameOpen = true;
   }
 
-  function submitRename() {
-    const newIdValue = renameNewId.trim();
-    if (!newIdValue || newIdValue === renameOldId) {
-      renameOpen = false;
-      return;
-    }
-    try {
-      ws.renameTree(renameOldId, newIdValue);
-      renameOpen = false;
-    } catch (err) {
-      renameError = errorMessage(err);
-    }
-  }
-
-  // ---- Delete dialog ----------------------------------------------------
-
-  let deleteOpen = $state(false);
-  let deleteId = $state('');
-  const deleteRefHits = $derived(
-    deleteId ? ws.findTreeRefs(deleteId) : ([] as string[]),
-  );
-
   function askDelete(id: string) {
-    deleteId = id;
+    deleteTarget = id;
     deleteOpen = true;
-  }
-
-  function submitDelete() {
-    try {
-      ws.deleteTree(deleteId);
-    } finally {
-      deleteOpen = false;
-      deleteId = '';
-    }
   }
 </script>
 
@@ -315,91 +276,17 @@
   testid={tid?.('new-tree')}
 />
 
-<!-- Rename tree dialog -->
-<Dialog.Root bind:open={renameOpen}>
-  <Dialog.Content class="sm:max-w-md" data-testid={tid('rename-dialog')}>
-    <Dialog.Header>
-      <Dialog.Title>Rename tree</Dialog.Title>
-      <Dialog.Description>
-        Renaming changes the workspace key. Other trees that link to this tree are
-        <strong>not</strong> rewired automatically.
-      </Dialog.Description>
-    </Dialog.Header>
-    <form
-      class="flex flex-col gap-3"
-      onsubmit={(e) => {
-        e.preventDefault();
-        submitRename();
-      }}
-    >
-      <div class="flex flex-col gap-1.5">
-        <Label>Old id</Label>
-        <Input value={renameOldId} disabled data-testid={tid('rename-old')} />
-      </div>
-      <div class="flex flex-col gap-1.5">
-        <Label for="rename-new-id">New id</Label>
-        <Input
-          id="rename-new-id"
-          bind:value={renameNewId}
-          autofocus
-          data-testid={tid('rename-new')}
-        />
-      </div>
-      <DanglingRefsWarning count={renameRefHits.length} treeId={renameOldId} testid={tid('rename-warn')} />
-      {#if renameError}
-        <p class="text-xs text-destructive" data-testid={tid('rename-error')}>{renameError}</p>
-      {/if}
-      <Dialog.Footer>
-        <Button
-          type="button"
-          variant="outline"
-          onclick={() => (renameOpen = false)}
-          data-testid={tid('rename-cancel')}
-        >
-          Cancel
-        </Button>
-        <Button
-          type="submit"
-          disabled={!renameNewId.trim() || renameNewId.trim() === renameOldId}
-          data-testid={tid('rename-submit')}
-        >
-          Rename
-        </Button>
-      </Dialog.Footer>
-    </form>
-  </Dialog.Content>
-</Dialog.Root>
+<RenameTreeDialog
+  bind:open={renameOpen}
+  treeId={renameTarget}
+  testid={tid?.('rename-dialog')}
+/>
 
-<!-- Delete tree dialog -->
-<Dialog.Root bind:open={deleteOpen}>
-  <Dialog.Content class="sm:max-w-md" data-testid={tid('delete-dialog')}>
-    <Dialog.Header>
-      <Dialog.Title>Delete tree?</Dialog.Title>
-      <Dialog.Description>
-        <span class="font-mono text-foreground">{deleteId}</span> will be removed from the
-        workspace. This cannot be undone.
-      </Dialog.Description>
-    </Dialog.Header>
-    <DanglingRefsWarning count={deleteRefHits.length} treeId={deleteId} testid={tid('delete-warn')} />
-    <Dialog.Footer>
-      <Button
-        type="button"
-        variant="outline"
-        onclick={() => (deleteOpen = false)}
-        data-testid={tid('delete-cancel')}
-      >Cancel</Button>
-      <Button
-        type="button"
-        variant="destructive"
-        class="bg-destructive text-destructive-foreground hover:bg-destructive/80"
-        onclick={submitDelete}
-        data-testid={tid('delete-confirm')}
-      >
-        <Trash2 /> Delete
-      </Button>
-    </Dialog.Footer>
-  </Dialog.Content>
-</Dialog.Root>
+<DeleteTreeDialog
+  bind:open={deleteOpen}
+  treeId={deleteTarget}
+  testid={tid?.('delete-dialog')}
+/>
 
 <ImportTreeDialog
   bind:this={importDialog}

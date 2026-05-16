@@ -42,6 +42,7 @@
     setTimeout(() => (copied = false), 1500);
   }
 
+  // TODO: 8 - Reuse downloadBlob from workspace/storage/dom-io.ts instead of duplicating Blob+anchor logic
   function downloadYaml() {
     const blob = new Blob([yaml], { type: 'text/yaml' });
     const url = URL.createObjectURL(blob);

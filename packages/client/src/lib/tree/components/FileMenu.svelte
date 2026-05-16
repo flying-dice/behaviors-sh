@@ -1,4 +1,5 @@
 <script lang="ts">
+  // TODO: 8 - Extract inlined error-dialog and delete-slot-confirmation dialog into standalone components (SRP)
   import { makeTid, errorMessage } from "$lib/utils";
   import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
   import * as Dialog from '$lib/components/ui/dialog';

@@ -116,7 +116,7 @@ export function computeLayout(root: BehaviourNode): Layout {
         children(node).forEach((c, i) => walk(c, [...path, i], path, depth + 1));
     })(root, [], null, 0);
 
-    // Snap rows by depth so siblings with variable heights align.
+    // TODO: 7 - Merge this second tree walk into the first one above (both traverse identically)
     const depthOf = new Map<string, number>();
     (function walk(node: BehaviourNode, path: Path, d: number) {
         depthOf.set(pathKey(path), d);
