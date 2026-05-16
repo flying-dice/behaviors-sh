@@ -45,6 +45,12 @@
     errorOpen = true;
   }
 
+  function withError(title: string, fn: () => void | Promise<void>) {
+    return async () => {
+      try { await fn(); } catch (err) { reportError(title, err); }
+    };
+  }
+
   const slots = $derived(ws.listBrowserSlots());
   const current = $derived(ws.getWorkspace());
   const source = $derived(ws.getSource());
@@ -61,53 +67,17 @@
     ws.newWorkspace(name, version);
   }
 
-  // TODO: 7 - Extract withError(title, fn) helper to eliminate 7 repeated try/catch/reportError blocks
+  const openFromDevice = withError('Open from device failed', () => ws.openFromDevice());
+  const saveBrowserNew = withError('Save failed', () => ws.saveAsNewBrowserSlot());
+  const saveAsDevice = withError('Save to device failed', () => ws.saveAsToDevice());
+  const save = withError('Save failed', () => ws.save());
+
   function openBrowserSlot(slotId: string) {
-    try {
-      ws.openFromBrowser(slotId);
-    } catch (err) {
-      reportError('Could not open workspace', err);
-    }
-  }
-
-  async function openFromDevice() {
-    try {
-      await ws.openFromDevice();
-    } catch (err) {
-      reportError('Open from device failed', err);
-    }
-  }
-
-  function saveBrowserNew() {
-    try {
-      ws.saveAsNewBrowserSlot();
-    } catch (err) {
-      reportError('Save failed', err);
-    }
+    withError('Could not open workspace', () => ws.openFromBrowser(slotId))();
   }
 
   function saveBrowserToSlot(slotId: string) {
-    try {
-      ws.saveToBrowser(slotId);
-    } catch (err) {
-      reportError('Save failed', err);
-    }
-  }
-
-  async function saveAsDevice() {
-    try {
-      await ws.saveAsToDevice();
-    } catch (err) {
-      reportError('Save to device failed', err);
-    }
-  }
-
-  async function save() {
-    try {
-      await ws.save();
-    } catch (err) {
-      reportError('Save failed', err);
-    }
+    withError('Save failed', () => ws.saveToBrowser(slotId))();
   }
 
   function closeWorkspace() {
@@ -132,11 +102,7 @@
 
   function confirmDeleteSlot() {
     if (!deleteSlotTarget) return;
-    try {
-      ws.deleteBrowserSlot(deleteSlotTarget.id);
-    } catch (err) {
-      reportError('Delete failed', err);
-    }
+    withError('Delete failed', () => ws.deleteBrowserSlot(deleteSlotTarget!.id))();
     deleteSlotTarget = null;
     deleteSlotOpen = false;
   }
