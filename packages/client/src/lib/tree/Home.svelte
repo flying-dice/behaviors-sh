@@ -22,7 +22,6 @@
   import NewTreeDialog from './components/NewTreeDialog.svelte';
   import Kbd from './components/Kbd.svelte';
   import * as ws from '$lib/workspace/store.svelte';
-  import { pickAndParseTree } from '$lib/workspace/serialize';
 
   interface Props {
     onOpenTree: (id: string) => void;
@@ -87,36 +86,7 @@
     return `${days}d ago`;
   }
 
-  // ---- Import tree -------------------------------------------------------
-
-  let importOpen = $state(false);
-  let importId = $state('');
-  let importNode = $state<BehaviourNode | null>(null);
-  let importError = $state('');
-
-  async function startImportTree() {
-    try {
-      const result = await pickAndParseTree();
-      if (!result) return;
-      importNode = result.node;
-      importId = result.id;
-      importError = '';
-      importOpen = true;
-    } catch (err) {
-      console.error('Import failed', err);
-    }
-  }
-
-  function submitImport(id: string) {
-    if (!importNode) return;
-    try {
-      ws.createTree(id, importNode);
-      importOpen = false;
-      onOpenTree(id);
-    } catch (err) {
-      importError = err instanceof Error ? err.message : String(err);
-    }
-  }
+  let importDialog: ReturnType<typeof ImportTreeDialog>;
 
   // ---- New tree dialog --------------------------------------------------
 
@@ -280,7 +250,7 @@
             <Button onclick={() => (newOpen = true)} data-testid={tid('new-tree')}>
               <PlusIcon /> New tree
             </Button>
-            <Button variant="outline" onclick={startImportTree} data-testid={tid('import-tree')}>
+            <Button variant="outline" onclick={() => importDialog.start()} data-testid={tid('import-tree')}>
               <FileUp /> Import tree
             </Button>
             <Button
@@ -464,11 +434,8 @@
 </Dialog.Root>
 
 <ImportTreeDialog
-  bind:open={importOpen}
-  bind:importId
-  error={importError}
-  onSubmit={submitImport}
-  onClose={() => (importOpen = false)}
+  bind:this={importDialog}
+  onCreated={onOpenTree}
   testid={tid?.('import')}
 />
 

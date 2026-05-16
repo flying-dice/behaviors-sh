@@ -1,25 +1,48 @@
 <script lang="ts">
   import { makeTid } from "$lib/utils";
+  import type { BehaviourNode } from '@behaviors-ui/behavior-spec';
   import * as Dialog from '$lib/components/ui/dialog';
   import { Button } from '$lib/components/ui/button';
   import { Input } from '$lib/components/ui/input';
   import { Label } from '$lib/components/ui/label';
+  import * as ws from '$lib/workspace/store.svelte';
+  import { pickAndParseTree } from '$lib/workspace/serialize';
 
   interface Props {
-    open: boolean;
-    importId: string;
-    error?: string;
-    onSubmit: (id: string) => void;
-    onClose: () => void;
+    onCreated?: (id: string) => void;
     testid?: string;
   }
-  let { open = $bindable(), importId = $bindable(), error, onSubmit, onClose, testid }: Props = $props();
+  let { onCreated, testid }: Props = $props();
   const tid = $derived(makeTid(testid));
+
+  let open = $state(false);
+  let importId = $state('');
+  let importNode = $state<BehaviourNode | null>(null);
+  let error = $state('');
+
+  export async function start() {
+    try {
+      const result = await pickAndParseTree();
+      if (!result) return;
+      importNode = result.node;
+      importId = result.id;
+      error = '';
+      open = true;
+    } catch (err) {
+      console.error('Import failed', err);
+    }
+  }
 
   function submit() {
     const id = importId.trim();
-    if (!id) return;
-    onSubmit(id);
+    if (!id || !importNode) return;
+    try {
+      ws.createTree(id, importNode);
+      open = false;
+      onCreated?.(id);
+    } catch (err) {
+      error = err instanceof Error ? err.message : String(err);
+    }
   }
 </script>
 
@@ -56,7 +79,7 @@
         <Button
           type="button"
           variant="outline"
-          onclick={onClose}
+          onclick={() => (open = false)}
           data-testid={tid?.('cancel')}
         >Cancel</Button>
         <Button

@@ -16,8 +16,6 @@
   import Settings from '@lucide/svelte/icons/settings';
   import Trash2 from '@lucide/svelte/icons/trash-2';
   import * as ws from '$lib/workspace/store.svelte';
-  import { pickAndParseTree } from '$lib/workspace/serialize';
-  import type { BehaviourNode } from '@behaviors-ui/behavior-spec';
   import FileUp from '@lucide/svelte/icons/file-up';
   import NewWorkspaceDialog from './NewWorkspaceDialog.svelte';
   import ImportTreeDialog from './ImportTreeDialog.svelte';
@@ -37,9 +35,7 @@
   let deleteSlotOpen = $state(false);
   let deleteSlotTarget = $state<{ id: string; name: string } | null>(null);
 
-  let importOpen = $state(false);
-  let importId = $state('');
-  let importNode = $state<BehaviourNode | null>(null);
+  let importDialog: ReturnType<typeof ImportTreeDialog>;
 
   let errorOpen = $state(false);
   let errorTitle = $state('');
@@ -120,30 +116,6 @@
     ws.closeWorkspace();
   }
 
-  async function startImportTree() {
-    try {
-      const result = await pickAndParseTree();
-      if (!result) return;
-      importNode = result.node;
-      importId = result.id;
-      importOpen = true;
-    } catch (err) {
-      reportError('Import failed', err);
-    }
-  }
-
-  function submitImport(id: string) {
-    if (!importNode) return;
-    try {
-      ws.createTree(id, importNode);
-    } catch (err) {
-      reportError('Import failed', err);
-      return;
-    }
-    importNode = null;
-    importId = '';
-    importOpen = false;
-  }
 
   function openSettings() {
     if (!current) return;
@@ -215,7 +187,7 @@
 
     <DropdownMenu.Item
       disabled={!current}
-      onclick={startImportTree}
+      onclick={() => importDialog.start()}
       data-testid={tid('import-tree')}
     >
       <FileUp />
@@ -345,10 +317,7 @@
 />
 
 <ImportTreeDialog
-  bind:open={importOpen}
-  bind:importId
-  onSubmit={submitImport}
-  onClose={() => (importOpen = false)}
+  bind:this={importDialog}
   testid={tid?.('import')}
 />
 
