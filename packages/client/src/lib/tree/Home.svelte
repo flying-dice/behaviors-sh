@@ -60,22 +60,6 @@
     ws.newWorkspace(name, version);
   }
 
-  // TODO: 5 - DRY: openFromDevice/openBrowserSlot duplicated in FileMenu.svelte with same try/catch pattern
-  async function openFromDevice() {
-    try {
-      await ws.openFromDevice();
-    } catch (err) {
-      console.error('Open from device failed', err);
-    }
-  }
-
-  function openBrowserSlot(slotId: string) {
-    try {
-      ws.openFromBrowser(slotId);
-    } catch (err) {
-      console.error('Could not open workspace', err);
-    }
-  }
 
   function formatTime(ts: number): string {
     const diff = Date.now() - ts;
@@ -188,7 +172,7 @@
             <div class="text-xs text-muted-foreground">Start from scratch</div>
           </button>
           <button
-            onclick={openFromDevice}
+            onclick={() => ws.openFromDevice()}
             data-testid={tid('landing-device')}
             class="group flex flex-col items-center gap-3 rounded-lg border border-dashed border-border bg-transparent p-6 text-center transition-all hover:border-primary hover:bg-primary/5"
           >
@@ -208,7 +192,7 @@
             <div class="flex flex-col gap-1.5">
               {#each slots as slot (slot.id)}
                 <button
-                  onclick={() => openBrowserSlot(slot.id)}
+                  onclick={() => ws.openFromBrowser(slot.id)}
                   data-testid={tid(`landing-slot-${slot.id}`)}
                   class="flex items-center gap-3 rounded-md border bg-transparent px-4 py-3 text-left transition-colors hover:bg-muted/50"
                 >
