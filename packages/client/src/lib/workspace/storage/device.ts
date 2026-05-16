@@ -43,6 +43,7 @@ export interface OpenedFromDevice {
     filename: string;
 }
 
+// TODO: 4 - DRY: openFromDevice and pickTreeFile share FSA+fallback branching boilerplate
 export async function openFromDevice(): Promise<OpenedFromDevice | null> {
     if (fsa.showOpenFilePicker) {
         let handle: FileSystemFileHandle;

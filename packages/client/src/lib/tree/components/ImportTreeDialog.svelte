@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { makeTid } from "$lib/utils";
+  import { makeTid, errorMessage } from "$lib/utils";
   import type { BehaviourNode } from '@behaviors-ui/behavior-spec';
   import * as Dialog from '$lib/components/ui/dialog';
   import { Button } from '$lib/components/ui/button';
@@ -41,7 +41,7 @@
       open = false;
       onCreated?.(id);
     } catch (err) {
-      error = err instanceof Error ? err.message : String(err);
+      error = errorMessage(err);
     }
   }
 </script>

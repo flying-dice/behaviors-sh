@@ -15,3 +15,7 @@ export type WithElementRef<T, U extends HTMLElement = HTMLElement> = T & { ref?:
 export function makeTid(testid: string | undefined) {
 	return (suffix: string) => (testid ? `${testid}-${suffix}` : undefined);
 }
+
+export function errorMessage(err: unknown): string {
+	return err instanceof Error ? err.message : String(err);
+}

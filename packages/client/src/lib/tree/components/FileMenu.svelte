@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { makeTid } from "$lib/utils";
+  import { makeTid, errorMessage } from "$lib/utils";
   import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
   import * as Dialog from '$lib/components/ui/dialog';
   import { Button } from '$lib/components/ui/button';
@@ -36,12 +36,12 @@
 
   let errorOpen = $state(false);
   let errorTitle = $state('');
-  let errorMessage = $state('');
+  let errorMsg = $state('');
 
   function reportError(title: string, err: unknown) {
     console.error(title, err);
     errorTitle = title;
-    errorMessage = err instanceof Error ? err.message : String(err);
+    errorMsg = errorMessage(err);
     errorOpen = true;
   }
 
@@ -358,7 +358,7 @@
     <Dialog.Header>
       <Dialog.Title>{errorTitle}</Dialog.Title>
       <Dialog.Description>
-        <span class="font-mono text-[12.5px]">{errorMessage}</span>
+        <span class="font-mono text-[12.5px]">{errorMsg}</span>
       </Dialog.Description>
     </Dialog.Header>
     <Dialog.Footer>

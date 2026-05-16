@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { makeTid } from "$lib/utils";
+  import { makeTid, errorMessage } from "$lib/utils";
   import type { BehaviourNode } from '@behaviors-ui/behavior-spec';
   import { Card, CardContent } from '$lib/components/ui/card';
   import { Badge } from '$lib/components/ui/badge';
@@ -86,7 +86,7 @@
       newError = '';
       onOpenTree(id);
     } catch (err) {
-      newError = err instanceof Error ? err.message : String(err);
+      newError = errorMessage(err);
     }
   }
 
@@ -117,7 +117,7 @@
       ws.renameTree(renameOldId, newIdValue);
       renameOpen = false;
     } catch (err) {
-      renameError = err instanceof Error ? err.message : String(err);
+      renameError = errorMessage(err);
     }
   }
 

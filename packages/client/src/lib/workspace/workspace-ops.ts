@@ -8,6 +8,7 @@ export function assertValidTreeKey(id: string): void {
     }
 }
 
+// TODO: 4 - DRY: createTreeIn and replaceTreeIn share identical components.trees spread; extract withTrees helper
 export function createTreeIn(ws: Workspace, id: string, node: BehaviourNode): Workspace {
     assertValidTreeKey(id);
     if (ws.components.trees[id]) {
