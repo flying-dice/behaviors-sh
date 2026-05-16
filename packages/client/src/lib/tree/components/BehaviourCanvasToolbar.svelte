@@ -1,5 +1,6 @@
 <script lang="ts">
   import { makeTid } from "$lib/utils";
+  import { ZOOM_MAX, ZOOM_MIN } from '../behaviour-layout';
   import { Button } from '$lib/components/ui/button';
   import { Badge } from '$lib/components/ui/badge';
   import Plus from '@lucide/svelte/icons/plus';
@@ -62,7 +63,7 @@
     variant="ghost"
     size="icon"
     title="Zoom out"
-    onclick={() => onZoom(Math.max(0.3, zoom - 0.1))}
+    onclick={() => onZoom(Math.max(ZOOM_MIN, zoom - 0.1))}
     data-testid={tid('zoom-out')}
   >
     <Minus />
@@ -77,7 +78,7 @@
     variant="ghost"
     size="icon"
     title="Zoom in"
-    onclick={() => onZoom(Math.min(2.5, zoom + 0.1))}
+    onclick={() => onZoom(Math.min(ZOOM_MAX, zoom + 0.1))}
     data-testid={tid('zoom-in')}
   >
     <Plus />

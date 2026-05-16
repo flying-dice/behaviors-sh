@@ -7,6 +7,10 @@ export const NODE_H_LEAF = 76;
 export const H_GAP = 28;
 export const V_GAP = 64;
 
+export const ZOOM_MIN = 0.3;
+export const ZOOM_MAX = 2.5;
+export const ZOOM_FIT_MAX = 2.0;
+
 export type NodeKind = 'action' | 'sequence' | 'selector' | 'parallel' | 'ref';
 
 export const KIND_META: Record<NodeKind, {

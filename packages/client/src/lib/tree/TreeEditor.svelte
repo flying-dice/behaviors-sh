@@ -8,7 +8,7 @@
   import BehaviourRightDock from './components/BehaviourRightDock.svelte';
   import BehaviourStatusBar from './components/BehaviourStatusBar.svelte';
   import CanvasNodeMenu from './components/CanvasNodeMenu.svelte';
-  import { computeLayout, countNodes } from './behaviour-layout';
+  import { ZOOM_FIT_MAX, ZOOM_MIN, computeLayout, countNodes } from './behaviour-layout';
   import { nodeToYaml } from './behaviour-yaml';
   import { dereferenceTree } from './dereference';
   import {
@@ -244,7 +244,7 @@
     const padding = 48;
     const zx = (vw - padding * 2) / layout.width;
     const zy = (vh - padding * 2) / layout.height;
-    const newZoom = Math.max(0.3, Math.min(2.0, Math.min(zx, zy)));
+    const newZoom = Math.max(ZOOM_MIN, Math.min(ZOOM_FIT_MAX, Math.min(zx, zy)));
     const contentW = layout.width * newZoom;
     const contentH = layout.height * newZoom;
     zoom = newZoom;

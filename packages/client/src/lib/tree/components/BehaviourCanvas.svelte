@@ -3,6 +3,8 @@
   import type { BehaviourNode } from '@behaviors-ui/behavior-spec';
   import {
     KIND_META,
+    ZOOM_MAX,
+    ZOOM_MIN,
     computeLayout,
     computeWires,
     leafPreview,
@@ -76,7 +78,7 @@
     if (e.ctrlKey || e.metaKey) {
       e.preventDefault();
       const delta = -e.deltaY * 0.0015;
-      onZoom(Math.max(0.3, Math.min(2.5, zoom * (1 + delta))));
+      onZoom(Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, zoom * (1 + delta))));
     } else {
       onPan({ x: pan.x - e.deltaX, y: pan.y - e.deltaY });
     }
