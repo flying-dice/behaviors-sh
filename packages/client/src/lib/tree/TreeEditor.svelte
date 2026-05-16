@@ -5,7 +5,8 @@
   import BehaviourCanvas from './components/BehaviourCanvas.svelte';
   import BehaviourCanvasToolbar from './components/BehaviourCanvasToolbar.svelte';
   import BehaviourLeftRail from './components/BehaviourLeftRail.svelte';
-  import BehaviourRightDock from './components/BehaviourRightDock.svelte';
+  import BehaviourInspector from './components/BehaviourInspector.svelte';
+  import { ScrollArea } from '$lib/components/ui/scroll-area';
   import BehaviourStatusBar from './components/BehaviourStatusBar.svelte';
   import CanvasNodeMenu from './components/CanvasNodeMenu.svelte';
   import { ZOOM_FIT_MAX, ZOOM_MIN, computeLayout, countNodes } from './behaviour-layout';
@@ -18,6 +19,7 @@
     getAt,
     insertChild,
     move,
+    moveStep,
     parentOf,
     removeAt,
     removeStep,
@@ -40,11 +42,31 @@
   let { treeId, onBack, onSwitchTree, testid }: Props = $props();
   const tid = $derived(makeTid(testid));
 
-  let selected = $state<Path>([]);
-  let inspectorTab = $state<'inspector' | 'yaml'>('inspector');
+  let selected = $state<Path | null>(null);
   let pan = $state({ x: 32, y: 16 });
   let zoom = $state(0.85);
   let canvasWrap = $state<HTMLDivElement | null>(null);
+
+  const DOCK_MIN = 320;
+  let dockWidth = $state(Math.max(DOCK_MIN, Math.round(window.innerWidth * 0.25)));
+  let dragging = $state(false);
+
+  function onResizeStart(e: PointerEvent) {
+    dragging = true;
+    const startX = e.clientX;
+    const startW = dockWidth;
+    const onMove = (ev: PointerEvent) => {
+      const delta = startX - ev.clientX;
+      dockWidth = Math.max(DOCK_MIN, startW + delta);
+    };
+    const onUp = () => {
+      dragging = false;
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', onUp);
+    };
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onUp);
+  }
 
   let menuOpen = $state(false);
   let menuX = $state(0);
@@ -65,22 +87,22 @@
     if (!root) onBack();
   });
 
-  // Snap selection back to root if a structural edit invalidated the path.
+  // Snap selection back to null if a structural edit invalidated the path.
   $effect(() => {
-    if (!root) return;
+    if (!root || selected == null) return;
     try {
       getAt(root, selected);
     } catch {
-      selected = [];
+      selected = null;
     }
   });
 
   const selectedNode = $derived.by<BehaviourNode | null>(() => {
-    if (!root) return null;
+    if (!root || selected == null) return null;
     try {
       return getAt(root, selected);
     } catch {
-      return root;
+      return null;
     }
   });
 
@@ -112,7 +134,7 @@
     return !!n && !('$ref' in n) && n.type !== 'action';
   });
   const isRef = $derived.by(() => !!selectedNode && '$ref' in selectedNode);
-  const isRoot = $derived(selected.length === 0);
+  const isRoot = $derived(selected != null && selected.length === 0);
 
   function apply(transform: (r: BehaviourNode) => BehaviourNode) {
     if (!root) return;
@@ -124,7 +146,8 @@
   }
 
   function patchSelected(fn: (node: BehaviourNode) => BehaviourNode) {
-    apply((r) => updateAt(r, selected, fn));
+    if (selected == null) return;
+    apply((r) => updateAt(r, selected!, fn));
   }
 
   function onSetName(v: string) { patchSelected((n) => setName(n, v)); }
@@ -134,13 +157,14 @@
   function onSetRef(v: string) { patchSelected((n) => setRef(n, v)); }
   function onAddStep(kind: 'evaluate' | 'instruct') { patchSelected((n) => addStep(n, kind)); }
   function onRemoveStep(idx: number) { patchSelected((n) => removeStep(n, idx)); }
+  function onMoveStep(from: number, to: number) { patchSelected((n) => moveStep(n, from, to)); }
   function onSetStepBody(idx: number, value: string) { patchSelected((n) => setStepBody(n, idx, value)); }
 
   function onWrap(type: 'sequence' | 'selector' | 'parallel') {
-    if (!selectedNode) return;
+    if (!selectedNode || selected == null) return;
     const wrapperName =
       'name' in selectedNode ? `${selectedNode.name}-wrapper` : 'wrapper';
-    apply((r) => wrap(r, selected, type, wrapperName));
+    apply((r) => wrap(r, selected!, type, wrapperName));
     selected = [...selected, 0];
   }
 
@@ -155,33 +179,34 @@
   // ---- Structural toolbar (canvas-area buttons) ------------------------
 
   function onAddChild() {
-    if (!isComposite) return;
-    apply((r) => insertChild(r, selected, defaultAction()));
+    if (!isComposite || selected == null) return;
+    apply((r) => insertChild(r, selected!, defaultAction()));
   }
 
   function onAddSibling() {
-    if (isRoot) return;
+    if (isRoot || selected == null) return;
     const parent = parentOf(selected)!;
     const idx = selected[selected.length - 1]! + 1;
     apply((r) => insertChild(r, parent, defaultAction(), idx));
   }
 
   function onDeleteSelected() {
+    if (selected == null) return;
     if (isRoot) {
       apply(() => defaultAction(treeId));
-      selected = [];
+      selected = null;
       return;
     }
     const parent = parentOf(selected)!;
-    apply((r) => removeAt(r, selected));
+    apply((r) => removeAt(r, selected!));
     selected = parent;
   }
 
   function onMoveSelected(direction: -1 | 1) {
-    if (isRoot) return;
-    apply((r) => move(r, selected, direction));
-    const last = selected[selected.length - 1]!;
-    selected = [...parentOf(selected)!, last + direction];
+    if (isRoot || selected == null) return;
+    apply((r) => move(r, selected!, direction));
+    const last = selected![selected!.length - 1]!;
+    selected = [...parentOf(selected!)!, last + direction];
   }
 
   // Frame the entire tree inside the canvas viewport. Used by the Fit
@@ -222,14 +247,17 @@
 {:else}
   <div
     data-testid={testid}
-    class="grid h-full min-h-0 grid-cols-[248px_1fr_380px] grid-rows-[auto_1fr_auto] overflow-hidden"
+    class="grid h-full min-h-0 grid-rows-[auto_1fr_auto] overflow-hidden"
+    class:select-none={dragging}
+    style:grid-template-columns={selected != null ? `248px 1fr 8px ${dockWidth}px` : '248px 1fr'}
   >
-    <div class="col-span-3">
+    <div class="col-span-full">
       <BehaviourCanvasToolbar
         testid={tid('toolbar')}
         {treeId}
         treeName={'name' in root ? root.name : treeId}
         {zoom}
+        {yaml}
         valid={true}
         onZoom={(z) => (zoom = z)}
         {onFit}
@@ -244,7 +272,7 @@
       {root}
       {selected}
       onSwitchTree={(id) => {
-        selected = [];
+        selected = null;
         onSwitchTree(id);
       }}
       {onBack}
@@ -260,7 +288,7 @@
           type="button"
           data-testid={tid('canvas-add-child')}
           class="rounded px-2 py-1 text-[11px] font-medium text-foreground transition-colors hover:bg-muted disabled:opacity-40"
-          disabled={!isComposite}
+          disabled={selected == null || !isComposite}
           onclick={onAddChild}
           title="Add child action under selected composite"
         >
@@ -270,7 +298,7 @@
           type="button"
           data-testid={tid('canvas-add-sibling')}
           class="rounded px-2 py-1 text-[11px] font-medium text-foreground transition-colors hover:bg-muted disabled:opacity-40"
-          disabled={isRoot}
+          disabled={selected == null || isRoot}
           onclick={onAddSibling}
           title="Add sibling after selected"
         >
@@ -281,7 +309,7 @@
           type="button"
           data-testid={tid('canvas-move-up')}
           class="rounded px-2 py-1 text-[11px] font-medium text-foreground transition-colors hover:bg-muted disabled:opacity-40"
-          disabled={isRoot}
+          disabled={selected == null || isRoot}
           onclick={() => onMoveSelected(-1)}
           title="Move up among siblings"
         >
@@ -291,7 +319,7 @@
           type="button"
           data-testid={tid('canvas-move-down')}
           class="rounded px-2 py-1 text-[11px] font-medium text-foreground transition-colors hover:bg-muted disabled:opacity-40"
-          disabled={isRoot}
+          disabled={selected == null || isRoot}
           onclick={() => onMoveSelected(1)}
           title="Move down among siblings"
         >
@@ -301,7 +329,8 @@
         <button
           type="button"
           data-testid={tid('canvas-delete')}
-          class="rounded px-2 py-1 text-[11px] font-medium text-destructive transition-colors hover:bg-destructive/10"
+          class="rounded px-2 py-1 text-[11px] font-medium text-destructive transition-colors hover:bg-destructive/10 disabled:opacity-40"
+          disabled={selected == null}
           onclick={onDeleteSelected}
           title={isRoot ? 'Replace root with a fresh action' : 'Delete selected'}
         >
@@ -321,7 +350,7 @@
         onZoom={(z) => (zoom = z)}
         onContextMenu={openContextMenu}
         onOpenLinkedTree={(id) => {
-          selected = [];
+          selected = null;
           onSwitchTree(id);
         }}
       />
@@ -346,32 +375,49 @@
       onDelete={onDeleteSelected}
     />
 
-    <BehaviourRightDock
-      testid={tid('right-dock')}
-      tab={inspectorTab}
-      onTabChange={(t) => (inspectorTab = t)}
-      node={selectedNode}
-      {yaml}
-      {trees}
-      currentTreeId={treeId}
-      {onSetName}
-      {onSetDescription}
-      {onSetRetries}
-      {onSetCompositeType}
-      {onSetRef}
-      {onAddStep}
-      {onRemoveStep}
-      {onSetStepBody}
-      {onWrap}
-      {onConvertToRef}
-      {onConvertRefToAction}
-      onOpenLinkedTree={(id) => {
-        selected = [];
-        onSwitchTree(id);
-      }}
-    />
+    {#if selected != null}
+      <!-- svelte-ignore a11y_no_static_element_interactions -->
+      <div
+        data-testid={tid('dock-resize-handle')}
+        class="cursor-col-resize transition-colors hover:bg-primary/40 {dragging ? 'bg-primary/40' : ''}"
+        role="separator"
+        aria-orientation="vertical"
+        onpointerdown={onResizeStart}
+      ></div>
 
-    <div class="col-span-3">
+      <aside data-testid={tid('right-dock')} class="flex min-h-0 flex-col border-l bg-card">
+        <div class="min-h-0 flex-1">
+          <ScrollArea class="h-full">
+            <div class="p-4">
+              <BehaviourInspector
+                testid={tid('right-dock-inspector')}
+                node={selectedNode}
+                {trees}
+                currentTreeId={treeId}
+                {onSetName}
+                {onSetDescription}
+                {onSetRetries}
+                {onSetCompositeType}
+                {onSetRef}
+                {onAddStep}
+                {onRemoveStep}
+                {onMoveStep}
+                {onSetStepBody}
+                {onWrap}
+                {onConvertToRef}
+                {onConvertRefToAction}
+                onOpenLinkedTree={(id) => {
+                  selected = null;
+                  onSwitchTree(id);
+                }}
+              />
+            </div>
+          </ScrollArea>
+        </div>
+      </aside>
+    {/if}
+
+    <div class="col-span-full">
       <BehaviourStatusBar
         testid={tid('status-bar')}
         workspaceName={workspace.name}
