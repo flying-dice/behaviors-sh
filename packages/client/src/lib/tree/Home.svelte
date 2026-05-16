@@ -20,6 +20,7 @@
   import NewWorkspaceDialog from './components/NewWorkspaceDialog.svelte';
   import ImportTreeDialog from './components/ImportTreeDialog.svelte';
   import NewTreeDialog from './components/NewTreeDialog.svelte';
+  import DanglingRefsWarning from './components/DanglingRefsWarning.svelte';
   import Kbd from './components/Kbd.svelte';
   import * as ws from '$lib/workspace/store.svelte';
 
@@ -359,16 +360,7 @@
           data-testid={tid('rename-new')}
         />
       </div>
-      {#if renameRefHits.length > 0}
-        <p
-          class="rounded-md border border-amber-500/40 bg-amber-500/5 p-2 text-xs text-amber-700 dark:text-amber-300"
-          data-testid={tid('rename-warn')}
-        >
-          {renameRefHits.length} other tree{renameRefHits.length === 1 ? '' : 's'}
-          link{renameRefHits.length === 1 ? 's' : ''} to <span class="font-mono">{renameOldId}</span>
-          and will be left dangling.
-        </p>
-      {/if}
+      <DanglingRefsWarning count={renameRefHits.length} treeId={renameOldId} testid={tid('rename-warn')} />
       {#if renameError}
         <p class="text-xs text-destructive" data-testid={tid('rename-error')}>{renameError}</p>
       {/if}
@@ -403,16 +395,7 @@
         workspace. This cannot be undone.
       </Dialog.Description>
     </Dialog.Header>
-    {#if deleteRefHits.length > 0}
-      <p
-        class="rounded-md border border-amber-500/40 bg-amber-500/5 p-2 text-xs text-amber-700 dark:text-amber-300"
-        data-testid={tid('delete-warn')}
-      >
-        {deleteRefHits.length} other tree{deleteRefHits.length === 1 ? '' : 's'}
-        link{deleteRefHits.length === 1 ? 's' : ''} to <span class="font-mono">{deleteId}</span>
-        and will be left dangling.
-      </p>
-    {/if}
+    <DanglingRefsWarning count={deleteRefHits.length} treeId={deleteId} testid={tid('delete-warn')} />
     <Dialog.Footer>
       <Button
         type="button"
