@@ -10,9 +10,13 @@
   import Layers from '@lucide/svelte/icons/layers';
   import Cpu from '@lucide/svelte/icons/cpu';
   import X from '@lucide/svelte/icons/x';
+  import Sparkles from '@lucide/svelte/icons/sparkles';
+  import ExternalLink from '@lucide/svelte/icons/external-link';
   import { MARKETPLACE, type MarketItem } from './marketplace-data';
   import MarketCard from './components/MarketCard.svelte';
   import MarketDetail from './components/MarketDetail.svelte';
+
+  const INTEREST_URL = 'https://github.com/anthropics/behaviors-ui/issues/1';
 
   interface Props {
     onInstall: (item: MarketItem) => void;
@@ -71,7 +75,10 @@
     onInstall={() => onInstall(detail!)}
   />
 {:else}
-  <div data-testid={testid} class="grid h-full grid-cols-[260px_1fr] overflow-hidden">
+  <div data-testid={testid} class="relative h-full overflow-hidden">
+    <!-- Marketplace content (blurred behind overlay) -->
+    <div class="pointer-events-none h-full select-none blur-[2px]">
+      <div class="grid h-full grid-cols-[260px_1fr] overflow-hidden">
     <!-- sidebar -->
     <aside class="overflow-auto border-r bg-card p-5" data-testid={tid('sidebar')}>
       <div class="mb-3 text-[11px] font-medium text-muted-foreground">Marketplace</div>
@@ -180,5 +187,37 @@
         {/if}
       </div>
     </ScrollArea>
+      </div>
+    </div>
+
+    <!-- Coming Soon overlay -->
+    <div
+      data-testid={tid('coming-soon-overlay')}
+      class="absolute inset-0 z-50 flex items-center justify-center bg-background/60 backdrop-blur-[1px]"
+    >
+      <div class="flex max-w-md flex-col items-center gap-6 rounded-xl border border-border/50 bg-card/95 px-12 py-10 shadow-2xl backdrop-blur-sm">
+        <div class="flex size-14 items-center justify-center rounded-full bg-primary/10">
+          <Sparkles class="size-7 text-primary" />
+        </div>
+        <div class="flex flex-col items-center gap-2 text-center">
+          <h2 class="text-2xl font-semibold tracking-tight">Coming Soon</h2>
+          <p class="max-w-[320px] text-sm leading-relaxed text-muted-foreground">
+            The community marketplace is under construction. Share and discover
+            battle-tested behaviour trees built by the community.
+          </p>
+        </div>
+        <Button
+          data-testid={tid('register-interest')}
+          class="gap-2"
+          onclick={() => window.open(INTEREST_URL, '_blank')}
+        >
+          <ExternalLink class="size-4" />
+          Register your interest
+        </Button>
+        <p class="text-xs text-muted-foreground/70">
+          Vote on the GitHub issue to help us prioritise
+        </p>
+      </div>
+    </div>
   </div>
 {/if}
