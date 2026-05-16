@@ -98,10 +98,12 @@ export function computeLayout(root: BehaviourNode): Layout {
     });
 
     const items: LayoutItem[] = [];
+    const depthOf = new Map<string, number>();
     let idx = 0;
     (function walk(node: BehaviourNode, path: Path, parentPath: Path | null, depth: number) {
         const kind = kindOf(node);
         const h = KIND_META[kind].isComposite ? NODE_H_COMP : NODE_H_LEAF;
+        depthOf.set(pathKey(path), depth);
         items.push({
             node,
             path,
@@ -115,13 +117,6 @@ export function computeLayout(root: BehaviourNode): Layout {
         idx++;
         children(node).forEach((c, i) => walk(c, [...path, i], path, depth + 1));
     })(root, [], null, 0);
-
-    // TODO: 7 - Merge this second tree walk into the first one above (both traverse identically)
-    const depthOf = new Map<string, number>();
-    (function walk(node: BehaviourNode, path: Path, d: number) {
-        depthOf.set(pathKey(path), d);
-        children(node).forEach((c, i) => walk(c, [...path, i], d + 1));
-    })(root, [], 0);
 
     const maxDepth = items.reduce(
         (m, it) => Math.max(m, depthOf.get(pathKey(it.path)) ?? 0),
