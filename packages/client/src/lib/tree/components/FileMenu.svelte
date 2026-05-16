@@ -3,8 +3,6 @@
   import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
   import * as Dialog from '$lib/components/ui/dialog';
   import { Button } from '$lib/components/ui/button';
-  import { Input } from '$lib/components/ui/input';
-  import { Label } from '$lib/components/ui/label';
   import ChevronsUpDown from '@lucide/svelte/icons/chevrons-up-down';
   import FolderKanban from '@lucide/svelte/icons/folder-kanban';
   import FilePlus from '@lucide/svelte/icons/file-plus';
@@ -19,6 +17,7 @@
   import FileUp from '@lucide/svelte/icons/file-up';
   import NewWorkspaceDialog from './NewWorkspaceDialog.svelte';
   import ImportTreeDialog from './ImportTreeDialog.svelte';
+  import WorkspaceSettingsDialog from './WorkspaceSettingsDialog.svelte';
 
   interface Props {
     testid?: string;
@@ -26,12 +25,9 @@
   let { testid }: Props = $props();
   const tid = $derived(makeTid(testid));
 
-  // TODO: 5 - SRP: mixes file dropdown, workspace-settings dialog, delete-slot dialog, and error dialog in one component
   let newOpen = $state(false);
 
   let settingsOpen = $state(false);
-  let settingsName = $state('');
-  let settingsVersion = $state('');
 
   let deleteSlotOpen = $state(false);
   let deleteSlotTarget = $state<{ id: string; name: string } | null>(null);
@@ -120,18 +116,12 @@
 
   function openSettings() {
     if (!current) return;
-    settingsName = current.name;
-    settingsVersion = current.version;
     settingsOpen = true;
   }
 
-  function submitSettings() {
-    const name = settingsName.trim();
-    const version = settingsVersion.trim();
-    if (!name || !version) return;
+  function submitSettings(name: string, version: string) {
     ws.setName(name);
     ws.setVersion(version);
-    settingsOpen = false;
   }
 
   function askDeleteSlot(slot: { id: string; name: string }) {
@@ -322,59 +312,13 @@
   testid={tid?.('import')}
 />
 
-<!-- Workspace settings dialog -->
-<Dialog.Root bind:open={settingsOpen}>
-  <Dialog.Content class="sm:max-w-md" data-testid={tid('settings-dialog')}>
-    <Dialog.Header>
-      <Dialog.Title>Workspace settings</Dialog.Title>
-      <Dialog.Description>
-        Edit the workspace name and version. Changes mark the workspace dirty until saved.
-      </Dialog.Description>
-    </Dialog.Header>
-    <form
-      class="flex flex-col gap-3"
-      onsubmit={(e) => {
-        e.preventDefault();
-        submitSettings();
-      }}
-    >
-      <div class="flex flex-col gap-1.5">
-        <Label for="settings-name">Name</Label>
-        <Input
-          id="settings-name"
-          bind:value={settingsName}
-          autofocus
-          data-testid={tid('settings-name')}
-        />
-      </div>
-      <div class="flex flex-col gap-1.5">
-        <Label for="settings-version">Version</Label>
-        <Input
-          id="settings-version"
-          bind:value={settingsVersion}
-          data-testid={tid('settings-version')}
-        />
-      </div>
-      <Dialog.Footer>
-        <Button
-          type="button"
-          variant="outline"
-          onclick={() => (settingsOpen = false)}
-          data-testid={tid('settings-cancel')}
-        >
-          Cancel
-        </Button>
-        <Button
-          type="submit"
-          disabled={!settingsName.trim() || !settingsVersion.trim()}
-          data-testid={tid('settings-submit')}
-        >
-          Save
-        </Button>
-      </Dialog.Footer>
-    </form>
-  </Dialog.Content>
-</Dialog.Root>
+<WorkspaceSettingsDialog
+  bind:open={settingsOpen}
+  initialName={current?.name ?? ''}
+  initialVersion={current?.version ?? ''}
+  onSubmit={submitSettings}
+  testid={tid?.('settings')}
+/>
 
 <!-- Delete browser slot confirm -->
 <Dialog.Root bind:open={deleteSlotOpen}>
