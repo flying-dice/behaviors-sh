@@ -1,4 +1,4 @@
-import type { ActionNode, BehaviourNode, RefNode } from '@behaviors-ui/behavior-spec';
+import { stepKind, type ActionNode, type BehaviourNode, type RefNode, type Step } from '@behaviors-ui/behavior-spec';
 
 export type Path = number[];
 
@@ -126,6 +126,56 @@ export function defaultAction(name = 'step'): BehaviourNode {
 export function parentOf(path: Path): Path | null {
     if (path.length === 0) return null;
     return path.slice(0, -1);
+}
+
+export function setName(node: BehaviourNode, name: string): BehaviourNode {
+    return '$ref' in node ? node : { ...node, name };
+}
+
+export function setDescription(node: BehaviourNode, description: string): BehaviourNode {
+    if ('$ref' in node) return node;
+    return { ...node, description: description.trim() || undefined };
+}
+
+export function setRetries(node: BehaviourNode, text: string): BehaviourNode {
+    if ('$ref' in node) return node;
+    const trimmed = text.trim();
+    if (!trimmed) return { ...node, retries: undefined };
+    const parsed = Number(trimmed);
+    if (!Number.isInteger(parsed) || parsed < 1) return node;
+    return { ...node, retries: parsed };
+}
+
+export function setCompositeType(node: BehaviourNode, type: 'sequence' | 'selector' | 'parallel'): BehaviourNode {
+    if ('$ref' in node || node.type === 'action') return node;
+    return { ...node, type };
+}
+
+export function setRef(node: BehaviourNode, value: string): BehaviourNode {
+    return '$ref' in node ? { $ref: value } : node;
+}
+
+export function addStep(node: BehaviourNode, kind: 'evaluate' | 'instruct'): BehaviourNode {
+    if ('$ref' in node || node.type !== 'action') return node;
+    const seed: Step = kind === 'evaluate' ? { evaluate: 'true' } : { instruct: 'TODO: describe step.' };
+    return { ...node, steps: [...node.steps, seed] };
+}
+
+export function removeStep(node: BehaviourNode, idx: number): BehaviourNode {
+    if ('$ref' in node || node.type !== 'action') return node;
+    if (node.steps.length <= 1) return node;
+    const steps = node.steps.slice();
+    steps.splice(idx, 1);
+    return { ...node, steps };
+}
+
+export function setStepBody(node: BehaviourNode, idx: number, value: string): BehaviourNode {
+    if ('$ref' in node || node.type !== 'action') return node;
+    const steps = node.steps.slice();
+    const current = steps[idx]!;
+    const kind = stepKind(current);
+    steps[idx] = { [kind]: value } as typeof current;
+    return { ...node, steps };
 }
 
 export function pathsEqual(a: Path, b: Path): boolean {

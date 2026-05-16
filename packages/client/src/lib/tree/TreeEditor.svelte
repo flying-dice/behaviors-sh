@@ -1,7 +1,6 @@
 <script lang="ts">
-  // TODO: 7 - SRP: mixes canvas viewport, selection, YAML generation, inspector mutations, and context menu in one component
   import { makeTid } from "$lib/utils";
-  import { stepKind, type BehaviourNode } from '@behaviors-ui/behavior-spec';
+  import type { BehaviourNode } from '@behaviors-ui/behavior-spec';
   import * as ws from '$lib/workspace/store.svelte';
   import BehaviourCanvas from './components/BehaviourCanvas.svelte';
   import BehaviourCanvasToolbar from './components/BehaviourCanvasToolbar.svelte';
@@ -14,12 +13,20 @@
   import { dereferenceTree } from './dereference';
   import {
     type Path,
+    addStep,
     defaultAction,
     getAt,
     insertChild,
     move,
     parentOf,
     removeAt,
+    removeStep,
+    setCompositeType,
+    setDescription,
+    setName,
+    setRef,
+    setRetries,
+    setStepBody,
     updateAt,
     wrap,
   } from './tree-ops';
@@ -120,70 +127,14 @@
     apply((r) => updateAt(r, selected, fn));
   }
 
-  // ---- Inspector handlers ----------------------------------------------
-
-  function onSetName(name: string) {
-    patchSelected((n) => ('$ref' in n ? n : { ...n, name }));
-  }
-
-  function onSetDescription(description: string) {
-    patchSelected((n) =>
-      '$ref' in n ? n : { ...n, description: description.trim() || undefined },
-    );
-  }
-
-  function onSetRetries(text: string) {
-    patchSelected((n) => {
-      if ('$ref' in n) return n;
-      const trimmed = text.trim();
-      if (!trimmed) return { ...n, retries: undefined };
-      const parsed = Number(trimmed);
-      if (!Number.isInteger(parsed) || parsed < 1) return n;
-      return { ...n, retries: parsed };
-    });
-  }
-
-  function onSetCompositeType(type: 'sequence' | 'selector' | 'parallel') {
-    patchSelected((n) =>
-      '$ref' in n || n.type === 'action' ? n : { ...n, type },
-    );
-  }
-
-  function onSetRef(value: string) {
-    patchSelected((n) => ('$ref' in n ? { $ref: value } : n));
-  }
-
-  function onAddStep(kind: 'evaluate' | 'instruct') {
-    patchSelected((n) => {
-      if ('$ref' in n || n.type !== 'action') return n;
-      const seed =
-        kind === 'evaluate'
-          ? { evaluate: 'true' }
-          : { instruct: 'TODO: describe step.' };
-      return { ...n, steps: [...n.steps, seed] };
-    });
-  }
-
-  function onRemoveStep(idx: number) {
-    patchSelected((n) => {
-      if ('$ref' in n || n.type !== 'action') return n;
-      if (n.steps.length <= 1) return n;
-      const steps = n.steps.slice();
-      steps.splice(idx, 1);
-      return { ...n, steps };
-    });
-  }
-
-  function onSetStepBody(idx: number, value: string) {
-    patchSelected((n) => {
-      if ('$ref' in n || n.type !== 'action') return n;
-      const steps = n.steps.slice();
-      const current = steps[idx]!;
-      const kind = stepKind(current);
-      steps[idx] = { [kind]: value } as typeof current;
-      return { ...n, steps };
-    });
-  }
+  function onSetName(v: string) { patchSelected((n) => setName(n, v)); }
+  function onSetDescription(v: string) { patchSelected((n) => setDescription(n, v)); }
+  function onSetRetries(v: string) { patchSelected((n) => setRetries(n, v)); }
+  function onSetCompositeType(v: 'sequence' | 'selector' | 'parallel') { patchSelected((n) => setCompositeType(n, v)); }
+  function onSetRef(v: string) { patchSelected((n) => setRef(n, v)); }
+  function onAddStep(kind: 'evaluate' | 'instruct') { patchSelected((n) => addStep(n, kind)); }
+  function onRemoveStep(idx: number) { patchSelected((n) => removeStep(n, idx)); }
+  function onSetStepBody(idx: number, value: string) { patchSelected((n) => setStepBody(n, idx, value)); }
 
   function onWrap(type: 'sequence' | 'selector' | 'parallel') {
     if (!selectedNode) return;
