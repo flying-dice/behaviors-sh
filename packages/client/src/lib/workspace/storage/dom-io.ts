@@ -26,8 +26,8 @@ export function pickFile<T>(
     });
 }
 
-export function downloadBlob(text: string, filename: string): void {
-    const blob = new Blob([text], { type: "application/json" });
+export function downloadBlob(text: string, filename: string, mime = "application/json"): void {
+    const blob = new Blob([text], { type: mime });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;

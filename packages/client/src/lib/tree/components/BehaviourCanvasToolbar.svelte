@@ -1,5 +1,6 @@
 <script lang="ts">
   import { makeTid } from "$lib/utils";
+  import { downloadBlob } from '$lib/workspace/storage/dom-io';
   import { ZOOM_MAX, ZOOM_MIN } from '../behaviour-layout';
   import { Button } from '$lib/components/ui/button';
   import { Badge } from '$lib/components/ui/badge';
@@ -42,15 +43,8 @@
     setTimeout(() => (copied = false), 1500);
   }
 
-  // TODO: 8 - Reuse downloadBlob from workspace/storage/dom-io.ts instead of duplicating Blob+anchor logic
   function downloadYaml() {
-    const blob = new Blob([yaml], { type: 'text/yaml' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${treeId}.yaml`;
-    a.click();
-    URL.revokeObjectURL(url);
+    downloadBlob(yaml, `${treeId}.yaml`, 'text/yaml');
   }
 </script>
 
