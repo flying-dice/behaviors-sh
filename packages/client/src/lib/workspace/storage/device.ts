@@ -43,31 +43,36 @@ export interface OpenedFromDevice {
     filename: string;
 }
 
-// TODO: 4 - DRY: openFromDevice and pickTreeFile share FSA+fallback branching boilerplate
-export async function openFromDevice(): Promise<OpenedFromDevice | null> {
+async function pickFromDevice<T>(
+    pickerTypes: typeof PICKER_TYPES,
+    fallbackAccept: string,
+    onFile: (file: File) => T | Promise<T>,
+    onHandle?: (result: T, handle: FileSystemFileHandle) => T,
+): Promise<T | null> {
     if (fsa.showOpenFilePicker) {
         let handle: FileSystemFileHandle;
         try {
             [handle] = await fsa.showOpenFilePicker({
                 multiple: false,
-                types: PICKER_TYPES,
+                types: pickerTypes,
             });
         } catch {
-            return null; // user cancelled
+            return null;
         }
         const file = await handle.getFile();
-        const workspace = parseWorkspace(await file.text());
-        return { workspace, handle, filename: file.name };
+        const result = await onFile(file);
+        return onHandle ? onHandle(result, handle) : result;
     }
-    return openFromDeviceFallback();
+    return pickFile(fallbackAccept, async (file) => onFile(file));
 }
 
-
-function openFromDeviceFallback(): Promise<OpenedFromDevice | null> {
-    return pickFile(`${FILE_EXT},.json,application/json`, async (file) => {
-        const workspace = parseWorkspace(await file.text());
-        return { workspace, filename: file.name };
-    });
+export async function openFromDevice(): Promise<OpenedFromDevice | null> {
+    return pickFromDevice(
+        PICKER_TYPES,
+        `${FILE_EXT},.json,application/json`,
+        async (file) => ({ workspace: parseWorkspace(await file.text()), filename: file.name }),
+        (result, handle) => ({ ...result, handle }),
+    );
 }
 
 export interface SavedToDevice {
@@ -152,24 +157,8 @@ export interface PickedFile {
 }
 
 export async function pickTreeFile(): Promise<PickedFile | null> {
-    if (fsa.showOpenFilePicker) {
-        let handle: FileSystemFileHandle;
-        try {
-            [handle] = await fsa.showOpenFilePicker({
-                multiple: false,
-                types: TREE_PICKER_TYPES,
-            });
-        } catch {
-            return null;
-        }
-        const file = await handle.getFile();
-        return { text: await file.text(), filename: file.name };
-    }
-    return pickTreeFileFallback();
-}
-
-function pickTreeFileFallback(): Promise<PickedFile | null> {
-    return pickFile(
+    return pickFromDevice(
+        TREE_PICKER_TYPES,
         ".yaml,.yml,.json,application/x-yaml,application/json",
         async (file) => ({ text: await file.text(), filename: file.name }),
     );
