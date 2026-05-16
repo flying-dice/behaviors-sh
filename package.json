@@ -1,0 +1,20 @@
+{
+  "name": "behaviors-ui",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:client": "bun --filter @behaviors-ui/client dev",
+    "dev:server": "bun --filter @behaviors-ui/server dev",
+    "dev": "bun --filter '*' --parallel dev",
+    "build": "bun --filter @behaviors-ui/client build",
+    "start": "bun --filter @behaviors-ui/server start",
+    "cli": "bun --filter @behaviors-ui/cli start",
+    "cli:headless": "bun --filter @behaviors-ui/cli headless",
+    "compile": "bun --filter @behaviors-ui/cli compile",
+    "check": "bun --filter @behaviors-ui/client check"
+  }
+}

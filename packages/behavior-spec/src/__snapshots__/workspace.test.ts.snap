@@ -1,0 +1,232 @@
+// Bun Snapshot v1, https://bun.sh/docs/test/snapshots
+
+exports[`WorkspaceSchema.toJSONSchema emits the published JSON Schema 1`] = `
+{
+  "$defs": {
+    "__schema0": {
+      "$id": "https://behaviors-ui.dev/schemas/tree.schema.json",
+      "anyOf": [
+        {
+          "additionalProperties": false,
+          "properties": {
+            "$ref": {
+              "type": "string",
+            },
+          },
+          "required": [
+            "$ref",
+          ],
+          "type": "object",
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "$schema": {
+              "type": "string",
+            },
+            "description": {
+              "type": "string",
+            },
+            "name": {
+              "minLength": 1,
+              "pattern": "^[^/@]+$",
+              "type": "string",
+            },
+            "retries": {
+              "maximum": 9007199254740991,
+              "minimum": 1,
+              "type": "integer",
+            },
+            "state": {
+              "additionalProperties": false,
+              "properties": {
+                "const": {
+                  "additionalProperties": {},
+                  "propertyNames": {
+                    "type": "string",
+                  },
+                  "type": "object",
+                },
+                "var": {
+                  "additionalProperties": {},
+                  "propertyNames": {
+                    "type": "string",
+                  },
+                  "type": "object",
+                },
+              },
+              "type": "object",
+            },
+            "steps": {
+              "items": {
+                "anyOf": [
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "evaluate": {
+                        "minLength": 1,
+                        "type": "string",
+                      },
+                    },
+                    "required": [
+                      "evaluate",
+                    ],
+                    "type": "object",
+                  },
+                  {
+                    "additionalProperties": false,
+                    "properties": {
+                      "instruct": {
+                        "minLength": 1,
+                        "type": "string",
+                      },
+                    },
+                    "required": [
+                      "instruct",
+                    ],
+                    "type": "object",
+                  },
+                ],
+              },
+              "minItems": 1,
+              "type": "array",
+            },
+            "type": {
+              "const": "action",
+              "type": "string",
+            },
+            "version": {
+              "type": "string",
+            },
+          },
+          "required": [
+            "type",
+            "name",
+            "steps",
+          ],
+          "type": "object",
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "$schema": {
+              "type": "string",
+            },
+            "children": {
+              "items": {
+                "$ref": "#/$defs/__schema0",
+              },
+              "minItems": 1,
+              "type": "array",
+            },
+            "description": {
+              "type": "string",
+            },
+            "name": {
+              "minLength": 1,
+              "pattern": "^[^/@]+$",
+              "type": "string",
+            },
+            "retries": {
+              "maximum": 9007199254740991,
+              "minimum": 1,
+              "type": "integer",
+            },
+            "state": {
+              "additionalProperties": false,
+              "properties": {
+                "const": {
+                  "additionalProperties": {},
+                  "propertyNames": {
+                    "type": "string",
+                  },
+                  "type": "object",
+                },
+                "var": {
+                  "additionalProperties": {},
+                  "propertyNames": {
+                    "type": "string",
+                  },
+                  "type": "object",
+                },
+              },
+              "type": "object",
+            },
+            "type": {
+              "enum": [
+                "sequence",
+                "selector",
+                "parallel",
+              ],
+              "type": "string",
+            },
+            "version": {
+              "type": "string",
+            },
+          },
+          "required": [
+            "type",
+            "name",
+            "children",
+          ],
+          "type": "object",
+        },
+      ],
+      "description": "Schema for behaviour-tree YAML files. The file root is a node — there is no wrapper. Optional \`version\`, \`description\`, and \`state\` fields can appear on any node so fragments and trees share one shape. Reference via \`# yaml-language-server: $schema=...\` or \`$schema:\` field.",
+      "title": "Behaviour Tree File",
+    },
+  },
+  "$id": "https://behaviors-ui.dev/schemas/workspace.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "A workspace bundles named behaviour trees under an OpenAPI-style \`components\` namespace. Each entry under \`components.trees\` is a BehaviourNode. Anywhere a node is expected — as a whole tree or inside a composite's \`children\` — \`$ref\` can stand in for it and point to another tree in the workspace (\`#/components/trees/<id>\`) or to a file/URL. Resolution is performed by \`@apidevtools/json-schema-ref-parser\` at load time, so the schema only requires that \`$ref\` is a non-empty string.",
+  "properties": {
+    "components": {
+      "additionalProperties": false,
+      "properties": {
+        "trees": {
+          "additionalProperties": {
+            "$ref": "#/$defs/__schema0",
+          },
+          "propertyNames": {
+            "minLength": 1,
+            "pattern": "^[^/@]+$",
+            "type": "string",
+          },
+          "type": "object",
+        },
+      },
+      "required": [
+        "trees",
+      ],
+      "type": "object",
+    },
+    "name": {
+      "minLength": 1,
+      "type": "string",
+    },
+    "version": {
+      "minLength": 1,
+      "type": "string",
+    },
+  },
+  "required": [
+    "name",
+    "version",
+    "components",
+  ],
+  "title": "Behaviour Workspace File",
+  "type": "object",
+  "~standard": {
+    "jsonSchema": {
+      "input": [Function],
+      "output": [Function],
+    },
+    "validate": [Function],
+    "vendor": "zod",
+    "version": 1,
+  },
+}
+`;
+
+exports[`WorkspaceSchema rejects tree keys containing '/' or '@' 1`] = `"Invalid key in record"`;
