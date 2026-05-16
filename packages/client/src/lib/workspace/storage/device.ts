@@ -1,6 +1,6 @@
-// TODO: 7 - SRP: mixes FSA API, tree-file picking, and DOM fallback (input/anchor injection) in one module
 import type { Workspace } from "@behaviors-ui/behavior-spec";
 import { parseWorkspace, serializeWorkspace, slugify } from "../serialize";
+import { downloadBlob, pickFile } from "./dom-io";
 
 const FILE_EXT = ".workspace.json";
 const PICKER_TYPES = [
@@ -61,36 +61,9 @@ export async function openFromDevice(): Promise<OpenedFromDevice | null> {
     return openFromDeviceFallback();
 }
 
-function pickFileFallback<T>(
-    accept: string,
-    process: (file: File) => Promise<T>,
-): Promise<T | null> {
-    return new Promise((resolve, reject) => {
-        const input = document.createElement("input");
-        input.type = "file";
-        input.accept = accept;
-        input.style.display = "none";
-        input.addEventListener("change", async () => {
-            const file = input.files?.[0];
-            input.remove();
-            if (!file) return resolve(null);
-            try {
-                resolve(await process(file));
-            } catch (err) {
-                reject(err);
-            }
-        });
-        input.addEventListener("cancel", () => {
-            input.remove();
-            resolve(null);
-        });
-        document.body.appendChild(input);
-        input.click();
-    });
-}
 
 function openFromDeviceFallback(): Promise<OpenedFromDevice | null> {
-    return pickFileFallback(`${FILE_EXT},.json,application/json`, async (file) => {
+    return pickFile(`${FILE_EXT},.json,application/json`, async (file) => {
         const workspace = parseWorkspace(await file.text());
         return { workspace, filename: file.name };
     });
@@ -167,18 +140,6 @@ async function ensureReadwritePermission(handle: FileSystemFileHandle) {
     );
 }
 
-function downloadBlob(text: string, filename: string) {
-    const blob = new Blob([text], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = filename;
-    a.style.display = "none";
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
-}
 
 function defaultFilenameStem(name: string): string {
     return slugify(name, "workspace");
@@ -207,7 +168,7 @@ export async function pickTreeFile(): Promise<PickedFile | null> {
 }
 
 function pickTreeFileFallback(): Promise<PickedFile | null> {
-    return pickFileFallback(
+    return pickFile(
         ".yaml,.yml,.json,application/x-yaml,application/json",
         async (file) => ({ text: await file.text(), filename: file.name }),
     );
