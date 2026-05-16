@@ -1,5 +1,5 @@
 import { stepBody, stepKind, type BehaviourNode } from '@behaviors-ui/behavior-spec';
-import { isLeaf, type Path } from './tree-ops';
+import { isLeaf, type CompositeType, type Path } from './tree-ops';
 import { miniLayout } from './mini-layout';
 
 export const NODE_W = 200;
@@ -52,7 +52,10 @@ export const KIND_META: Record<NodeKind, {
     },
 };
 
-// TODO: 8 - Export COMPOSITE_TYPES array derived from KIND_META to replace hardcoded ['sequence','selector','parallel'] lists in Inspector and CanvasNodeMenu
+export const COMPOSITE_TYPES = (Object.keys(KIND_META) as NodeKind[]).filter(
+    (k) => KIND_META[k].isComposite,
+) as CompositeType[];
+
 export function kindOf(node: BehaviourNode): NodeKind {
     if ('$ref' in node) return 'ref';
     return node.type;

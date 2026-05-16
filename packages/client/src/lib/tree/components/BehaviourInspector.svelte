@@ -17,7 +17,7 @@
   import type { TreeSummary } from '$lib/workspace/store.svelte';
   import { refToTreeId, treeIdToRef } from '../ref';
   import type { CompositeType } from '../tree-ops';
-  import { kindOf, KIND_META, nodeColor } from '../behaviour-layout';
+  import { COMPOSITE_TYPES, kindOf, KIND_META, nodeColor } from '../behaviour-layout';
 
   interface Props {
     node: BehaviourNode | null;
@@ -249,7 +249,7 @@
           <div class="flex flex-col gap-1.5">
             <Label>Composite type</Label>
             <div class="grid grid-cols-3 gap-2" data-testid={tid('composite-type')}>
-              {#each ['sequence', 'selector', 'parallel'] as const as t (t)}
+              {#each COMPOSITE_TYPES as t (t)}
                 <button
                   type="button"
                   class="rounded-md border px-3 py-2 text-left text-[12.5px] transition-colors {selCompositeType === t ? '' : 'hover:bg-muted/60'}"

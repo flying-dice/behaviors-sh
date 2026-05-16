@@ -1,6 +1,7 @@
 <script lang="ts">
   import { makeTid } from "$lib/utils";
   import type { CompositeType } from '../tree-ops';
+  import { COMPOSITE_TYPES } from '../behaviour-layout';
   import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
   import PlusIcon from '@lucide/svelte/icons/plus';
   import ChevronUp from '@lucide/svelte/icons/chevron-up';
@@ -118,24 +119,14 @@
         <span>Wrap in…</span>
       </DropdownMenu.SubTrigger>
       <DropdownMenu.SubContent class="w-44">
-        <DropdownMenu.Item
-          onclick={() => run(() => onWrap('sequence'))}
-          data-testid={tid('wrap-sequence')}
-        >
-          <span class="font-mono">sequence</span>
-        </DropdownMenu.Item>
-        <DropdownMenu.Item
-          onclick={() => run(() => onWrap('selector'))}
-          data-testid={tid('wrap-selector')}
-        >
-          <span class="font-mono">selector</span>
-        </DropdownMenu.Item>
-        <DropdownMenu.Item
-          onclick={() => run(() => onWrap('parallel'))}
-          data-testid={tid('wrap-parallel')}
-        >
-          <span class="font-mono">parallel</span>
-        </DropdownMenu.Item>
+        {#each COMPOSITE_TYPES as t (t)}
+          <DropdownMenu.Item
+            onclick={() => run(() => onWrap(t))}
+            data-testid={tid(`wrap-${t}`)}
+          >
+            <span class="font-mono">{t}</span>
+          </DropdownMenu.Item>
+        {/each}
       </DropdownMenu.SubContent>
     </DropdownMenu.Sub>
 
