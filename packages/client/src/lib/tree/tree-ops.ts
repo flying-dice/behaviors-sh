@@ -113,13 +113,18 @@ export function wrap(
     }));
 }
 
+const SEED_INSTRUCT: Step = { instruct: 'TODO: describe step.' };
+
 export function defaultAction(name = 'step'): BehaviourNode {
     return {
         type: 'action',
         name,
-        // TODO: 6 - DRY: this seed step literal is duplicated in NewTreeDialog.svelte and TreeEditor.svelte
-        steps: [{ instruct: 'TODO: describe step.' }],
+        steps: [SEED_INSTRUCT],
     };
+}
+
+export function defaultComposite(type: 'sequence' | 'selector' | 'parallel', name: string): BehaviourNode {
+    return { type, name, children: [defaultAction()] };
 }
 
 // Returns the parent's path, or null if `path` is the root.
@@ -157,7 +162,7 @@ export function setRef(node: BehaviourNode, value: string): BehaviourNode {
 
 export function addStep(node: BehaviourNode, kind: 'evaluate' | 'instruct'): BehaviourNode {
     if ('$ref' in node || node.type !== 'action') return node;
-    const seed: Step = kind === 'evaluate' ? { evaluate: 'true' } : { instruct: 'TODO: describe step.' };
+    const seed: Step = kind === 'evaluate' ? { evaluate: 'true' } : SEED_INSTRUCT;
     return { ...node, steps: [...node.steps, seed] };
 }
 

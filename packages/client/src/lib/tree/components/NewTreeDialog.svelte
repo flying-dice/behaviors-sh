@@ -5,6 +5,7 @@
   import { Button } from '$lib/components/ui/button';
   import { Input } from '$lib/components/ui/input';
   import { Label } from '$lib/components/ui/label';
+  import { defaultAction, defaultComposite } from '../tree-ops';
 
   type NodeType = 'action' | 'sequence' | 'selector' | 'parallel';
 
@@ -29,16 +30,8 @@
   });
 
   function seedNode(type: NodeType, name: string): BehaviourNode {
-    if (type === 'action') {
-      return { type: 'action', name, steps: [{ instruct: 'TODO: describe step.' }] };
-    }
-    return {
-      type,
-      name,
-      children: [
-        { type: 'action', name: 'step', steps: [{ instruct: 'TODO: describe step.' }] },
-      ],
-    };
+    if (type === 'action') return defaultAction(name);
+    return defaultComposite(type, name);
   }
 
   function submit() {
