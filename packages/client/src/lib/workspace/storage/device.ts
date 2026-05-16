@@ -1,3 +1,4 @@
+// TODO: 7 - SRP: mixes FSA API, tree-file picking, and DOM fallback (input/anchor injection) in one module
 import type { Workspace } from "@behaviors-ui/behavior-spec";
 import { parseWorkspace, serializeWorkspace, slugify } from "../serialize";
 

@@ -1,4 +1,5 @@
 <script lang="ts">
+  // TODO: 7 - SRP: mixes canvas viewport, selection, YAML generation, inspector mutations, and context menu in one component
   import { makeTid } from "$lib/utils";
   import { stepKind, type BehaviourNode } from '@behaviors-ui/behavior-spec';
   import * as ws from '$lib/workspace/store.svelte';

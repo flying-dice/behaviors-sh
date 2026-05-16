@@ -65,6 +65,7 @@ async function runHeadless(opts: CliOptions): Promise<void> {
   console.log(`[cli] headless mode — serving at ${running.url} (Ctrl+C to stop)`)
 }
 
+// TODO: 8 - SRP: runWebview conflates port discovery, server polling, process lifecycle, and webview management
 async function runWebview(opts: CliOptions): Promise<void> {
   let Webview: typeof import('webview-bun').Webview
   try {

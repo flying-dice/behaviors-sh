@@ -117,6 +117,7 @@ export function defaultAction(name = 'step'): BehaviourNode {
     return {
         type: 'action',
         name,
+        // TODO: 6 - DRY: this seed step literal is duplicated in NewTreeDialog.svelte and TreeEditor.svelte
         steps: [{ instruct: 'TODO: describe step.' }],
     };
 }
