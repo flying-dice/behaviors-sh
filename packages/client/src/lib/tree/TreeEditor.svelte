@@ -177,6 +177,11 @@
     patchSelected(() => defaultAction('step'));
   }
 
+  function switchToTree(id: string) {
+    selected = null;
+    onSwitchTree(id);
+  }
+
   // ---- Structural toolbar (canvas-area buttons) ------------------------
 
   function onAddChild() {
@@ -272,10 +277,7 @@
       currentTreeId={treeId}
       {root}
       {selected}
-      onSwitchTree={(id) => {
-        selected = null;
-        onSwitchTree(id);
-      }}
+      onSwitchTree={switchToTree}
       {onBack}
       onSelect={(p) => (selected = p)}
     />
@@ -350,10 +352,7 @@
         onPan={(p) => (pan = p)}
         onZoom={(z) => (zoom = z)}
         onContextMenu={openContextMenu}
-        onOpenLinkedTree={(id) => {
-          selected = null;
-          onSwitchTree(id);
-        }}
+        onOpenLinkedTree={switchToTree}
       />
     </div>
 
@@ -407,10 +406,7 @@
                 {onWrap}
                 {onConvertToRef}
                 {onConvertRefToAction}
-                onOpenLinkedTree={(id) => {
-                  selected = null;
-                  onSwitchTree(id);
-                }}
+                onOpenLinkedTree={switchToTree}
               />
             </div>
           </ScrollArea>

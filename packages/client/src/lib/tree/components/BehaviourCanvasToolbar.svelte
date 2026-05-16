@@ -35,6 +35,7 @@
   }: Props = $props();
   const tid = $derived(makeTid(testid));
 
+  // TODO: 8 - Use a single Tooltip.Provider wrapping both tooltip buttons instead of duplicated Provider/Root/Trigger/Content stacks
   let copied = $state(false);
 
   function copyYaml() {

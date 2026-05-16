@@ -61,6 +61,7 @@
     ws.newWorkspace(name, version);
   }
 
+  // TODO: 7 - Extract withError(title, fn) helper to eliminate 7 repeated try/catch/reportError blocks
   function openBrowserSlot(slotId: string) {
     try {
       ws.openFromBrowser(slotId);

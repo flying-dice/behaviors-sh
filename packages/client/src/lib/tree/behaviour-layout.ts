@@ -52,6 +52,7 @@ export const KIND_META: Record<NodeKind, {
     },
 };
 
+// TODO: 8 - Export COMPOSITE_TYPES array derived from KIND_META to replace hardcoded ['sequence','selector','parallel'] lists in Inspector and CanvasNodeMenu
 export function kindOf(node: BehaviourNode): NodeKind {
     if ('$ref' in node) return 'ref';
     return node.type;
