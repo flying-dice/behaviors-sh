@@ -26,6 +26,7 @@
   let { testid }: Props = $props();
   const tid = $derived(makeTid(testid));
 
+  // TODO: 5 - SRP: mixes file dropdown, workspace-settings dialog, delete-slot dialog, and error dialog in one component
   let newOpen = $state(false);
 
   let settingsOpen = $state(false);

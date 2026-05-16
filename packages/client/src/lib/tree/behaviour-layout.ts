@@ -75,6 +75,7 @@ export interface LayoutItem {
     parentPath: Path | null;
 }
 
+// TODO: 5 - DRY: measure/place algorithm duplicates the generic version in mini-layout.ts
 interface Measured {
     w: number;
     h: number;

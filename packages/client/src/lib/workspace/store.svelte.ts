@@ -1,9 +1,10 @@
-import { NAME_PATTERN, type BehaviourNode, type Workspace } from "@behaviors-ui/behavior-spec";
+import type { BehaviourNode, Workspace } from "@behaviors-ui/behavior-spec";
 import { countNodes, kindOf } from "../tree/behaviour-layout";
 import { emptyWorkspace } from "./serialize";
 import * as browser from "./storage/browser";
 import * as device from "./storage/device";
 import type { BrowserSlot, WorkspaceSource } from "./types";
+import { createTreeIn, deleteTreeIn, findTreeRefsIn, renameTreeIn, replaceTreeIn } from "./workspace-ops";
 
 export interface TreeSummary {
     id: string;
@@ -36,14 +37,8 @@ function refreshBrowserSlots() {
     browserSlots = browser.listSlots();
 }
 
-function setTree(id: string, node: BehaviourNode) {
-    workspace = {
-        ...workspace!,
-        components: {
-            ...workspace!.components,
-            trees: { ...workspace!.components.trees, [id]: node },
-        },
-    };
+function applyWorkspace(next: Workspace) {
+    workspace = next;
     dirty = true;
 }
 
@@ -73,87 +68,29 @@ export function getTree(id: string): BehaviourNode | null {
     return workspace?.components.trees[id] ?? null;
 }
 
-function assertValidTreeKey(id: string) {
-    if (!id || !NAME_PATTERN.test(id)) {
-        throw new Error(
-            `Invalid tree id "${id}". Must be non-empty and contain no '/' or '@'.`,
-        );
-    }
-}
-
 export function createTree(id: string, node: BehaviourNode) {
     if (!workspace) throw new Error("No workspace open.");
-    assertValidTreeKey(id);
-    if (workspace.components.trees[id]) {
-        throw new Error(`A tree with id "${id}" already exists.`);
-    }
-    setTree(id, node);
+    applyWorkspace(createTreeIn(workspace, id, node));
 }
 
 export function replaceTree(id: string, node: BehaviourNode) {
     if (!workspace) throw new Error("No workspace open.");
-    if (!(id in workspace.components.trees)) {
-        throw new Error(`No tree with id "${id}".`);
-    }
-    setTree(id, node);
+    applyWorkspace(replaceTreeIn(workspace, id, node));
 }
 
-// Rename changes the workspace map key. Internal `$ref` strings that
-// pointed at the old key (e.g. `#/components/trees/<old>`) are NOT
-// rewritten — callers that care should inspect the workspace first.
 export function renameTree(oldId: string, newId: string) {
     if (!workspace) throw new Error("No workspace open.");
-    if (oldId === newId) return;
-    assertValidTreeKey(newId);
-    const trees = workspace.components.trees;
-    if (!(oldId in trees)) throw new Error(`No tree with id "${oldId}".`);
-    if (newId in trees) {
-        throw new Error(`A tree with id "${newId}" already exists.`);
-    }
-    // Preserve insertion order: walk the existing entries and substitute
-    // the renamed key in place rather than dropping it to the end.
-    const next: Record<string, BehaviourNode> = {};
-    for (const [k, v] of Object.entries(trees)) {
-        next[k === oldId ? newId : k] = v;
-    }
-    workspace = {
-        ...workspace,
-        components: { ...workspace.components, trees: next },
-    };
-    dirty = true;
+    applyWorkspace(renameTreeIn(workspace, oldId, newId));
 }
 
 export function deleteTree(id: string) {
     if (!workspace) throw new Error("No workspace open.");
-    if (!(id in workspace.components.trees)) return;
-    const { [id]: _removed, ...rest } = workspace.components.trees;
-    workspace = {
-        ...workspace,
-        components: { ...workspace.components, trees: rest },
-    };
-    dirty = true;
+    applyWorkspace(deleteTreeIn(workspace, id));
 }
 
-// Returns the list of `$ref` strings inside the workspace that point at
-// `#/components/trees/<id>`. Useful before renaming/deleting a tree so
-// the UI can warn about dangling references.
 export function findTreeRefs(id: string): string[] {
     if (!workspace) return [];
-    const target = `#/components/trees/${id}`;
-    const hits: string[] = [];
-    function walk(node: BehaviourNode, path: string) {
-        if ("$ref" in node) {
-            if (node.$ref === target) hits.push(path);
-            return;
-        }
-        if (node.type === "action") return;
-        node.children.forEach((c, i) => walk(c, `${path}/children/${i}`));
-    }
-    for (const [k, v] of Object.entries(workspace.components.trees)) {
-        if (k === id) continue;
-        walk(v, `#/components/trees/${k}`);
-    }
-    return hits;
+    return findTreeRefsIn(workspace, id);
 }
 
 function setWorkspace(next: Workspace | null, nextSource: WorkspaceSource) {

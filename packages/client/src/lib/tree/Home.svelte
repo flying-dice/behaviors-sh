@@ -60,6 +60,7 @@
     ws.newWorkspace(name, version);
   }
 
+  // TODO: 5 - DRY: openFromDevice/openBrowserSlot duplicated in FileMenu.svelte with same try/catch pattern
   async function openFromDevice() {
     try {
       await ws.openFromDevice();
