@@ -1,4 +1,5 @@
 import { NAME_PATTERN, type BehaviourNode, type Workspace } from "@behaviors-ui/behavior-spec";
+import { treeIdToRef } from "../tree/ref";
 
 export function assertValidTreeKey(id: string): void {
     if (!id || !NAME_PATTERN.test(id)) {
@@ -48,9 +49,8 @@ export function deleteTreeIn(ws: Workspace, id: string): Workspace {
     return withTrees(ws, rest);
 }
 
-// TODO: 8 - Use treeIdToRef from ../tree/ref.ts instead of hardcoding the prefix string
 export function findTreeRefsIn(ws: Workspace, id: string): string[] {
-    const target = `#/components/trees/${id}`;
+    const target = treeIdToRef(id);
     const hits: string[] = [];
     function walk(node: BehaviourNode, path: string) {
         if ("$ref" in node) {
@@ -62,7 +62,7 @@ export function findTreeRefsIn(ws: Workspace, id: string): string[] {
     }
     for (const [k, v] of Object.entries(ws.components.trees)) {
         if (k === id) continue;
-        walk(v, `#/components/trees/${k}`);
+        walk(v, treeIdToRef(k));
     }
     return hits;
 }
