@@ -8,32 +8,23 @@ export function assertValidTreeKey(id: string): void {
     }
 }
 
-// TODO: 4 - DRY: createTreeIn and replaceTreeIn share identical components.trees spread; extract withTrees helper
+function withTrees(ws: Workspace, trees: Record<string, BehaviourNode>): Workspace {
+    return { ...ws, components: { ...ws.components, trees } };
+}
+
 export function createTreeIn(ws: Workspace, id: string, node: BehaviourNode): Workspace {
     assertValidTreeKey(id);
     if (ws.components.trees[id]) {
         throw new Error(`A tree with id "${id}" already exists.`);
     }
-    return {
-        ...ws,
-        components: {
-            ...ws.components,
-            trees: { ...ws.components.trees, [id]: node },
-        },
-    };
+    return withTrees(ws, { ...ws.components.trees, [id]: node });
 }
 
 export function replaceTreeIn(ws: Workspace, id: string, node: BehaviourNode): Workspace {
     if (!(id in ws.components.trees)) {
         throw new Error(`No tree with id "${id}".`);
     }
-    return {
-        ...ws,
-        components: {
-            ...ws.components,
-            trees: { ...ws.components.trees, [id]: node },
-        },
-    };
+    return withTrees(ws, { ...ws.components.trees, [id]: node });
 }
 
 export function renameTreeIn(ws: Workspace, oldId: string, newId: string): Workspace {
@@ -48,13 +39,13 @@ export function renameTreeIn(ws: Workspace, oldId: string, newId: string): Works
     for (const [k, v] of Object.entries(trees)) {
         next[k === oldId ? newId : k] = v;
     }
-    return { ...ws, components: { ...ws.components, trees: next } };
+    return withTrees(ws, next);
 }
 
 export function deleteTreeIn(ws: Workspace, id: string): Workspace {
     if (!(id in ws.components.trees)) return ws;
     const { [id]: _removed, ...rest } = ws.components.trees;
-    return { ...ws, components: { ...ws.components, trees: rest } };
+    return withTrees(ws, rest);
 }
 
 export function findTreeRefsIn(ws: Workspace, id: string): string[] {

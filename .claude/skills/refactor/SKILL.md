@@ -28,7 +28,9 @@ Always apply the clean-code skill (@.claude/skills/clean-code/) when writing the
 
 6. **Verify** — Run the project's lint/typecheck commands if they exist. If tests exist for the affected code, run them. If anything fails, fix it before reporting done.
 
-7. **Report** — Show what was fixed using this format, then remind the user they can run `/refactor` again:
+7. **Commit & Push** — Stage all changed files, commit with a message in the format `refactor: <one-sentence summary of the fix>`, and push to the current branch.
+
+8. **Report** — Show what was fixed using this format, then remind the user they can run `/refactor` again:
 
    ```
    ### Refactored
