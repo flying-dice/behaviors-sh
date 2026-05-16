@@ -35,7 +35,6 @@
   }: Props = $props();
   const tid = $derived(makeTid(testid));
 
-  // TODO: 8 - Use a single Tooltip.Provider wrapping both tooltip buttons instead of duplicated Provider/Root/Trigger/Content stacks
   let copied = $state(false);
 
   function copyYaml() {
@@ -97,8 +96,6 @@
       </Tooltip.Trigger>
       <Tooltip.Content>Copy YAML</Tooltip.Content>
     </Tooltip.Root>
-  </Tooltip.Provider>
-  <Tooltip.Provider>
     <Tooltip.Root>
       <Tooltip.Trigger>
         <Button
