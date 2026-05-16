@@ -1,9 +1,6 @@
 <script lang="ts">
-  // TODO: 8 - Extract inlined error-dialog and delete-slot-confirmation dialog into standalone components (SRP)
   import { makeTid, errorMessage } from "$lib/utils";
   import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
-  import * as Dialog from '$lib/components/ui/dialog';
-  import { Button } from '$lib/components/ui/button';
   import ChevronsUpDown from '@lucide/svelte/icons/chevrons-up-down';
   import FolderKanban from '@lucide/svelte/icons/folder-kanban';
   import FilePlus from '@lucide/svelte/icons/file-plus';
@@ -19,6 +16,8 @@
   import NewWorkspaceDialog from './NewWorkspaceDialog.svelte';
   import ImportTreeDialog from './ImportTreeDialog.svelte';
   import WorkspaceSettingsDialog from './WorkspaceSettingsDialog.svelte';
+  import DeleteSlotDialog from './DeleteSlotDialog.svelte';
+  import ErrorDialog from './ErrorDialog.svelte';
 
   interface Props {
     testid?: string;
@@ -321,53 +320,16 @@
   testid={tid?.('settings')}
 />
 
-<!-- Delete browser slot confirm -->
-<Dialog.Root bind:open={deleteSlotOpen}>
-  <Dialog.Content class="sm:max-w-md" data-testid={tid('delete-slot-dialog')}>
-    <Dialog.Header>
-      <Dialog.Title>Delete browser slot?</Dialog.Title>
-      <Dialog.Description>
-        <span class="font-mono text-foreground">{deleteSlotTarget?.name ?? ''}</span> will be
-        removed from this browser. This does not affect any device files.
-      </Dialog.Description>
-    </Dialog.Header>
-    <Dialog.Footer>
-      <Button
-        type="button"
-        variant="outline"
-        onclick={() => (deleteSlotOpen = false)}
-        data-testid={tid('delete-slot-cancel')}
-      >
-        Cancel
-      </Button>
-      <Button
-        type="button"
-        variant="destructive"
-        class="bg-destructive text-destructive-foreground hover:bg-destructive/80"
-        onclick={confirmDeleteSlot}
-        data-testid={tid('delete-slot-confirm')}
-      >
-        <Trash2 /> Delete
-      </Button>
-    </Dialog.Footer>
-  </Dialog.Content>
-</Dialog.Root>
+<DeleteSlotDialog
+  bind:open={deleteSlotOpen}
+  slotName={deleteSlotTarget?.name ?? ''}
+  onConfirm={confirmDeleteSlot}
+  testid={tid?.('delete-slot-dialog')}
+/>
 
-<!-- Error dialog -->
-<Dialog.Root bind:open={errorOpen}>
-  <Dialog.Content class="sm:max-w-md" data-testid={tid('error-dialog')}>
-    <Dialog.Header>
-      <Dialog.Title>{errorTitle}</Dialog.Title>
-      <Dialog.Description>
-        <span class="font-mono text-[12.5px]">{errorMsg}</span>
-      </Dialog.Description>
-    </Dialog.Header>
-    <Dialog.Footer>
-      <Button
-        type="button"
-        onclick={() => (errorOpen = false)}
-        data-testid={tid('error-dismiss')}
-      >Dismiss</Button>
-    </Dialog.Footer>
-  </Dialog.Content>
-</Dialog.Root>
+<ErrorDialog
+  bind:open={errorOpen}
+  title={errorTitle}
+  message={errorMsg}
+  testid={tid?.('error-dialog')}
+/>
