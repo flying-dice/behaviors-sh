@@ -1,5 +1,6 @@
 import { stepBody, stepKind, type BehaviourNode } from '@behaviors-ui/behavior-spec';
 import { isLeaf, type Path } from './tree-ops';
+import { miniLayout } from './mini-layout';
 
 export const NODE_W = 200;
 export const NODE_H_COMP = 56;
@@ -75,27 +76,9 @@ export interface LayoutItem {
     parentPath: Path | null;
 }
 
-// TODO: 5 - DRY: measure/place algorithm duplicates the generic version in mini-layout.ts
-interface Measured {
-    w: number;
-    h: number;
-    node: BehaviourNode;
-    children: Measured[];
-}
-
 function children(node: BehaviourNode): BehaviourNode[] {
     if (isLeaf(node)) return [];
     return node.children;
-}
-
-function measure(node: BehaviourNode): Measured {
-    const kind = kindOf(node);
-    const isLeaf = !KIND_META[kind].isComposite;
-    const h = isLeaf ? NODE_H_LEAF : NODE_H_COMP;
-    const kids = children(node).map(measure);
-    if (!kids.length) return { w: NODE_W, h, node, children: [] };
-    const childrenW = kids.reduce((s, k) => s + k.w, 0) + (kids.length - 1) * H_GAP;
-    return { w: Math.max(NODE_W, childrenW), h, node, children: kids };
 }
 
 export interface Layout {
@@ -105,41 +88,35 @@ export interface Layout {
 }
 
 export function computeLayout(root: BehaviourNode): Layout {
-    const items: LayoutItem[] = [];
+    const padding = 24;
+    const mini = miniLayout(root, {
+        children,
+        nodeW: NODE_W,
+        nodeH: NODE_H_COMP,
+        hGap: H_GAP,
+        vGap: V_GAP,
+    });
 
-    function place(m: Measured, x: number, path: Path, parentPath: Path | null) {
-        const cw = m.children.length
-            ? m.children.reduce((s, k) => s + k.w, 0) + (m.children.length - 1) * H_GAP
-            : 0;
-        let cx = x + (m.w - cw) / 2;
-        let myCx: number;
-        if (!m.children.length) {
-            myCx = x + m.w / 2;
-        } else {
-            const first = cx + m.children[0]!.w / 2;
-            const last = cx + cw - m.children[m.children.length - 1]!.w / 2;
-            myCx = (first + last) / 2;
-        }
+    const items: LayoutItem[] = [];
+    let idx = 0;
+    (function walk(node: BehaviourNode, path: Path, parentPath: Path | null, depth: number) {
+        const kind = kindOf(node);
+        const h = KIND_META[kind].isComposite ? NODE_H_COMP : NODE_H_LEAF;
         items.push({
-            node: m.node,
+            node,
             path,
-            kind: kindOf(m.node),
-            x: myCx - NODE_W / 2,
+            kind,
+            x: mini.items[idx]!.x + padding,
             y: 0,
             w: NODE_W,
-            h: m.h,
+            h,
             parentPath,
         });
-        m.children.forEach((k, i) => {
-            place(k, cx, [...path, i], path);
-            cx += k.w + H_GAP;
-        });
-    }
+        idx++;
+        children(node).forEach((c, i) => walk(c, [...path, i], path, depth + 1));
+    })(root, [], null, 0);
 
-    const measured = measure(root);
-    place(measured, 24, [], null);
-
-    // Snap rows by depth so siblings line up.
+    // Snap rows by depth so siblings with variable heights align.
     const depthOf = new Map<string, number>();
     (function walk(node: BehaviourNode, path: Path, d: number) {
         depthOf.set(pathKey(path), d);
@@ -150,7 +127,7 @@ export function computeLayout(root: BehaviourNode): Layout {
         (m, it) => Math.max(m, depthOf.get(pathKey(it.path)) ?? 0),
         0,
     );
-    const rowY = [24];
+    const rowY = [padding];
     for (let d = 0; d < maxDepth + 1; d++) {
         const rowItems = items.filter(
             (it) => (depthOf.get(pathKey(it.path)) ?? 0) === d,
@@ -162,8 +139,8 @@ export function computeLayout(root: BehaviourNode): Layout {
     }
     for (const it of items) it.y = rowY[depthOf.get(pathKey(it.path)) ?? 0]!;
 
-    const width = Math.max(...items.map((it) => it.x + it.w), 0) + 24;
-    const height = Math.max(...items.map((it) => it.y + it.h), 0) + 24;
+    const width = Math.max(...items.map((it) => it.x + it.w), 0) + padding;
+    const height = Math.max(...items.map((it) => it.y + it.h), 0) + padding;
     return { items, width, height };
 }
 
