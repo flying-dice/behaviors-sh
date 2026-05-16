@@ -20,11 +20,11 @@
 
   interface Props {
     root: BehaviourNode;
-    selected: Path;
+    selected: Path | null;
     pan: { x: number; y: number };
     zoom: number;
     trees: TreeSummary[];
-    onSelect: (path: Path) => void;
+    onSelect: (path: Path | null) => void;
     onPan: (pan: { x: number; y: number }) => void;
     onZoom: (zoom: number) => void;
     onContextMenu: (path: Path, x: number, y: number) => void;
@@ -85,10 +85,10 @@
   }
 
   function onCanvasClick(e: MouseEvent) {
-    const t = e.target as HTMLElement | null;
+    const t = e.target as Element | null;
     if (!t) return;
-    // Click on empty canvas clears selection to root.
-    if (t === wrap || t.classList.contains('canvas-bg')) onSelect([]);
+    if (t.closest('.node-hit')) return;
+    onSelect(null);
   }
 
   function nodePath(it: LayoutItem) {
@@ -182,7 +182,7 @@
       {#each layout.items as it (pathKey(it.path))}
         {@const meta = KIND_META[it.kind]}
         {@const isLeaf = !meta.isComposite}
-        {@const isSelected = pathsEqual(it.path, selected)}
+        {@const isSelected = selected != null && pathsEqual(it.path, selected)}
         <g
           class="node-hit"
           style="cursor:pointer"

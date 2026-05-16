@@ -1,11 +1,32 @@
 import { stepBody, stepKind, type BehaviourNode } from '@behaviors-ui/behavior-spec';
 
+const LINE_WIDTH = 60;
 const indent = (n: number) => '  '.repeat(n);
 
-function escapeString(s: string): string {
+function wordWrap(s: string, width: number): string[] {
+    const lines: string[] = [];
+    let line = '';
+    for (const word of s.split(' ')) {
+        if (line && line.length + 1 + word.length > width) {
+            lines.push(line);
+            line = word;
+        } else {
+            line = line ? line + ' ' + word : word;
+        }
+    }
+    if (line) lines.push(line);
+    return lines;
+}
+
+function escapeString(s: string, depth = 0): string {
     if (s === '') return '""';
+    const contentPad = indent(depth + 1);
     if (s.includes('\n')) {
-        return '|\n' + s.split('\n').map((l) => '  ' + l).join('\n');
+        return '|\n' + s.split('\n').map((l) => contentPad + l).join('\n');
+    }
+    if (s.length > LINE_WIDTH) {
+        const wrapped = wordWrap(s, LINE_WIDTH);
+        return '>\n' + wrapped.map((l) => contentPad + l).join('\n');
     }
     if (/[:#@`{}[\],&*?|<>=!%]/.test(s) || /^\s|\s$/.test(s)) {
         return JSON.stringify(s);
@@ -18,14 +39,14 @@ export function nodeToYaml(node: BehaviourNode, depth = 0): string {
     const lines: string[] = [];
 
     if ('$ref' in node) {
-        lines.push(`${pad}$ref: ${escapeString(node.$ref)}`);
+        lines.push(`${pad}$ref: ${escapeString(node.$ref, depth)}`);
         return lines.join('\n');
     }
 
     lines.push(`${pad}type: ${node.type}`);
-    lines.push(`${pad}name: ${escapeString(node.name)}`);
+    lines.push(`${pad}name: ${escapeString(node.name, depth)}`);
     if (node.description) {
-        lines.push(`${pad}description: ${escapeString(node.description)}`);
+        lines.push(`${pad}description: ${escapeString(node.description, depth)}`);
     }
     if (node.retries != null) {
         lines.push(`${pad}retries: ${node.retries}`);
@@ -36,7 +57,7 @@ export function nodeToYaml(node: BehaviourNode, depth = 0): string {
         for (const step of node.steps) {
             const kind = stepKind(step);
             const body = stepBody(step);
-            lines.push(`${pad}  - ${kind}: ${escapeString(body)}`);
+            lines.push(`${pad}  - ${kind}: ${escapeString(body, depth + 1)}`);
         }
     } else {
         lines.push(`${pad}children:`);

@@ -174,6 +174,15 @@ export function removeStep(node: BehaviourNode, idx: number): BehaviourNode {
     return { ...node, steps };
 }
 
+export function moveStep(node: BehaviourNode, from: number, to: number): BehaviourNode {
+    if ('$ref' in node || node.type !== 'action') return node;
+    if (from === to || from < 0 || to < 0 || from >= node.steps.length || to >= node.steps.length) return node;
+    const steps = node.steps.slice();
+    const [moved] = steps.splice(from, 1);
+    steps.splice(to, 0, moved!);
+    return { ...node, steps };
+}
+
 export function setStepBody(node: BehaviourNode, idx: number, value: string): BehaviourNode {
     if ('$ref' in node || node.type !== 'action') return node;
     const steps = node.steps.slice();

@@ -8,6 +8,9 @@
   import * as Select from '$lib/components/ui/select';
   import PlusIcon from '@lucide/svelte/icons/plus';
   import Trash2 from '@lucide/svelte/icons/trash-2';
+  import ArrowUp from '@lucide/svelte/icons/arrow-up';
+  import ArrowDown from '@lucide/svelte/icons/arrow-down';
+  import GripVertical from '@lucide/svelte/icons/grip-vertical';
   import GitBranchPlus from '@lucide/svelte/icons/git-branch-plus';
   import ExternalLink from '@lucide/svelte/icons/external-link';
   import NumberStepper from './NumberStepper.svelte';
@@ -26,6 +29,7 @@
     onSetRef: (v: string) => void;
     onAddStep: (kind: 'evaluate' | 'instruct') => void;
     onRemoveStep: (idx: number) => void;
+    onMoveStep: (from: number, to: number) => void;
     onSetStepBody: (idx: number, value: string) => void;
     onWrap: (t: 'sequence' | 'selector' | 'parallel') => void;
     onConvertToRef: () => void;
@@ -45,6 +49,7 @@
     onSetRef,
     onAddStep,
     onRemoveStep,
+    onMoveStep,
     onSetStepBody,
     onWrap,
     onConvertToRef,
@@ -85,6 +90,44 @@
     if (!node || '$ref' in node || node.type === 'action') return null;
     return node.type;
   });
+
+  let dragIdx = $state<number | null>(null);
+  let dropIdx = $state<number | null>(null);
+
+  function onDragStart(e: PointerEvent, idx: number) {
+    e.preventDefault();
+    dragIdx = idx;
+    dropIdx = idx;
+    const container = (e.currentTarget as HTMLElement).closest('[data-testid$="steps-section"]')!;
+    const cards = [...container.querySelectorAll<HTMLElement>('[data-step-idx]')];
+
+    document.body.style.cursor = 'grabbing';
+    document.body.style.userSelect = 'none';
+
+    const onMove = (ev: PointerEvent) => {
+      for (let c = 0; c < cards.length; c++) {
+        const rect = cards[c]!.getBoundingClientRect();
+        const mid = rect.top + rect.height / 2;
+        if (ev.clientY < mid) { dropIdx = c; return; }
+      }
+      dropIdx = cards.length - 1;
+    };
+
+    const onUp = () => {
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+      if (dragIdx != null && dropIdx != null && dragIdx !== dropIdx) {
+        onMoveStep(dragIdx, dropIdx);
+      }
+      dragIdx = null;
+      dropIdx = null;
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', onUp);
+    };
+
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onUp);
+  }
 
   function pickLinkedTree(id: string) {
     onSetRef(treeIdToRef(id));
@@ -249,11 +292,28 @@
           {#each node.steps as step, i (i)}
             {@const kind = stepKind(step)}
             {@const body = stepBody(step)}
+            {@const showBefore = dragIdx != null && dropIdx === i && dropIdx < dragIdx}
+            {@const showAfter = dragIdx != null && dropIdx === i && dropIdx > dragIdx}
             <div
-              class="flex flex-col gap-1.5 rounded-md border p-3"
+              class="relative flex flex-col gap-1.5 rounded-md border p-3 transition-opacity {dragIdx === i ? 'opacity-50' : ''}"
               data-testid={tid(`step-${i}`)}
+              data-step-idx={i}
             >
+              {#if showBefore}
+                <div class="absolute -top-1.5 left-0 right-0 h-0.5 rounded-full bg-primary"></div>
+              {/if}
+              {#if showAfter}
+                <div class="absolute -bottom-1.5 left-0 right-0 h-0.5 rounded-full bg-primary"></div>
+              {/if}
               <div class="flex items-center gap-2">
+                <!-- svelte-ignore a11y_no_static_element_interactions -->
+                <div
+                  class="cursor-grab touch-none text-muted-foreground hover:text-foreground"
+                  data-testid={tid(`step-${i}-drag`)}
+                  onpointerdown={(e) => onDragStart(e, i)}
+                >
+                  <GripVertical class="size-4" />
+                </div>
                 <span
                   class="font-mono text-[11px] uppercase tracking-wide"
                   style:color="var(--color-abtree-green)"
@@ -261,6 +321,24 @@
                   {kind}
                 </span>
                 <span class="flex-1"></span>
+                <Button
+                  variant="ghost"
+                  class="h-6 w-6 p-0"
+                  onclick={() => onMoveStep(i, i - 1)}
+                  disabled={i === 0}
+                  data-testid={tid(`step-${i}-up`)}
+                >
+                  <ArrowUp class="size-3.5" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  class="h-6 w-6 p-0"
+                  onclick={() => onMoveStep(i, i + 1)}
+                  disabled={i === node.steps.length - 1}
+                  data-testid={tid(`step-${i}-down`)}
+                >
+                  <ArrowDown class="size-3.5" />
+                </Button>
                 <Button
                   variant="ghost"
                   class="h-6 px-2 text-destructive"

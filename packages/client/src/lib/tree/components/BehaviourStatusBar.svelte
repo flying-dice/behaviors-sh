@@ -6,7 +6,7 @@
   interface Props {
     workspaceName: string;
     nodeCount: number;
-    selected: Path;
+    selected: Path | null;
     zoom: number;
     dirty: boolean;
     testid?: string;
@@ -26,8 +26,10 @@
   <span>·</span>
   <span data-testid={tid('node-count')}>{nodeCount} nodes</span>
   <div class="flex-1"></div>
-  <span data-testid={tid('selection')}>↳ #/{pathKey(selected)}</span>
-  <span>·</span>
+  {#if selected != null}
+    <span data-testid={tid('selection')}>↳ #/{pathKey(selected)}</span>
+    <span>·</span>
+  {/if}
   <span data-testid={tid('zoom')}>{Math.round(zoom * 100)}%</span>
   <span>·</span>
   <span class={dirty ? 'text-amber-500' : ''} data-testid={tid('dirty')}>

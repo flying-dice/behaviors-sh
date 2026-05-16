@@ -10,7 +10,7 @@
   interface Props {
     node: BehaviourNode;
     path: Path;
-    selected: Path;
+    selected: Path | null;
     trees: TreeSummary[];
     onSelect: (path: Path) => void;
     testid?: string;
@@ -20,7 +20,7 @@
   const rowId = $derived(path.length === 0 ? 'root' : path.join('-'));
 
   const depth = $derived(path.length);
-  const isSelected = $derived(pathsEqual(path, selected));
+  const isSelected = $derived(selected != null && pathsEqual(path, selected));
 
   const kind = $derived(kindOf(node));
   const meta = $derived(KIND_META[kind]);

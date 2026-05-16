@@ -15,7 +15,7 @@
     trees: TreeSummary[];
     currentTreeId: string;
     root: BehaviourNode;
-    selected: Path;
+    selected: Path | null;
     onSwitchTree: (id: string) => void;
     onSelect: (path: Path) => void;
     onBack: () => void;
