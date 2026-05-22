@@ -1,6 +1,6 @@
 {
 	"name": "@behaviors-sh/dsl",
-	"version": "0.0.0",
+	"version": "0.1.0",
 	"description": "TypeScript DSL for authoring behaviors-sh trees.",
 	"type": "module",
 	"exports": {

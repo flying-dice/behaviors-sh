@@ -1,6 +1,6 @@
 {
 	"name": "@behaviors-sh/spec",
-	"version": "0.0.0",
+	"version": "0.1.0",
 	"description": "Behaviour-tree spec: zod schemas + JSON Schemas for behaviors-sh trees and workspaces.",
 	"type": "module",
 	"exports": {
