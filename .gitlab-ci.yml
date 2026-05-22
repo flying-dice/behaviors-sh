@@ -99,24 +99,30 @@ pages:
 # semantic-release: computes the next version from conventional commit
 # messages, updates CHANGELOG.md, bumps the three publishable
 # package.json files, builds + publishes @behaviors-sh/{spec,dsl,cli}
-# to npm, commits the version+changelog back to the repo, and creates
-# a GitHub release with the generated notes.
+# to npm, commits the version+changelog back to the repo, pushes
+# both to GitLab AND GitHub, and creates a GitHub release with the
+# generated notes.
+#
+# Code flow stays GitLab → GitHub: the release commit + tag are
+# pushed to GitLab as `origin` first (the source of truth), then
+# fast-forwarded to the GitHub mirror as `github` so the GitHub
+# release plugin can reference a tag that already exists.
 #
 # Manual-only (click ▶ on `release` from the main pipeline view) so
-# nothing slips out unintentionally. Requires two CI/CD variables:
+# nothing slips out unintentionally. Requires three CI/CD variables:
 #
 #   NPM_TOKEN     — masked + protected. npm "Automation" token scoped
 #                   to the @behaviors-sh org. `bun publish` reads it
 #                   from .npmrc.
+#   GITLAB_TOKEN  — masked + protected. Project / personal access
+#                   token with `write_repository` scope on this
+#                   project. Used by @semantic-release/git to push
+#                   the release commit + tag back to GitLab.
 #   GITHUB_TOKEN  — masked + protected. GitHub PAT (or fine-grained
 #                   token) with `contents: write` on
 #                   flying-dice/behaviors-sh. Used to push the
-#                   release commit + tag and to create the GitHub
-#                   release via the API.
-#
-# Origin is rewritten to GitHub for the release run so the tag lands
-# alongside the existing mirror, keeping `npm` package homepages and
-# GitHub release URLs consistent.
+#                   release commit + tag to the mirror and to create
+#                   the GitHub release via the API.
 release:
   extends: .bun
   stage: release
@@ -127,7 +133,10 @@ release:
     - when: never
   before_script:
     - apt-get update -qq && apt-get install -y -qq git ca-certificates
-    - git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/flying-dice/behaviors-sh.git"
+    - git config user.email "release-bot@behaviors.sh"
+    - git config user.name "behaviors-sh release bot"
+    - git remote set-url origin "https://oauth2:${GITLAB_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git"
+    - git remote add github "https://x-access-token:${GITHUB_TOKEN}@github.com/flying-dice/behaviors-sh.git"
     - bun install --frozen-lockfile
     - echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > .npmrc
   script:

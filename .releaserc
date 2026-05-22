@@ -39,6 +39,12 @@
       }
     ],
     [
+      "@semantic-release/exec",
+      {
+        "publishCmd": "git push github HEAD:main --follow-tags"
+      }
+    ],
+    [
       "@semantic-release/github",
       {
         "successComment": false,
