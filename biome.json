@@ -28,7 +28,8 @@
 		"rules": {
 			"recommended": true,
 			"complexity": {
-				"noImportantStyles": "off"
+				"noImportantStyles": "off",
+				"noUselessConstructor": "off"
 			},
 			"style": {
 				"noNonNullAssertion": "off"

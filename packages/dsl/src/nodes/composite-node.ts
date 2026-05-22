@@ -23,6 +23,15 @@ export interface CompositePayload {
 export class CompositeNode extends Node<CompositeKind, CompositePayload> {
 	readonly children: Node[] = [];
 
+	// Re-exposes the base class's `protected` constructor as `public`
+	// so the factory functions below (and external callers) can
+	// instantiate it. Biome's `noUselessConstructor` would strip
+	// this — looks like a pass-through but it carries the access
+	// level change.
+	constructor(kind: CompositeKind, name: string) {
+		super(kind, name);
+	}
+
 	protected payload(): CompositePayload {
 		return { children: this.children };
 	}
