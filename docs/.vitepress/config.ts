@@ -158,7 +158,7 @@ export default defineConfig({
 		socialLinks: [
 			{
 				icon: "github",
-				link: "https://gitlab.beluga-sirius.ts.net/flying-dice/behaviors-sh",
+				link: "https://github.com/flying-dice/behaviors-sh",
 			},
 		],
 
