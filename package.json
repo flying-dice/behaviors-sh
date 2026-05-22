@@ -9,11 +9,9 @@
 	],
 	"scripts": {
 		"dev:client": "bun --filter @behaviors-sh/client dev",
-		"dev:server": "bun --filter @behaviors-sh/server dev",
 		"dev": "bun --filter '*' --parallel dev",
 		"build": "bun --filter @behaviors-sh/client build",
 		"build:cli": "bun --filter @behaviors-sh/cli build",
-		"start": "bun --filter @behaviors-sh/server start",
 		"cli": "bun --filter @behaviors-sh/cli start",
 		"check": "bun --filter @behaviors-sh/client check",
 		"docs:dev": "vitepress dev docs --host",

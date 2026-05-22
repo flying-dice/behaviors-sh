@@ -31,7 +31,6 @@ typecheck:
     - bunx tsc --noEmit -p packages/spec/tsconfig.json
     - bunx tsc --noEmit -p packages/runtime/tsconfig.json
     - bunx tsc --noEmit -p packages/cli/tsconfig.json
-    - bunx tsc --noEmit -p packages/server/tsconfig.json
     - bunx tsc --noEmit -p packages/dsl/tsconfig.json
 
 # ---- Stage: test -------------------------------------------------------------
