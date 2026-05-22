@@ -143,8 +143,10 @@ export default defineConfig({
 			{
 				text: "Guide",
 				items: [
-					{ text: "Writing trees", link: "/guide/writing-trees" },
+					{ text: "Registering an MCP client", link: "/guide/mcp-clients" },
 					{ text: "Driving over MCP", link: "/guide/mcp" },
+					{ text: "URI schemes", link: "/guide/uris" },
+					{ text: "Writing trees", link: "/guide/writing-trees" },
 					{
 						text: "Inspecting executions",
 						link: "/guide/inspecting-executions",
