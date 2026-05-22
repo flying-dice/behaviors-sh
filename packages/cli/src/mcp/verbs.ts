@@ -42,7 +42,7 @@ import {
 	type TickResult,
 	type TraceEntry,
 	type TraceKind,
-} from '@behaviors-ui/runtime'
+} from '@behaviors-sh/runtime'
 
 export const PROTOCOL_GATE_NAME = 'Acknowledge_Protocol'
 
@@ -52,7 +52,7 @@ export const PROTOCOL_GATE_NAME = 'Acknowledge_Protocol'
 // surface real tree steps.
 const PROTOCOL_GATE_INSTRUCTION =
 	'Read the runtime protocol below in full. It is the binding contract for the rest of this execution.\n\n' +
-	'You drive a behaviour tree by calling MCP tools on the `behaviors-ui` server:\n' +
+	'You drive a behaviour tree by calling MCP tools on the `behaviors-sh` server:\n' +
 	'  - `next_step(trace_output)` returns the next request (an evaluate, an instruct, or a terminal done/failure). It is replay-safe — calling it again while a step is in flight returns the same request.\n' +
 	'  - For an `evaluate`, call `eval(trace_output, result, note?)` with a boolean.\n' +
 	'  - For an `instruct`, call `submit(trace_output, status, note?)` with `success`, `failure`, or `running`. `success` advances within the action and completes it on the last step; `failure` fails the action; `running` is a yield that keeps the cursor in place.\n' +

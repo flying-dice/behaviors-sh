@@ -1,5 +1,5 @@
 {
-  "name": "@behaviors-ui/tree-code-review",
+  "name": "@behaviors-sh/tree-code-review",
   "private": true,
   "version": "0.1.0",
   "description": "Review uncommitted changes in the working tree: gate on triviality, gather CLAUDE.md context, run five parallel reviewers, score, filter, and report.",
@@ -11,8 +11,8 @@
     "src"
   ],
   "dependencies": {
-    "@behaviors-ui/spec": "workspace:*",
-    "@behaviors-ui/dsl": "workspace:*"
+    "@behaviors-sh/spec": "workspace:*",
+    "@behaviors-sh/dsl": "workspace:*"
   },
   "devDependencies": {
     "@types/bun": "latest",

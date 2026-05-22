@@ -1,4 +1,4 @@
-import type { BehaviourNode, Workspace } from "@behaviors-ui/spec";
+import type { BehaviourNode, Workspace } from "@behaviors-sh/spec";
 import { countNodes, kindOf } from "../tree/behaviour-layout";
 import { emptyWorkspace } from "./serialize";
 import * as browser from "./storage/browser";

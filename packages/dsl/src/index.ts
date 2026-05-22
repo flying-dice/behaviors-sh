@@ -1,5 +1,5 @@
 /**
- * Tiny jest-style DSL for authoring behaviors-ui behaviour trees in
+ * Tiny jest-style DSL for authoring behaviors-sh behaviour trees in
  * TypeScript.
  *
  * A file's "output" is just a node (composite or action). Package metadata
@@ -43,7 +43,7 @@
  *
  * @example
  * ```ts
- * import { action, constant, instruct, sequence, variable } from "@behaviors-ui/dsl";
+ * import { action, constant, instruct, sequence, variable } from "@behaviors-sh/dsl";
  *
  * export const tree = sequence("Greet", (root) => {
  *   root.description = "Greet the current user.";

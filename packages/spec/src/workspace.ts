@@ -17,7 +17,7 @@ export const WorkspaceSchema = z
         components: ComponentsSchema,
     })
     .meta({
-        $id: "https://behaviors-ui.dev/schemas/workspace.schema.json",
+        $id: "https://behaviors-sh.dev/schemas/workspace.schema.json",
         title: "Behaviour Workspace File",
         description:
             "A workspace bundles named behaviour trees under an OpenAPI-style `components` namespace. Each entry under `components.trees` is a BehaviourNode. Anywhere a node is expected — as a whole tree or inside a composite's `children` — `$ref` can stand in for it and point to another tree in the workspace (`#/components/trees/<id>`) or to a file/URL. Resolution is performed by `@apidevtools/json-schema-ref-parser` at load time, so the schema only requires that `$ref` is a non-empty string.",

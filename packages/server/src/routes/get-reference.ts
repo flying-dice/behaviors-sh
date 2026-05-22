@@ -4,7 +4,7 @@ import { factory, type RouteModule } from '../factory.ts'
 const operationId = 'getReference'
 
 const handlers = factory.createHandlers(
-  Scalar({ url: '/openapi.json', pageTitle: 'Behaviors UI · API reference' }),
+  Scalar({ url: '/openapi.json', pageTitle: 'Behaviors · API reference' }),
 )
 
 const route: RouteModule = {

@@ -8,7 +8,7 @@ import { Node } from "./node.ts";
 
 /**
  * The composite (children-bearing) node kinds. Maps directly onto the
- * behaviors-ui runtime's three branching primitives.
+ * behaviors-sh runtime's three branching primitives.
  *
  * - `sequence` — run children left-to-right; fail on first child failure.
  * - `selector` — run children left-to-right; succeed on first child success.

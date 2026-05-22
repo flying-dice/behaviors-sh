@@ -16,7 +16,7 @@
   import MarketCard from './components/MarketCard.svelte';
   import MarketDetail from './components/MarketDetail.svelte';
 
-  const INTEREST_URL = 'https://github.com/anthropics/behaviors-ui/issues/1';
+  const INTEREST_URL = 'https://github.com/anthropics/behaviors-sh/issues/1';
 
   interface Props {
     onInstall: (item: MarketItem) => void;

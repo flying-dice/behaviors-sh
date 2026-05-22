@@ -1,4 +1,4 @@
-import { stepBody, stepKind, type BehaviourNode } from '@behaviors-ui/spec';
+import { stepBody, stepKind, type BehaviourNode } from '@behaviors-sh/spec';
 
 const LINE_WIDTH = 60;
 const indent = (n: number) => '  '.repeat(n);

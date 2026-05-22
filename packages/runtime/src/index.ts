@@ -1,4 +1,4 @@
-// Barrel: the public surface of the behaviors-ui runtime engine.
+// Barrel: the public surface of the behaviors-sh runtime engine.
 //
 // The runtime is structured as a hexagonal (ports & adapters) package
 // with dependency injection at every layer. The execution ports are

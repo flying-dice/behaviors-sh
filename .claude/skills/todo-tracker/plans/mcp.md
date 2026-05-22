@@ -1,13 +1,13 @@
 # MCP server for the runtime
 
-Expose `@behaviors-ui/runtime` from the `@behaviors-ui/cli` package as a Model Context Protocol server so that external agents can drive behaviour-tree executions. Two transports are in scope: STDIO first, then HTTP.
+Expose `@behaviors-sh/runtime` from the `@behaviors-sh/cli` package as a Model Context Protocol server so that external agents can drive behaviour-tree executions. Two transports are in scope: STDIO first, then HTTP.
 
 ## Architecture
 
 ```mermaid
 flowchart LR
     Client["MCP client<br/>(agent, IDE)"]
-    subgraph CLI["packages/cli — behaviors-ui mcp …"]
+    subgraph CLI["packages/cli — behaviors-sh mcp …"]
         Transport["STDIO / HTTP transport"]
         Register["registerRuntimeTools(server, runtime)"]
         Runtime["buildRuntime({ executions, trees })"]
@@ -104,8 +104,8 @@ sequenceDiagram
 
 Add to `packages/cli/src/index.ts`:
 
-- `behaviors-ui mcp` — STDIO transport (no port, no logging to stdout — logs go to stderr).
-- `behaviors-ui mcp --http [--port <n>] [--host <name>]` — HTTP/SSE transport. Either mount on the existing `@behaviors-ui/server` Bun server under `/mcp` or run a standalone listener; pick one and document it in code comments.
+- `behaviors-sh mcp` — STDIO transport (no port, no logging to stdout — logs go to stderr).
+- `behaviors-sh mcp --http [--port <n>] [--host <name>]` — HTTP/SSE transport. Either mount on the existing `@behaviors-sh/server` Bun server under `/mcp` or run a standalone listener; pick one and document it in code comments.
 
 ## Tool surface
 
@@ -182,7 +182,7 @@ Reader/writer registration lives in `packages/cli/src/mcp/io/` so new schemes (e
 
 ### Execution document schema
 
-The single source of truth for the **execution output format** lives in `@behaviors-ui/spec` as `execution.ts`, parallel to the existing `tree.ts` / `workspace.ts`. Today the equivalent types live in `packages/runtime/src/types.ts` (`ExecutionRow`, `ExecutionDoc`, `TraceEntry`, `RuntimeState`, `NodeStatus`, `TickResult`) — that work is to lift the schema into spec and have the runtime `import type` from spec (the way it already does for `BehaviourNode` / `Step`).
+The single source of truth for the **execution output format** lives in `@behaviors-sh/spec` as `execution.ts`, parallel to the existing `tree.ts` / `workspace.ts`. Today the equivalent types live in `packages/runtime/src/types.ts` (`ExecutionRow`, `ExecutionDoc`, `TraceEntry`, `RuntimeState`, `NodeStatus`, `TickResult`) — that work is to lift the schema into spec and have the runtime `import type` from spec (the way it already does for `BehaviourNode` / `Step`).
 
 Top-level shape of an execution document (what a `file://` writer would serialize to disk and what `resume_execution` reads back):
 
@@ -254,7 +254,7 @@ Notes:
 ## Key files
 
 - `packages/cli/src/index.ts` — CLI entrypoint, add `mcp` subcommand.
-- `packages/cli/package.json` — add `@behaviors-ui/runtime` and `@modelcontextprotocol/sdk`.
+- `packages/cli/package.json` — add `@behaviors-sh/runtime` and `@modelcontextprotocol/sdk`.
 - `packages/cli/src/mcp/` (new) — `register-runtime-tools.ts`, `stdio.ts`, `http.ts`.
 - `packages/runtime/src/index.ts` — public runtime surface (already exports everything we need).
 - `packages/runtime/src/runtime.ts` — `buildRuntime` factory.

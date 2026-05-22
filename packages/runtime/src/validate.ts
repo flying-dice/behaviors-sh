@@ -4,7 +4,7 @@
 // The CLI wraps the throw at the boundary; it is NOT the runtime's job
 // to terminate the process.
 
-import { BehaviourNodeSchema } from "@behaviors-ui/spec";
+import { BehaviourNodeSchema } from "@behaviors-sh/spec";
 import type { z } from "zod";
 import type {
 	BehaviourNode,
@@ -15,8 +15,8 @@ import type {
 
 // Re-exported under the abtree-compatible name for callers that import
 // `AbtNodeSchema`. The underlying schema is `BehaviourNodeSchema` from
-// `@behaviors-ui/spec`.
-export { BehaviourNodeSchema as AbtNodeSchema } from "@behaviors-ui/spec";
+// `@behaviors-sh/spec`.
+export { BehaviourNodeSchema as AbtNodeSchema } from "@behaviors-sh/spec";
 export { BehaviourNodeSchema };
 
 export function validateRootNode(raw: unknown): BehaviourNode {

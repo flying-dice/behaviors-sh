@@ -1,5 +1,5 @@
 {
-  "name": "@behaviors-ui/tree-hello-world",
+  "name": "@behaviors-sh/tree-hello-world",
   "private": true,
   "version": "0.1.0",
   "description": "Greet a user based on time of day. Demonstrates sequence, selector, action, and delegate primitives.",
@@ -11,8 +11,8 @@
     "src"
   ],
   "dependencies": {
-    "@behaviors-ui/spec": "workspace:*",
-    "@behaviors-ui/dsl": "workspace:*"
+    "@behaviors-sh/spec": "workspace:*",
+    "@behaviors-sh/dsl": "workspace:*"
   },
   "devDependencies": {
     "@types/bun": "latest",

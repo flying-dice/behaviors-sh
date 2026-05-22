@@ -81,7 +81,7 @@ export const CompositeNodeSchema: z.ZodType<CompositeNode> =
 export const BehaviourNodeSchema: z.ZodType<BehaviourNode> = z
     .lazy(() => z.union([RefNodeSchema, ActionNodeSchema, CompositeNodeSchema]))
     .meta({
-        $id: "https://behaviors-ui.dev/schemas/tree.schema.json",
+        $id: "https://behaviors-sh.dev/schemas/tree.schema.json",
         title: "Behaviour Tree File",
         description:
             "Schema for behaviour-tree YAML files. The file root is a node — there is no wrapper. Optional `version`, `description`, and `state` fields can appear on any node so fragments and trees share one shape. Reference via `# yaml-language-server: $schema=...` or `$schema:` field.",

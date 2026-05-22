@@ -23,7 +23,7 @@ import {
 	INITIAL_CURSOR,
 	type Runtime,
 	buildRuntime,
-} from '@behaviors-ui/runtime'
+} from '@behaviors-sh/runtime'
 import { buildDefaultIoAdapters } from '../src/mcp/io/index.ts'
 
 let tmp: string
@@ -32,7 +32,7 @@ let treeUri: string
 let runtime: Runtime
 
 beforeEach(() => {
-	tmp = realpathSync(mkdtempSync(join(tmpdir(), 'behaviors-ui-cli-mcp-')))
+	tmp = realpathSync(mkdtempSync(join(tmpdir(), 'behaviors-sh-cli-mcp-')))
 	executionsDir = join(tmp, 'executions')
 	mkdirSync(executionsDir)
 

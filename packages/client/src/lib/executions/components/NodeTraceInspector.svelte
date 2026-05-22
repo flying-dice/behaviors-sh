@@ -4,7 +4,7 @@
     ExecutionDocument,
     NodeStatus,
     TraceEntry as TraceEntryT,
-  } from '@behaviors-ui/spec';
+  } from '@behaviors-sh/spec';
   import { ScrollArea } from '$lib/components/ui/scroll-area';
   import { Badge } from '$lib/components/ui/badge';
   import Activity from '@lucide/svelte/icons/activity';

@@ -3,7 +3,7 @@
 // so there's no value in persisting a stale snapshot. On reload, the
 // list is empty; the user re-picks files via `openFromDevice`.
 
-import type { ExecutionDocument } from "@behaviors-ui/spec";
+import type { ExecutionDocument } from "@behaviors-sh/spec";
 import {
     openExecutionFromDevice,
     reloadFromHandle,

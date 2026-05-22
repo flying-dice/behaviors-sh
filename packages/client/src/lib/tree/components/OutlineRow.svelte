@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { BehaviourNode } from '@behaviors-ui/spec';
+  import type { BehaviourNode } from '@behaviors-sh/spec';
   import type { Path } from '../tree-ops';
   import { pathsEqual } from '../tree-ops';
   import { kindOf, KIND_META, nodeColor } from '../behaviour-layout';

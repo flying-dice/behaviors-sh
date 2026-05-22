@@ -1,5 +1,5 @@
 {
-  "name": "@behaviors-ui/server",
+  "name": "@behaviors-sh/server",
   "private": true,
   "version": "0.0.0",
   "type": "module",

@@ -3,7 +3,7 @@
 // the action, an instruct that fails the agent submit() fails the
 // action.
 
-import type { Step } from "@behaviors-ui/spec";
+import type { Step } from "@behaviors-sh/spec";
 import { actionFrame } from "./builder.ts";
 
 export type { Step };

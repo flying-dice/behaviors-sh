@@ -24,7 +24,7 @@ let treeUri: string
 let sessionId: string | null = null
 
 beforeAll(async () => {
-	tmp = realpathSync(mkdtempSync(join(tmpdir(), 'behaviors-ui-mcp-http-')))
+	tmp = realpathSync(mkdtempSync(join(tmpdir(), 'behaviors-sh-mcp-http-')))
 	const executionsDir = join(tmp, 'executions')
 	mkdirSync(executionsDir)
 
@@ -90,7 +90,7 @@ describe('mcp http transport', () => {
 		expect(data).toMatchObject({
 			jsonrpc: '2.0',
 			id: 1,
-			result: { serverInfo: { name: 'behaviors-ui' } },
+			result: { serverInfo: { name: 'behaviors-sh' } },
 		})
 	})
 

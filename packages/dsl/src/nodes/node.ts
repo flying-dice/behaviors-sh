@@ -16,10 +16,10 @@
 // ignores it and emits the plain node shape. Callers wanting the
 // canonical file-format string call `.toJson()` explicitly.
 
-import { BehaviourNodeSchema } from "@behaviors-ui/spec";
+import { BehaviourNodeSchema } from "@behaviors-sh/spec";
 import type { NodeState, StateScope } from "./state.ts";
 
-const TREE_FILE_SCHEMA = "https://behaviors-ui.dev/schemas/tree.schema.json";
+const TREE_FILE_SCHEMA = "https://behaviors-sh.dev/schemas/tree.schema.json";
 
 /**
  * Canonical tree-file shape emitted by `Node.toJson()`. The shared

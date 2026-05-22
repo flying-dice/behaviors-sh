@@ -1,6 +1,6 @@
 <script lang="ts">
   import { makeTid } from '$lib/utils';
-  import type { ExecutionDocument } from '@behaviors-ui/spec';
+  import type { ExecutionDocument } from '@behaviors-sh/spec';
   import { ScrollArea } from '$lib/components/ui/scroll-area';
   import * as Tabs from '$lib/components/ui/tabs';
   import Activity from '@lucide/svelte/icons/activity';

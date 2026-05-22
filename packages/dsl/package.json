@@ -1,5 +1,5 @@
 {
-  "name": "@behaviors-ui/dsl",
+  "name": "@behaviors-sh/dsl",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -10,7 +10,7 @@
     "test": "bun test"
   },
   "dependencies": {
-    "@behaviors-ui/spec": "workspace:*",
+    "@behaviors-sh/spec": "workspace:*",
     "object-hash": "^3.0.0"
   },
   "devDependencies": {

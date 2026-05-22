@@ -1,4 +1,4 @@
-import { NAME_PATTERN, type BehaviourNode, type Workspace } from "@behaviors-ui/spec";
+import { NAME_PATTERN, type BehaviourNode, type Workspace } from "@behaviors-sh/spec";
 import { treeIdToRef } from "../tree/ref";
 
 export function assertValidTreeKey(id: string): void {

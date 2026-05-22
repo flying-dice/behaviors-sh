@@ -1,7 +1,7 @@
 <script lang="ts">
   import { untrack } from 'svelte';
   import { makeTid } from '$lib/utils';
-  import type { ExecutionDocument } from '@behaviors-ui/spec';
+  import type { ExecutionDocument } from '@behaviors-sh/spec';
   import { Badge } from '$lib/components/ui/badge';
   import Activity from '@lucide/svelte/icons/activity';
   import Copy from '@lucide/svelte/icons/copy';

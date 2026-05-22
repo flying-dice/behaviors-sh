@@ -26,7 +26,7 @@ let executionsDir: string;
 let runtime: Runtime;
 
 beforeEach(() => {
-	tmp = realpathSync(mkdtempSync(join(tmpdir(), "behaviors-ui-runtime-")));
+	tmp = realpathSync(mkdtempSync(join(tmpdir(), "behaviors-sh-runtime-")));
 	executionsDir = join(tmp, "executions");
 	mkdirSync(executionsDir);
 	runtime = buildRuntime({

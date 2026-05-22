@@ -11,7 +11,7 @@ import {
 	FileSystemExecutionReader,
 	FileSystemExecutionWriter,
 	FileSystemTreeReader,
-} from '@behaviors-ui/runtime'
+} from '@behaviors-sh/runtime'
 import { InMemoryExecutionStore } from './memory-execution.ts'
 import { RoutingExecutionReader } from './routing-execution-reader.ts'
 import { RoutingExecutionWriter } from './routing-execution-writer.ts'

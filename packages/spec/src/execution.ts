@@ -1,5 +1,5 @@
 // Execution document schema — the canonical shape that runtime adapters
-// serialize and deserialize. Lives in @behaviors-ui/spec so the runtime,
+// serialize and deserialize. Lives in @behaviors-sh/spec so the runtime,
 // the CLI's URI-scheme writers, and any external consumer all reference
 // the same source of truth.
 //

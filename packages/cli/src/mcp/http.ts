@@ -1,7 +1,7 @@
 // HTTP MCP entrypoint: wires the runtime against the default URI-scheme
 // adapters and serves MCP over Streamable HTTP at `POST /mcp`.
 //
-// Standalone Bun server (not mounted on @behaviors-ui/server) so callers
+// Standalone Bun server (not mounted on @behaviors-sh/server) so callers
 // can run MCP without pulling in the UI server. `GET /health` is exposed
 // for liveness checks.
 //
@@ -18,7 +18,7 @@ import {
 	defaultExecutionsDir,
 	ensureDir,
 	type Runtime,
-} from '@behaviors-ui/runtime'
+} from '@behaviors-sh/runtime'
 import pkg from '../../package.json' with { type: 'json' }
 import { buildDefaultIoAdapters } from './io/index.ts'
 import { registerRuntimeTools } from './register-runtime-tools.ts'
@@ -83,7 +83,7 @@ async function handleMcpRequest(req: Request, runtime: Runtime): Promise<Respons
 	// Fresh McpServer + transport per request. The SDK rejects reuse of
 	// a stateless transport, and the server is bound to its transport
 	// at `connect()` time, so the pair must be 1:1 per request.
-	const server = new McpServer({ name: 'behaviors-ui', version: pkg.version })
+	const server = new McpServer({ name: 'behaviors-sh', version: pkg.version })
 	registerRuntimeTools(server, runtime)
 	const transport = new WebStandardStreamableHTTPServerTransport({
 		sessionIdGenerator: undefined,

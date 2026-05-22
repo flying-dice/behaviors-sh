@@ -1,5 +1,5 @@
 {
-  "name": "behaviors-ui",
+  "name": "behaviors-sh",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -8,14 +8,14 @@
     "trees/*"
   ],
   "scripts": {
-    "dev:client": "bun --filter @behaviors-ui/client dev",
-    "dev:server": "bun --filter @behaviors-ui/server dev",
+    "dev:client": "bun --filter @behaviors-sh/client dev",
+    "dev:server": "bun --filter @behaviors-sh/server dev",
     "dev": "bun --filter '*' --parallel dev",
-    "build": "bun --filter @behaviors-ui/client build",
-    "start": "bun --filter @behaviors-ui/server start",
-    "cli": "bun --filter @behaviors-ui/cli start",
-    "cli:headless": "bun --filter @behaviors-ui/cli headless",
-    "compile": "bun --filter @behaviors-ui/cli compile",
-    "check": "bun --filter @behaviors-ui/client check"
+    "build": "bun --filter @behaviors-sh/client build",
+    "start": "bun --filter @behaviors-sh/server start",
+    "cli": "bun --filter @behaviors-sh/cli start",
+    "cli:headless": "bun --filter @behaviors-sh/cli headless",
+    "compile": "bun --filter @behaviors-sh/cli compile",
+    "check": "bun --filter @behaviors-sh/client check"
   }
 }

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { makeTid } from "$lib/utils";
-  import type { BehaviourNode } from '@behaviors-ui/spec';
+  import type { BehaviourNode } from '@behaviors-sh/spec';
   import {
     KIND_META,
     ZOOM_MAX,

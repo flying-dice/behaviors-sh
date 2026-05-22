@@ -1,5 +1,5 @@
 {
-  "name": "@behaviors-ui/tree-refine-plan",
+  "name": "@behaviors-sh/tree-refine-plan",
   "private": true,
   "version": "0.1.0",
   "description": "Refine a change request into an approved plan: analyse intent, draft to a per-execution draft file, critique it in place, promote to plans/, then take it through codeowner approval.",
@@ -11,8 +11,8 @@
     "src"
   ],
   "dependencies": {
-    "@behaviors-ui/spec": "workspace:*",
-    "@behaviors-ui/dsl": "workspace:*"
+    "@behaviors-sh/spec": "workspace:*",
+    "@behaviors-sh/dsl": "workspace:*"
   },
   "devDependencies": {
     "@types/bun": "latest",

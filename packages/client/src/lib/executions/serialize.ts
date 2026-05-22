@@ -2,7 +2,7 @@
 // `parseWorkspace` / `parseTreeFile` in style — minimal duck-type
 // validation, plain errors that the UI can surface.
 
-import type { ExecutionDocument } from '@behaviors-ui/spec';
+import type { ExecutionDocument } from '@behaviors-sh/spec';
 
 export class ParseExecutionError extends Error {
 	constructor(message: string) {

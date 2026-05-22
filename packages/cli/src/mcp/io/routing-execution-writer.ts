@@ -7,7 +7,7 @@ import type {
 	ExecutionDocument,
 	ExecutionWriter,
 	TraceEntry,
-} from '@behaviors-ui/runtime'
+} from '@behaviors-sh/runtime'
 import { uriScheme } from './scheme.ts'
 
 export class RoutingExecutionWriter implements ExecutionWriter {

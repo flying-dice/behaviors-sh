@@ -1,5 +1,5 @@
 {
-  "name": "@behaviors-ui/client",
+  "name": "@behaviors-sh/client",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -24,11 +24,11 @@
   },
   "dependencies": {
     "@apidevtools/json-schema-ref-parser": "^15.3.5",
-    "@behaviors-ui/spec": "workspace:*",
-    "@behaviors-ui/tree-clean-code-review": "workspace:*",
-    "@behaviors-ui/tree-code-review": "workspace:*",
-    "@behaviors-ui/tree-hello-world": "workspace:*",
-    "@behaviors-ui/tree-refine-plan": "workspace:*",
+    "@behaviors-sh/spec": "workspace:*",
+    "@behaviors-sh/tree-clean-code-review": "workspace:*",
+    "@behaviors-sh/tree-code-review": "workspace:*",
+    "@behaviors-sh/tree-hello-world": "workspace:*",
+    "@behaviors-sh/tree-refine-plan": "workspace:*",
     "@lucide/svelte": "^1.16.0",
     "@tailwindcss/vite": "^4.3.0",
     "bits-ui": "^2.18.1",

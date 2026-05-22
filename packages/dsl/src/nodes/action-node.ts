@@ -2,7 +2,7 @@
 // Construct via the `action(name, body)` factory; the body callback
 // registers steps via `evaluate(...)` / `instruct(...)`.
 
-import type { Step } from "@behaviors-ui/spec";
+import type { Step } from "@behaviors-sh/spec";
 import { compositeParent, popFrame, pushAction } from "../builder.ts";
 import { Node } from "./node.ts";
 

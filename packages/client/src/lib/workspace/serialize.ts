@@ -3,7 +3,7 @@ import {
     WorkspaceSchema,
     type BehaviourNode,
     type Workspace,
-} from "@behaviors-ui/spec";
+} from "@behaviors-sh/spec";
 import { parse as parseYaml } from "yaml";
 
 export function serializeWorkspace(ws: Workspace): string {

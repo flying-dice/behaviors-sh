@@ -19,7 +19,7 @@ describe("BehaviourNodeSchema.toJSONSchema", () => {
             target: "draft-2020-12",
         }) as { $schema?: string; $id?: string; title?: string };
         expect(schema.$schema).toBe("https://json-schema.org/draft/2020-12/schema");
-        expect(schema.$id).toBe("https://behaviors-ui.dev/schemas/tree.schema.json");
+        expect(schema.$id).toBe("https://behaviors-sh.dev/schemas/tree.schema.json");
         expect(schema.title).toBe("Behaviour Tree File");
     });
 });
@@ -65,7 +65,7 @@ describe("ActionNodeSchema", () => {
             name: "greet",
             steps: [{ instruct: "say hi" }],
             retries: 3,
-            $schema: "https://behaviors-ui.dev/schemas/tree.schema.json",
+            $schema: "https://behaviors-sh.dev/schemas/tree.schema.json",
             version: "1.0.0",
             description: "greet the user",
             state: { var: { count: 0 }, const: { greeting: "hello" } },

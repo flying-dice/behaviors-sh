@@ -2,7 +2,7 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { z } from 'zod'
 
 export function buildMcpServer(): McpServer {
-  const mcp = new McpServer({ name: 'behaviors-ui', version: '0.0.0' })
+  const mcp = new McpServer({ name: 'behaviors-sh', version: '0.0.0' })
 
   mcp.registerTool(
     'ping',

@@ -5,7 +5,7 @@ import {
 	parallel,
 	sequence,
 	variable,
-} from "@behaviors-ui/dsl";
+} from "@behaviors-sh/dsl";
 
 export const cleanCodeReview = sequence("Clean_Code_Review", (node) => {
 	node.version = "0.1.0";

@@ -26,7 +26,7 @@ export interface DelegateOptions {
 
 	/**
 	 * Model hint for the spawned subagent (e.g. `"haiku"`, `"sonnet"`,
-	 * `"opus"`). Advisory only — behaviors-ui does not enforce it; whether
+	 * `"opus"`). Advisory only — behaviors-sh does not enforce it; whether
 	 * the parent agent's harness honours the hint is up to the harness.
 	 */
 	model?: string;

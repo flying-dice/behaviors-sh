@@ -5,7 +5,7 @@ import {
 	selector,
 	sequence,
 	variable,
-} from "@behaviors-ui/dsl";
+} from "@behaviors-sh/dsl";
 
 export const refinePlan = sequence("Refine_Plan_Workflow", (node) => {
 	node.version = "0.1.0";

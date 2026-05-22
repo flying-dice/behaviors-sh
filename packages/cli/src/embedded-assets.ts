@@ -1,4 +1,4 @@
-import type { EmbeddedAsset } from '@behaviors-ui/server'
+import type { EmbeddedAsset } from '@behaviors-sh/server'
 import { readClientDist } from './embed.macro.ts' with { type: 'macro' }
 
 export type { EmbeddedAsset }

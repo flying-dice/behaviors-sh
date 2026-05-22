@@ -6,7 +6,7 @@ import {
 	selector,
 	sequence,
 	variable,
-} from "@behaviors-ui/dsl";
+} from "@behaviors-sh/dsl";
 
 export const codeReview = sequence("Code_Review", (node) => {
 	node.version = "0.1.0";

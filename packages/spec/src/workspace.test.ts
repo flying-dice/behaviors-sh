@@ -20,7 +20,7 @@ describe("WorkspaceSchema.toJSONSchema", () => {
             }
         ).toJSONSchema({ target: "draft-2020-12" });
         expect(schema.$id).toBe(
-            "https://behaviors-ui.dev/schemas/workspace.schema.json",
+            "https://behaviors-sh.dev/schemas/workspace.schema.json",
         );
         expect(schema.title).toBe("Behaviour Workspace File");
     });

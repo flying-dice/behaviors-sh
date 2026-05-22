@@ -3,7 +3,7 @@
 // another reader against this router; the runtime never has to know
 // what schemes are supported.
 
-import type { LoadedTree, TreeReader } from '@behaviors-ui/runtime'
+import type { LoadedTree, TreeReader } from '@behaviors-sh/runtime'
 import { uriScheme } from './scheme.ts'
 
 export class RoutingTreeReader implements TreeReader {

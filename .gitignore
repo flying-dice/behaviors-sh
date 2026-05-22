@@ -37,4 +37,6 @@ playwright-report/
 # directory chosen by the agent's `traceOutput` URI — committing them
 # would leak per-run data.
 .behaviors-sh/
+# Legacy artefact dir from the pre-rename behaviors-ui name. Kept on
+# disk so saved workspaces aren't lost; ignored so we don't commit them.
 .behaviors-ui/

@@ -1,4 +1,4 @@
-import type { BehaviourNode } from '@behaviors-ui/spec';
+import type { BehaviourNode } from '@behaviors-sh/spec';
 import type { NodeType } from './types';
 
 export interface Shape {

@@ -1,4 +1,4 @@
-import { BehaviourNodeSchema } from "@behaviors-ui/spec";
+import { BehaviourNodeSchema } from "@behaviors-sh/spec";
 import { beforeEach, describe, expect, test } from "bun:test";
 import {
 	type ActionNode,

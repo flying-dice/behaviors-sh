@@ -6,7 +6,7 @@
 import type {
 	ExecutionDocument,
 	ExecutionReader,
-} from '@behaviors-ui/runtime'
+} from '@behaviors-sh/runtime'
 import { uriScheme } from './scheme.ts'
 
 export class RoutingExecutionReader implements ExecutionReader {

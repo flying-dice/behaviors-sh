@@ -8,7 +8,7 @@ import {
 	buildRuntime,
 	defaultExecutionsDir,
 	ensureDir,
-} from '@behaviors-ui/runtime'
+} from '@behaviors-sh/runtime'
 import pkg from '../../package.json' with { type: 'json' }
 import { buildDefaultIoAdapters } from './io/index.ts'
 import { registerRuntimeTools } from './register-runtime-tools.ts'
@@ -29,7 +29,7 @@ export async function runStdioMcp(opts: RunStdioMcpOptions = {}): Promise<void> 
 
 	const runtime = buildRuntime({ trees, executionsRead, executionsWrite })
 
-	const server = new McpServer({ name: 'behaviors-ui', version: pkg.version })
+	const server = new McpServer({ name: 'behaviors-sh', version: pkg.version })
 	registerRuntimeTools(server, runtime)
 
 	const transport = new StdioServerTransport()

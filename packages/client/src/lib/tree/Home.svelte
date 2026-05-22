@@ -1,6 +1,6 @@
 <script lang="ts">
   import { makeTid, errorMessage } from "$lib/utils";
-  import type { BehaviourNode } from '@behaviors-ui/spec';
+  import type { BehaviourNode } from '@behaviors-sh/spec';
   import { Card, CardContent } from '$lib/components/ui/card';
   import { Badge } from '$lib/components/ui/badge';
   import { Button } from '$lib/components/ui/button';

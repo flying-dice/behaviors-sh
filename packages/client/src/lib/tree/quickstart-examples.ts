@@ -1,8 +1,8 @@
-import type { BehaviourNode } from "@behaviors-ui/spec";
-import { cleanCodeReview } from "@behaviors-ui/tree-clean-code-review";
-import { codeReview } from "@behaviors-ui/tree-code-review";
-import { helloWorld } from "@behaviors-ui/tree-hello-world";
-import { refinePlan } from "@behaviors-ui/tree-refine-plan";
+import type { BehaviourNode } from "@behaviors-sh/spec";
+import { cleanCodeReview } from "@behaviors-sh/tree-clean-code-review";
+import { codeReview } from "@behaviors-sh/tree-code-review";
+import { helloWorld } from "@behaviors-sh/tree-hello-world";
+import { refinePlan } from "@behaviors-sh/tree-refine-plan";
 import { countNodes } from "./behaviour-layout";
 
 // Example trees live as standalone workspace packages under `/trees/<slug>`

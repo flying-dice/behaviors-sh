@@ -14,7 +14,7 @@ import {
 	EXECUTION_SCHEMA_VERSION,
 	INITIAL_CURSOR,
 	type Runtime,
-} from '@behaviors-ui/runtime'
+} from '@behaviors-sh/runtime'
 import { z } from 'zod'
 import {
 	coreConstRead,

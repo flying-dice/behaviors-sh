@@ -1,6 +1,6 @@
 {
   "mcpServers": {
-    "behaviors-ui": {
+    "behaviors-sh": {
       "command": "bun",
       "args": [
         "packages/cli/src/index.ts",

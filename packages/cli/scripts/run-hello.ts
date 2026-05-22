@@ -13,7 +13,7 @@ import {
 	FileSystemTreeReader,
 	FileSystemExecutionReader,
 	FileSystemExecutionWriter,
-} from '@behaviors-ui/runtime'
+} from '@behaviors-sh/runtime'
 import {
 	coreEval,
 	coreNext,

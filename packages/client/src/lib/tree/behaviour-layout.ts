@@ -1,4 +1,4 @@
-import { stepBody, stepKind, type BehaviourNode } from '@behaviors-ui/spec';
+import { stepBody, stepKind, type BehaviourNode } from '@behaviors-sh/spec';
 import { isLeaf, type CompositeType, type Path } from './tree-ops';
 import { miniLayout } from './mini-layout';
 

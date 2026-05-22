@@ -1,4 +1,4 @@
-// Re-exports from @behaviors-ui/spec (the canonical execution-document
+// Re-exports from @behaviors-sh/spec (the canonical execution-document
 // + tree schemas) plus runtime-internal types (`TickResult`) that
 // describe the tick engine's emit shape and don't belong in the
 // cross-package spec.
@@ -9,7 +9,7 @@ export type {
 	CompositeNode,
 	RefNode,
 	Step,
-} from "@behaviors-ui/spec";
+} from "@behaviors-sh/spec";
 
 export {
 	EXECUTION_SCHEMA_VERSION,
@@ -20,7 +20,7 @@ export {
 	type RuntimeState,
 	type TraceEntry,
 	type TraceKind,
-} from "@behaviors-ui/spec";
+} from "@behaviors-sh/spec";
 
 export type {
 	NodeState,
@@ -30,7 +30,7 @@ export type {
 	NormalizedRefNode,
 	NormalizedStep,
 	ParsedTree,
-} from "@behaviors-ui/spec";
+} from "@behaviors-sh/spec";
 
 export type TickResult =
 	| {

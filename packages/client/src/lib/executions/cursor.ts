@@ -4,7 +4,7 @@
 // (used to bucket trace entries by node) and a small helper for the
 // in-flight cursor on the doc itself.
 
-import type { ExecutionDocument, ParsedTree } from '@behaviors-ui/spec';
+import type { ExecutionDocument, ParsedTree } from '@behaviors-sh/spec';
 
 export interface DecodedCursor {
 	path: number[];

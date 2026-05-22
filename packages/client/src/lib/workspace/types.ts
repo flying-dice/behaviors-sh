@@ -1,4 +1,4 @@
-import type { Workspace } from "@behaviors-ui/spec";
+import type { Workspace } from "@behaviors-sh/spec";
 
 export type { Workspace };
 

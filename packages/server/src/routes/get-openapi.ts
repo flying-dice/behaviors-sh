@@ -11,7 +11,7 @@ const route: RouteModule = {
       openAPIRouteHandler(app, {
         documentation: {
           info: {
-            title: 'Behaviors UI API',
+            title: 'Behaviors API',
             version: '0.0.0',
             description: 'HTTP + MCP API exposed alongside the behaviors UI.',
           },

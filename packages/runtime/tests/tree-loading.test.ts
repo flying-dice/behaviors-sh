@@ -15,7 +15,7 @@ let tmp: string;
 let treeReader: TreeReader;
 
 beforeEach(() => {
-	tmp = realpathSync(mkdtempSync(join(tmpdir(), "behaviors-ui-tree-loading-")));
+	tmp = realpathSync(mkdtempSync(join(tmpdir(), "behaviors-sh-tree-loading-")));
 	treeReader = new FileSystemTreeReader({ cwd: tmp });
 });
 

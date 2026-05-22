@@ -1,5 +1,5 @@
 {
-  "name": "@behaviors-ui/runtime",
+  "name": "@behaviors-sh/runtime",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@apidevtools/json-schema-ref-parser": "^15.3.5",
-    "@behaviors-ui/spec": "workspace:*",
+    "@behaviors-sh/spec": "workspace:*",
     "zod": "^4.4.3"
   },
   "devDependencies": {

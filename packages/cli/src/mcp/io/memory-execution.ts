@@ -9,7 +9,7 @@ import type {
 	ExecutionReader,
 	ExecutionWriter,
 	TraceEntry,
-} from '@behaviors-ui/runtime'
+} from '@behaviors-sh/runtime'
 
 export class InMemoryExecutionStore implements ExecutionReader, ExecutionWriter {
 	private readonly docs = new Map<string, ExecutionDocument>()

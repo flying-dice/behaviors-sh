@@ -1,6 +1,6 @@
 <script lang="ts">
   import { makeTid } from '$lib/utils';
-  import type { TraceEntry } from '@behaviors-ui/spec';
+  import type { TraceEntry } from '@behaviors-sh/spec';
   import * as Tooltip from '$lib/components/ui/tooltip';
   import CheckCircle2 from '@lucide/svelte/icons/check-circle-2';
   import XCircle from '@lucide/svelte/icons/x-circle';

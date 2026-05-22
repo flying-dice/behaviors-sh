@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 import { Command, InvalidArgumentError } from 'commander'
-import { startServer } from '@behaviors-ui/server'
+import { startServer } from '@behaviors-sh/server'
 import { assets } from './embedded-assets.ts'
 import { runHttpMcp } from './mcp/http.ts'
 import { runStdioMcp } from './mcp/stdio.ts'
@@ -122,7 +122,7 @@ async function runWebview(opts: CliOptions): Promise<void> {
 }
 
 const program = new Command()
-  .name('behaviors-ui')
+  .name('behaviors-sh')
   .description(
     'Run the behaviors UI as a desktop webview, a headless server, or an MCP server.\n\n' +
       '  (default)   open the UI in a native webview window\n' +
@@ -133,7 +133,7 @@ const program = new Command()
   .option('--headless', 'run the server without a GUI window')
   .option('-p, --port <n>', 'port to listen on (default: 3000, or $PORT)', intArg('port'))
   .option('-H, --host <name>', 'hostname to bind', '127.0.0.1')
-  .option('--title <s>', 'webview window title', 'Behaviors UI')
+  .option('--title <s>', 'webview window title', 'Behaviors')
   .option('--width <n>', 'webview window width', intArg('width'), 1280)
   .option('--height <n>', 'webview window height', intArg('height'), 800)
   .option('--devtools', 'enable webview devtools (right-click → Inspect Element)')
@@ -154,7 +154,7 @@ program
   .option('-H, --host <name>', 'hostname to bind in --http mode', '127.0.0.1')
   .option(
     '--executions-dir <path>',
-    'base directory for listing file:// executions (default: $BEHAVIORS_UI_EXECUTIONS_DIR or <cwd>/.behaviors-ui/executions)',
+    'base directory for listing file:// executions (default: $BEHAVIORS_SH_EXECUTIONS_DIR or <cwd>/.behaviors-sh/executions)',
   )
   .option('--cwd <path>', 'working directory for resolving relative tree paths')
   .action(

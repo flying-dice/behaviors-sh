@@ -1,6 +1,6 @@
 // Helpers for callers that want the historic default layout for the FS
-// adapter: `<cwd>/.behaviors-ui/executions`, overridable via the
-// `BEHAVIORS_UI_EXECUTIONS_DIR` env var. The FS adapter itself takes
+// adapter: `<cwd>/.behaviors-sh/executions`, overridable via the
+// `BEHAVIORS_SH_EXECUTIONS_DIR` env var. The FS adapter itself takes
 // `executionsDir` as a constructor arg — these helpers are purely a
 // convenience for constructing one with the defaults.
 
@@ -15,11 +15,11 @@ function expandHome(p: string): string {
 }
 
 export function defaultBehaviorsUiDir(cwd: string = process.cwd()): string {
-	return resolve(cwd, ".behaviors-ui");
+	return resolve(cwd, ".behaviors-sh");
 }
 
 export function defaultExecutionsDir(cwd: string = process.cwd()): string {
-	const fromEnv = process.env.BEHAVIORS_UI_EXECUTIONS_DIR;
+	const fromEnv = process.env.BEHAVIORS_SH_EXECUTIONS_DIR;
 	if (fromEnv) return resolve(expandHome(fromEnv));
 	return join(defaultBehaviorsUiDir(cwd), "executions");
 }

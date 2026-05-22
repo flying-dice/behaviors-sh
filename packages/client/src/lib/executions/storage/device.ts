@@ -5,7 +5,7 @@
 // on browsers that don't support it.
 
 import { pickFile } from '$lib/workspace/storage/dom-io';
-import type { ExecutionDocument } from '@behaviors-ui/spec';
+import type { ExecutionDocument } from '@behaviors-sh/spec';
 import { parseExecutionDoc } from '../serialize';
 
 const PICKER_TYPES = [

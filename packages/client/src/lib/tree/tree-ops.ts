@@ -1,4 +1,4 @@
-import { stepKind, type ActionNode, type BehaviourNode, type RefNode, type Step } from '@behaviors-ui/spec';
+import { stepKind, type ActionNode, type BehaviourNode, type RefNode, type Step } from '@behaviors-sh/spec';
 
 export type CompositeType = 'sequence' | 'selector' | 'parallel';
 export type Path = number[];

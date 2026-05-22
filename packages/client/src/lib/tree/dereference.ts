@@ -1,5 +1,5 @@
 import $RefParser from "@apidevtools/json-schema-ref-parser";
-import type { BehaviourNode, Workspace } from "@behaviors-ui/spec";
+import type { BehaviourNode, Workspace } from "@behaviors-sh/spec";
 
 // Returns a copy of the tree at `treeId` with internal `$ref`s expanded
 // inline. Circular references are left as `$ref` strings so YAML
