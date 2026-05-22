@@ -5,7 +5,7 @@ description: Wire behaviors-sh into Claude Code, Claude Desktop, or any agent th
 
 # Registering an MCP client
 
-Point your agent's MCP client at `npx -y @behaviors-sh/cli mcp`. The client spawns the server on demand; twelve tools become available. No global install needed.
+Point your agent's MCP client at `npx -y @behaviors-sh/cli mcp`. The client spawns the server on demand; the [twelve runtime tools](/guide/mcp) become available. No global install needed.
 
 ## Claude Code
 
@@ -41,7 +41,7 @@ If the client supports stdio MCP servers, point it at the same command:
 npx -y @behaviors-sh/cli mcp
 ```
 
-No behaviors-sh-specific handshake — the first `next_step` on every execution surfaces the protocol gate, and that's the only ritual.
+No behaviors-sh-specific handshake — the first `next_step` on every execution surfaces the [protocol gate](/guide/mcp#the-phase-machine), and that's the only ritual.
 
 ## Streamable HTTP
 

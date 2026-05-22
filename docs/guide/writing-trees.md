@@ -72,12 +72,12 @@ export const helloWorld = sequence("Hello_World", (node) => {
 `sequence(name, builder)` opens a root composite. Inside the builder, every nested call adds a child to the current scope. The runtime knows nothing about your TypeScript — it only sees the JSON produced by `helloWorld.toJson()`.
 
 ::: tip Node naming
-Use **PascalCase with underscores** (`Determine_Time`, `Morning_Greeting`). The canvas viewer renders `_` as a space, so `Choose_Greeting` becomes "Choose Greeting" on screen.
+Use **PascalCase with underscores** (`Determine_Time`, `Morning_Greeting`). The [canvas viewer](/guide/inspecting-executions) renders `_` as a space, so `Choose_Greeting` becomes "Choose Greeting" on screen.
 :::
 
 ## 3. Declare state
 
-`$VAR` slots are mutable — actions write into them as the run progresses. `$CONST` slots are immutable — set in the DSL source, never written after execution-create.
+[`$VAR`](/concepts/state) slots are mutable — actions write into them as the run progresses. [`$CONST`](/concepts/state) slots are immutable — set in the DSL source, never written after execution-create.
 
 ```ts
 const timeOfDay = variable("time_of_day", null);
@@ -111,7 +111,7 @@ action("Determine_Time", () => {
 
 An `action` is a leaf — it asks the agent to do work. The body adds one or more steps:
 
-- **`instruct(...)`** — work the agent performs. When fired, the runtime returns `{ type: "instruct", ... }` from `next_step`. The agent answers with `submit(success | failure | running)`.
+- **`instruct(...)`** — work the agent performs. When fired, the runtime returns `{ type: "instruct", ... }` from [`next_step`](/guide/mcp) (an MCP tool). The agent answers with `submit(success | failure | running)`.
 - **`evaluate(...)`** — a precondition the agent judges. Returns `{ type: "evaluate", ... }`. The agent answers with `eval(true | false)`.
 
 Actions can have any number of steps; the runtime walks them in order, advancing on each `success` submission and closing the action on the last step.

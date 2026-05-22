@@ -57,9 +57,9 @@ All tools are URI-addressed — the caller picks where the trace lands (`trace_o
 
 | Tool | Purpose |
 | --- | --- |
-| `var_read(trace_output, path?)` | Read `$VAR`. Omit `path` for the whole scope. |
+| `var_read(trace_output, path?)` | Read [`$VAR`](/concepts/state) — the per-execution blackboard. Omit `path` for the whole scope. |
 | `var_write(trace_output, path, value)` | Write `$VAR`. Value is JSON-parsed when possible; otherwise stored as a string. |
-| `const_read(trace_output, path?)` | Read `$CONST`. Constants are seeded once at create from `tree.state.const` and never mutated. |
+| `const_read(trace_output, path?)` | Read [`$CONST`](/concepts/state) — the read-only world model. Seeded once at create from `tree.state.const`; never mutated. |
 
 ### Inspection
 

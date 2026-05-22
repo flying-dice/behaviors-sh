@@ -41,7 +41,7 @@ Open [app.behaviors.sh](https://app.behaviors.sh) and pick a tree from the **Qui
 Each loads into a workspace where you can browse, edit, or extend. When you're happy with it, save the tree as JSON to a path your agent can read — for example:
 
 ```text
-./.behaviors-sh/trees/hello-world.json
+./.behaviors-sh/trees/hello-world.yaml
 ```
 
 Don't want to leave the terminal? Materialise the same trees from the cloned repo instead — see [Writing trees](/guide/writing-trees).
@@ -53,7 +53,7 @@ In Claude Code, ChatGPT, or any agent that speaks MCP, send:
 ```text
 Drive the behaviors-sh hello-world tree end-to-end.
 
-  tree_uri:     file:///<abs>/.behaviors-sh/trees/hello-world.json
+  tree_uri:     file:///<abs>/.behaviors-sh/trees/hello-world.yaml
   trace_output: file:///<abs>/.behaviors-sh/executions/first-run.json
 
 Call start_execution, acknowledge the protocol gate, then loop

@@ -112,7 +112,7 @@ children:
   - { type: action, name: Review, steps: [...] }
 ```
 
-The bundled `hello-world` tree covers the first three primitives (sequence, selector, action) end-to-end.
+The bundled `hello-world` tree — available from the Quick start panel at [app.behaviors.sh](https://app.behaviors.sh) — covers the first three primitives (sequence, selector, action) end-to-end.
 
 ## Next
 

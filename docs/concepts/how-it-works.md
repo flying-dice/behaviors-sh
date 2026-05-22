@@ -13,7 +13,7 @@ The animation below runs both halves at once: the YAML tree on one side, the MCP
 
 ## The loop
 
-Once you hand the agent a trace URI, three tool calls drive every execution:
+Once you hand the agent a [trace URI](/guide/uris) — the address the runtime writes execution state to — three MCP tool calls drive every execution:
 
 - **`next_step(trace_output)`** asks the runtime what to do. The response is one of four shapes: `evaluate` (a precondition to check), `instruct` (work to perform), `done`, or `failure`.
 - **`eval(trace_output, true|false)`** answers an `evaluate` step. The runtime advances if the precondition holds; the action fails immediately if it does not.
@@ -23,7 +23,7 @@ As each node finishes, it settles into `success` (green) or `failure` (red). The
 
 ## The contract
 
-1. **You write the tree.** Composite nodes (`sequence`, `selector`, `parallel`) coordinate; `action` nodes do the work.
+1. **You write the tree.** Composite nodes — [`sequence`, `selector`, `parallel`](/concepts/branches-and-actions) — coordinate; `action` nodes do the work.
 2. **The runtime walks it.** It hands the agent the next step, gates each one on declared state, and persists the cursor between calls.
 3. **The agent answers.** It evaluates preconditions and performs instructions. It does not decide which step comes next.
 

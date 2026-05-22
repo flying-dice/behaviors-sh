@@ -44,7 +44,7 @@ Each entry is a card:
 - The **agent's narration** under an "Agent" label — what they said they did.
 - The **reasoning** under a "Reasoning" label with a sparkle icon — the optional `note` the agent attached.
 
-Inline `$VAR.x` / `$CONST.y` references in any of those blocks become hoverable badges. Hover one to see the current live value pulled from the doc — short string previews are shown inline, long values truncate to ~220 chars.
+Inline [`$VAR.x`](/concepts/state) / [`$CONST.y`](/concepts/state) references — the per-execution blackboard and the read-only world model — appear in any of those blocks as hoverable badges. Hover one to see the current live value pulled from the doc; short string previews show inline, long values truncate to ~220 chars.
 
 ### State
 
@@ -95,7 +95,7 @@ Three fields point at the cursor:
 | Field | Meaning |
 | --- | --- |
 | `status` | `running` while in flight; `complete` or `failed` when it terminated. |
-| `phase` | `idle` if `next_step` will tick the engine; `evaluating` / `performing` if a step is mid-flight; `protocol` if the agent hasn't acknowledged the gate yet. |
+| `phase` | `idle` if `next_step` will tick the engine; `evaluating` / `performing` if a step is mid-flight; `protocol` if the agent hasn't acknowledged the [protocol gate](/guide/mcp#the-phase-machine) yet. |
 | `cursor` | JSON-encoded `{ path, step }` pointing at the open node and its current step. `"null"` means no step in flight. |
 
 ### Common situations
