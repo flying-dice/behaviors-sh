@@ -15,7 +15,7 @@ import { ScrollArea } from "$lib/components/ui/scroll-area";
 import { errorMessage, makeTid } from "$lib/utils";
 import * as ws from "$lib/workspace/store.svelte";
 import DeleteTreeDialog from "./components/DeleteTreeDialog.svelte";
-import type ImportTreeDialog from "./components/ImportTreeDialog.svelte";
+import ImportTreeDialog from "./components/ImportTreeDialog.svelte";
 import Kbd from "./components/Kbd.svelte";
 import NewTreeDialog from "./components/NewTreeDialog.svelte";
 import NewWorkspaceDialog from "./components/NewWorkspaceDialog.svelte";

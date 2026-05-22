@@ -15,7 +15,7 @@ import { errorMessage, makeTid } from "$lib/utils";
 import * as ws from "$lib/workspace/store.svelte";
 import DeleteSlotDialog from "./DeleteSlotDialog.svelte";
 import ErrorDialog from "./ErrorDialog.svelte";
-import type ImportTreeDialog from "./ImportTreeDialog.svelte";
+import ImportTreeDialog from "./ImportTreeDialog.svelte";
 import NewWorkspaceDialog from "./NewWorkspaceDialog.svelte";
 import WorkspaceSettingsDialog from "./WorkspaceSettingsDialog.svelte";
 

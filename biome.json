@@ -47,6 +47,17 @@
 					"correctness": {
 						"noUnusedVariables": "off",
 						"noUnusedImports": "off"
+					},
+					"style": {
+						"useImportType": "off",
+						"useExportType": "off"
+					}
+				}
+			},
+			"assist": {
+				"actions": {
+					"source": {
+						"organizeImports": "off"
 					}
 				}
 			}
