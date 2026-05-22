@@ -111,7 +111,7 @@ Add to `packages/cli/src/index.ts`:
 
 Everything is path-driven. The MCP layer does **not** browse, enumerate, or "list" anything — there are no discovery tools. Callers always pass URIs in, and the runtime writes to URIs out. There is no execution-id registry on the server side; the URI **is** the execution handle.
 
-The driving verbs mirror the abtree runtime protocol — `next_step` is replay-safe, the phase machine (`idle | evaluating | performing | protocol`) gates which verb is valid next, and a synthetic `Acknowledge_Protocol` instruct is surfaced before any tree work until the agent submits success to it.
+The driving protocol: `next_step` is replay-safe, the phase machine (`idle | evaluating | performing | protocol`) gates which verb is valid next, and a synthetic `Acknowledge_Protocol` instruct is surfaced before any tree work until the agent submits success to it.
 
 | Group | Tool | Notes |
 | ----- | ---- | ----- |

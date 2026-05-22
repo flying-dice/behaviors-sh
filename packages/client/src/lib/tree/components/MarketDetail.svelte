@@ -21,7 +21,7 @@ interface Props {
 let { item, onBack, onInstall, testid }: Props = $props();
 const tid = $derived(makeTid(testid));
 
-const accent = $derived(`hsl(var(--abtree-${item.colorHint}))`);
+const accent = $derived(`hsl(var(--behaviors-${item.colorHint}))`);
 </script>
 
 <ScrollArea class="h-full" data-testid={testid}>
@@ -38,7 +38,7 @@ const accent = $derived(`hsl(var(--abtree-${item.colorHint}))`);
             {#if item.verified}
               <Badge
                 variant="outline"
-                class="border-abtree-cyan/35 bg-abtree-cyan/10 text-abtree-cyan"
+                class="border-behaviors-cyan/35 bg-behaviors-cyan/10 text-behaviors-cyan"
               >
                 <Check class="size-3" /> verified
               </Badge>
@@ -63,7 +63,7 @@ const accent = $derived(`hsl(var(--abtree-${item.colorHint}))`);
               <GitBranch /> Fork
             </Button>
             <Button variant="outline" data-testid={tid('star')}>
-              <Star class="fill-abtree-yellow text-abtree-yellow" /> Star
+              <Star class="fill-behaviors-yellow text-behaviors-yellow" /> Star
             </Button>
           </div>
         </div>
@@ -115,7 +115,7 @@ const accent = $derived(`hsl(var(--abtree-${item.colorHint}))`);
           <pre
             class="m-0 overflow-auto rounded-md border bg-background p-4 font-mono text-[13px] leading-relaxed">
 <span class="text-muted-foreground"># import from the marketplace</span>
-<span class="text-primary">$</span> abtree pull {item.id}
+<span class="text-primary">$</span> behaviors-sh pull {item.id}
 <span class="text-muted-foreground"># or compose inline</span>
 imports:
   - <span>"@{item.author.replace('@', '')}/{item.id}@{item.version}"</span></pre>

@@ -6,15 +6,15 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* abtree palette */
+/* behaviors-sh palette */
 :root {
-	--abtree-pink: 327 75% 68%;
-	--abtree-purple: 263 70% 68%;
-	--abtree-cyan: 190 75% 60%;
-	--abtree-green: 142 60% 55%;
-	--abtree-yellow: 43 85% 60%;
-	--abtree-orange: 25 90% 62%;
-	--abtree-red: 0 72% 60%;
+	--behaviors-pink: 327 75% 68%;
+	--behaviors-purple: 263 70% 68%;
+	--behaviors-cyan: 190 75% 60%;
+	--behaviors-green: 142 60% 55%;
+	--behaviors-yellow: 43 85% 60%;
+	--behaviors-orange: 25 90% 62%;
+	--behaviors-red: 0 72% 60%;
 }
 
 /* light (kept simple; app starts in dark) */
@@ -44,9 +44,9 @@
 	--wire: hsl(var(--muted-foreground) / 0.45);
 	--wire-active: hsl(var(--primary));
 
-	--status-success: hsl(var(--abtree-green));
-	--status-warn: hsl(var(--abtree-yellow));
-	--status-danger: hsl(var(--abtree-red));
+	--status-success: hsl(var(--behaviors-green));
+	--status-warn: hsl(var(--behaviors-yellow));
+	--status-danger: hsl(var(--behaviors-red));
 }
 
 .dark {
@@ -95,13 +95,13 @@
   --color-input: hsl(var(--input));
   --color-ring: hsl(var(--ring));
 
-  --color-abtree-pink:   hsl(var(--abtree-pink));
-  --color-abtree-purple: hsl(var(--abtree-purple));
-  --color-abtree-cyan:   hsl(var(--abtree-cyan));
-  --color-abtree-green:  hsl(var(--abtree-green));
-  --color-abtree-yellow: hsl(var(--abtree-yellow));
-  --color-abtree-orange: hsl(var(--abtree-orange));
-  --color-abtree-red:    hsl(var(--abtree-red));
+  --color-behaviors-pink:   hsl(var(--behaviors-pink));
+  --color-behaviors-purple: hsl(var(--behaviors-purple));
+  --color-behaviors-cyan:   hsl(var(--behaviors-cyan));
+  --color-behaviors-green:  hsl(var(--behaviors-green));
+  --color-behaviors-yellow: hsl(var(--behaviors-yellow));
+  --color-behaviors-orange: hsl(var(--behaviors-orange));
+  --color-behaviors-red:    hsl(var(--behaviors-red));
 
   --radius-sm: calc(var(--radius) - 2px);
   --radius-md: var(--radius);

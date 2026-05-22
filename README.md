@@ -7,21 +7,27 @@
 </p>
 
 <p align="center">
-  <a href="https://abtree.sh">Concepts</a> ·
-  <a href="https://abtree.sh/getting-started">Getting started</a> ·
-  <a href=".claude/skills/todo-tracker/plans/mcp.md">MCP design notes</a>
+  <a href="./docs/getting-started.md">Get started</a> ·
+  <a href="./docs/guide/mcp.md">Driving over MCP</a> ·
+  <a href="./docs/guide/inspecting-executions.md">Inspecting executions</a> ·
+  <a href=".claude/skills/todo-tracker/plans/mcp.md">Design notes</a>
 </p>
 
 ---
 
 ## What it does
 
-behaviors-sh is the next iteration of [abtree](https://github.com/flying-dice/abtree). Same well-tested loop (replay-safe `next_step`, protocol gate, `eval` / `submit` / `think`, `var_read` / `var_write` / `const_read`), repackaged around a URI-addressed I/O model and shipped with a real execution viewer instead of a directory of trace files you have to grep.
+behaviors-sh is a deterministic runtime for agent workflows. Author trees as YAML, JSON, or compile them from the TypeScript DSL. The runtime is exposed as a Model Context Protocol server — STDIO for local agents, Streamable HTTP for fleets — and twelve URI-addressed tools (`next_step`, `eval`, `submit`, `think`, `var_read` / `var_write` / `const_read`, plus the lifecycle quartet) drive a tree end-to-end.
 
-The runtime is exposed as a Model Context Protocol server (STDIO or Streamable HTTP); any agent that speaks MCP can drive a tree. Every step the agent took, every value it wrote, every branch it skipped lands in a self-contained trace file you can re-open later in the browser.
+Every step the agent took, every value it wrote, every branch it skipped lands in a self-contained trace file. Open it in the browser canvas to see exactly what ran, with status-coloured nodes and a per-node inspector for the LLM's reasoning.
 
 ## Read the docs
 
-Concepts, the runtime protocol, and the tree-authoring guide live at **[abtree.sh](https://abtree.sh)** — the loop semantics are identical. The differences specific to behaviors-sh (URI-addressed I/O, the executions canvas, the MCP-native surface) are written up in [`plans/mcp.md`](.claude/skills/todo-tracker/plans/mcp.md).
+The full site lives under [`docs/`](./docs) (VitePress). Run it locally:
+
+```sh
+bun install
+bun run docs:dev
+```
 
 → Open this repo in Claude Code; the `.mcp.json` registers the runtime as a project-scoped server.

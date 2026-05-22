@@ -52,7 +52,7 @@ function downloadYaml() {
   {#if valid}
     <Badge
       variant="outline"
-      class="border-abtree-green/35 bg-abtree-green/10 px-2 py-0 text-[11px] text-abtree-green"
+      class="border-behaviors-green/35 bg-behaviors-green/10 px-2 py-0 text-[11px] text-behaviors-green"
       data-testid={tid('status-valid')}
     >
       <Check class="size-3" />
@@ -80,7 +80,7 @@ function downloadYaml() {
           data-testid={tid('copy-yaml')}
         >
           {#if copied}
-            <Check class="size-4 text-abtree-green" />
+            <Check class="size-4 text-behaviors-green" />
           {:else}
             <ClipboardCopy class="size-4" />
           {/if}

@@ -17,7 +17,7 @@ interface Props {
 let { item, onOpen, onInstall, testid }: Props = $props();
 const tid = $derived(makeTid(testid));
 
-const accent = $derived(`hsl(var(--abtree-${item.colorHint}))`);
+const accent = $derived(`hsl(var(--behaviors-${item.colorHint}))`);
 </script>
 
 <Card
@@ -37,7 +37,7 @@ const accent = $derived(`hsl(var(--abtree-${item.colorHint}))`);
       <div class="mb-1 flex items-center gap-1.5">
         <span class="text-[15px] font-semibold">{item.name}</span>
         {#if item.verified}
-          <Check class="size-3.5 text-abtree-cyan" stroke-width="2.5" />
+          <Check class="size-3.5 text-behaviors-cyan" stroke-width="2.5" />
         {/if}
       </div>
       <p class="mb-1.5 text-[13px] leading-snug text-muted-foreground">{item.blurb}</p>
@@ -53,7 +53,7 @@ const accent = $derived(`hsl(var(--abtree-${item.colorHint}))`);
         <Download class="size-3" /> {formatCount(item.downloads)}
       </span>
       <span class="flex items-center gap-1 text-xs text-muted-foreground">
-        <Star class="size-3 fill-abtree-yellow text-abtree-yellow" /> {item.stars}
+        <Star class="size-3 fill-behaviors-yellow text-behaviors-yellow" /> {item.stars}
       </span>
       <div class="flex-1"></div>
       <Button variant="outline" size="sm" onclick={onInstall} data-testid={tid('install')}>

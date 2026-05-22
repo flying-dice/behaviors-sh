@@ -26,31 +26,31 @@ export const KIND_META: Record<
 	action: {
 		label: "action",
 		glyph: "▸",
-		colorVar: "--color-abtree-green",
+		colorVar: "--color-behaviors-green",
 		isComposite: false,
 	},
 	sequence: {
 		label: "sequence",
 		glyph: "→",
-		colorVar: "--color-abtree-purple",
+		colorVar: "--color-behaviors-purple",
 		isComposite: true,
 	},
 	selector: {
 		label: "selector",
 		glyph: "?",
-		colorVar: "--color-abtree-cyan",
+		colorVar: "--color-behaviors-cyan",
 		isComposite: true,
 	},
 	parallel: {
 		label: "parallel",
 		glyph: "‖",
-		colorVar: "--color-abtree-pink",
+		colorVar: "--color-behaviors-pink",
 		isComposite: true,
 	},
 	ref: {
 		label: "tree",
 		glyph: "↪",
-		colorVar: "--color-abtree-pink",
+		colorVar: "--color-behaviors-pink",
 		isComposite: false,
 	},
 };

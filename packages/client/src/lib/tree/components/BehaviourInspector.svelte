@@ -327,7 +327,7 @@ function pickLinkedTree(id: string) {
                 </div>
                 <span
                   class="font-mono text-[11px] uppercase tracking-wide"
-                  style:color="var(--color-abtree-green)"
+                  style:color="var(--color-behaviors-green)"
                 >
                   {kind}
                 </span>

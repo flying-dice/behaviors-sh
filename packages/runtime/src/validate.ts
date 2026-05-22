@@ -13,10 +13,6 @@ import type {
 	Step,
 } from "./types.ts";
 
-// Re-exported under the abtree-compatible name for callers that import
-// `AbtNodeSchema`. The underlying schema is `BehaviourNodeSchema` from
-// `@behaviors-sh/spec`.
-export { BehaviourNodeSchema as AbtNodeSchema } from "@behaviors-sh/spec";
 export { BehaviourNodeSchema };
 
 export function validateRootNode(raw: unknown): BehaviourNode {

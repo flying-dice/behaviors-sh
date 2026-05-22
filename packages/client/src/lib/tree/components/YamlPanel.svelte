@@ -13,15 +13,15 @@ type Token = { text: string; color?: string };
 function tokenizeValue(raw: string): Token[] {
 	if (!raw) return [];
 	if (/^("|').*\1$/.test(raw))
-		return [{ text: raw, color: "var(--color-abtree-yellow)" }];
+		return [{ text: raw, color: "var(--color-behaviors-yellow)" }];
 	if (/^-?\d+(\.\d+)?$/.test(raw))
-		return [{ text: raw, color: "var(--color-abtree-purple)" }];
+		return [{ text: raw, color: "var(--color-behaviors-purple)" }];
 	if (raw === "true" || raw === "false" || raw === "null")
-		return [{ text: raw, color: "var(--color-abtree-orange)" }];
+		return [{ text: raw, color: "var(--color-behaviors-orange)" }];
 	if (raw === "|" || raw === ">")
-		return [{ text: raw, color: "var(--color-abtree-cyan)" }];
+		return [{ text: raw, color: "var(--color-behaviors-cyan)" }];
 	if (/^\[.*\]$|^\{.*\}$/.test(raw))
-		return [{ text: raw, color: "var(--color-abtree-cyan)" }];
+		return [{ text: raw, color: "var(--color-behaviors-cyan)" }];
 	return [{ text: raw }];
 }
 
@@ -33,7 +33,7 @@ function tokenizeLine(line: string): Token[] {
 		const [, ws, dash, key, sep, val] = m;
 		return [
 			{ text: ws },
-			...(dash ? [{ text: dash, color: "var(--color-abtree-purple)" }] : []),
+			...(dash ? [{ text: dash, color: "var(--color-behaviors-purple)" }] : []),
 			{ text: key, color: "hsl(var(--primary))" },
 			{ text: sep },
 			...tokenizeValue(val),
@@ -42,7 +42,7 @@ function tokenizeLine(line: string): Token[] {
 	const m2 = line.match(/^(\s*-\s+)(.*)$/);
 	if (m2)
 		return [
-			{ text: m2[1], color: "var(--color-abtree-purple)" },
+			{ text: m2[1], color: "var(--color-behaviors-purple)" },
 			{ text: m2[2] },
 		];
 	return [{ text: line }];

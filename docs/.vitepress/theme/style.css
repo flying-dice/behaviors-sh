@@ -50,9 +50,9 @@
 	--vp-c-default-soft: var(--vp-c-gray-soft);
 
 	/* Brand chain tuned to complement the pink hero logo
-     (docs/public/abtree-mark.svg). Light mode uses lower-saturation
-     variants for AA contrast on white; dark mode uses the high-key
-     Dracula values that match the logo stroke. */
+     (docs/public/mark.svg). Light mode uses lower-saturation variants
+     for AA contrast on white; dark mode uses the high-key Dracula
+     values that match the logo stroke. */
 	--vp-c-brand-1: #d62786;
 	--vp-c-brand-2: #8c5cf2;
 	--vp-c-brand-3: #d62786;

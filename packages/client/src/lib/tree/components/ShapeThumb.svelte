@@ -13,7 +13,7 @@ let {
 	shape,
 	width = 220,
 	height = 84,
-	accent = "var(--color-abtree-cyan)",
+	accent = "var(--color-behaviors-cyan)",
 	testid,
 }: Props = $props();
 

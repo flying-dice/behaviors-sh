@@ -2,8 +2,7 @@
 //
 // MCP tool handlers in `register-runtime-tools.ts` are 2–4 line shims
 // over these `core*` functions; the same functions are reused by tests
-// and any future CLI entry points. The protocol mirrors abtree's
-// well-tested loop:
+// and any future CLI entry points. The driving loop is:
 //
 //   1.  `coreNext` is replay-safe — calling it while phase is
 //       `evaluating` / `performing` / `protocol` re-emits the pending
@@ -488,8 +487,8 @@ export function coreVarRead(runtime: Runtime, uri: string, path?: string) {
 }
 
 // `value` is JSON-parsed when possible; otherwise stored as a string
-// literal. Matches abtree's coerce-or-string behaviour so agents can
-// write either `"42"` or `42` without thinking about quoting.
+// literal — so agents can write either `"42"` or `42` without
+// thinking about quoting.
 export function coreVarWrite(
 	runtime: Runtime,
 	uri: string,
@@ -513,9 +512,9 @@ export function coreConstRead(runtime: Runtime, uri: string, path?: string) {
 
 // ── Reset ───────────────────────────────────────────────────────────────
 
-// Mirror abtree's reset: rewind the trace, scopes, runtime bookkeeping,
-// and the protocol gate. Used when the agent wants to re-attempt a run
-// against the same trace file without creating a new URI.
+// Rewind the trace, scopes, runtime bookkeeping, and the protocol
+// gate. Used when the agent wants to re-attempt a run against the
+// same trace file without creating a new URI.
 export function coreReset(runtime: Runtime, uri: string) {
 	const doc = loadDoc(runtime, uri);
 	const rootState = doc.tree.type !== "ref" ? (doc.tree.state ?? {}) : {};

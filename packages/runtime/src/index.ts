@@ -87,7 +87,6 @@ export type {
 export { EXECUTION_SCHEMA_VERSION } from "./types.ts";
 export { die, out } from "./utils.ts";
 export {
-	AbtNodeSchema,
 	BehaviourNodeSchema,
 	normalizeNode,
 	normalizeStep,

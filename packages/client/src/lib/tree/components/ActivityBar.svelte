@@ -36,7 +36,7 @@ const items: { id: Route; label: string; icon: typeof FolderKanban }[] = [
     <button
       onclick={() => onNavigate('home')}
       class="mb-3 grid size-10 place-items-center text-primary"
-      aria-label="abtree"
+      aria-label="behaviors-sh"
       data-testid={tid('logo')}
     >
       <TreeMark size={22} stroke={3} />

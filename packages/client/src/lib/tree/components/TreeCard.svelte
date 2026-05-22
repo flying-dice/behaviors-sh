@@ -58,7 +58,7 @@ function onCardKey(e: KeyboardEvent) {
         {#if tree.kind === 'ref'}
           <Badge
             variant="outline"
-            class="border-abtree-pink/35 bg-abtree-pink/10 px-2 py-0 text-[10px] text-abtree-pink"
+            class="border-behaviors-pink/35 bg-behaviors-pink/10 px-2 py-0 text-[10px] text-behaviors-pink"
           >
             link
           </Badge>

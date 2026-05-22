@@ -3,11 +3,11 @@
 // Shared between the STDIO and HTTP transports. Tool handlers are
 // 2–4 line shims over the `core*` verbs in `verbs.ts`; everything is
 // URI-addressed (callers supply both the tree URI and the execution
-// URI). The driving protocol mirrors abtree: `next_step` is
-// replay-safe, `eval` advances on true / fails on false, `submit`
-// advances-or-completes on success and fails on failure, `running`
-// yields. Scopes are read/written through dedicated tools — agents
-// never substitute state from their own context.
+// URI). The driving protocol: `next_step` is replay-safe, `eval`
+// advances on true / fails on false, `submit` advances-or-completes
+// on success and fails on failure, `running` yields. Scopes are
+// read/written through dedicated tools — agents never substitute
+// state from their own context.
 
 import {
 	EXECUTION_SCHEMA_VERSION,

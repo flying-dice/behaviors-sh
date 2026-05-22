@@ -21,7 +21,7 @@ const tid = $derived(makeTid(testid));
   class="flex h-7 items-center gap-4 border-t bg-card px-4 font-mono text-[11px] text-muted-foreground"
 >
   <span class="flex items-center gap-1.5" data-testid={tid('workspace')}>
-    <span class="size-1.5 rounded-full bg-abtree-green"></span>
+    <span class="size-1.5 rounded-full bg-behaviors-green"></span>
     {workspaceName}
   </span>
   <span>·</span>

@@ -2,7 +2,7 @@
 // document root is a node, not a wrapper. These tests anchor that
 // contract and guard against drift.
 import { describe, expect, test } from "bun:test";
-import { AbtNodeSchema, BehaviourNodeSchema } from "../src/index.ts";
+import { BehaviourNodeSchema } from "../src/index.ts";
 
 const validRoot = {
 	type: "action" as const,
@@ -50,9 +50,5 @@ describe("BehaviourNodeSchema (root)", () => {
 			tree: validRoot,
 		});
 		expect(r.success).toBe(false);
-	});
-
-	test("AbtNodeSchema is an alias for BehaviourNodeSchema", () => {
-		expect(AbtNodeSchema).toBe(BehaviourNodeSchema);
 	});
 });
