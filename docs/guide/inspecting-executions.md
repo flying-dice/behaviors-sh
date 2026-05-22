@@ -10,9 +10,11 @@ You drove an execution. The runtime wrote a self-contained JSON document to disk
 ## Open the viewer
 
 ```sh
-bun run cli              # opens the desktop UI (webview)
+bun run cli              # serves the UI on http://127.0.0.1:3000
 bun run dev:client       # or dev-server the client at :5173
 ```
+
+Open the printed URL in your browser.
 
 In the left rail, click **Executions**, then **Open trace file**. Pick any `*.json` written by the runtime. The file lives in your `trace_output` directory — usually under `.behaviors-sh/executions/`, but the runtime writes wherever you pointed it.
 

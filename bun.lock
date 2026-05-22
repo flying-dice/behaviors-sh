@@ -21,7 +21,6 @@
         "@behaviors-sh/server": "workspace:*",
         "@modelcontextprotocol/sdk": "^1.29.0",
         "commander": "^14.0.3",
-        "webview-bun": "^2.4.0",
         "zod": "^4.4.3",
       },
       "devDependencies": {
@@ -1149,8 +1148,6 @@
     "vm-browserify": ["vm-browserify@1.1.2", "", {}, "sha512-2ham8XPWTONajOR0ohOKOHXkm3+gaBmGut3SRuu75xLd/RRaY6vqgh8NBYYk7+RW3u5AtzPQZG8F10LHkl0lAQ=="],
 
     "vue": ["vue@3.5.34", "", { "dependencies": { "@vue/compiler-dom": "3.5.34", "@vue/compiler-sfc": "3.5.34", "@vue/runtime-dom": "3.5.34", "@vue/server-renderer": "3.5.34", "@vue/shared": "3.5.34" }, "peerDependencies": { "typescript": "*" }, "optionalPeers": ["typescript"] }, "sha512-WdLBG9gm02OgJIG9axd5Hpx0TFLdzVgfG2evFFu8Rur5O/IoGc5cMjnjh3tPL6GnRGsYvUhBSKVPYVcxRKpMCA=="],
-
-    "webview-bun": ["webview-bun@2.4.0", "", {}, "sha512-0+ugnQlcUHmuW+iLeb+Lzb8rGUJh7WEdXvNsuvaVEXT3EagK380XdD7heVJu0Ek/mNxMY3G2JM142YRQ1hDUGQ=="],
 
     "which": ["which@2.0.2", "", { "dependencies": { "isexe": "^2.0.0" }, "bin": { "node-which": "./bin/node-which" } }, "sha512-BLI3Tl1TW3Pvl70l3yq3Y64i+awpwXqsGBYWkkqMtnbXgrMD+yj7rhW0kuEDxzJaYXGjEW5ogapKNMEKNMjibA=="],
 

@@ -14,8 +14,6 @@
 		"build": "bun --filter @behaviors-sh/client build",
 		"start": "bun --filter @behaviors-sh/server start",
 		"cli": "bun --filter @behaviors-sh/cli start",
-		"cli:headless": "bun --filter @behaviors-sh/cli headless",
-		"compile": "bun --filter @behaviors-sh/cli compile",
 		"check": "bun --filter @behaviors-sh/client check",
 		"docs:dev": "vitepress dev docs --host",
 		"docs:build": "vitepress build docs",
