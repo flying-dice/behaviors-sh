@@ -3,6 +3,7 @@ stages:
   - test
   - docs
   - deploy
+  - release
   - mirror
 
 # ---- Reused pieces -----------------------------------------------------------
@@ -92,6 +93,49 @@ pages:
     expire_in: 30 days
   rules:
     - if: $CI_COMMIT_BRANCH == "main"
+
+# ---- Stage: release ----------------------------------------------------------
+
+# Publish @behaviors-sh/spec, @behaviors-sh/dsl, @behaviors-sh/cli to
+# npm. Versions are synced — bump all three in their package.json and
+# the matching trees/*/package.json before triggering. Bun publish
+# rewrites `workspace:*` to the resolved version at publish time.
+#
+# Manual-only (click ▶ on `release` from the main pipeline view) so
+# nothing slips out unintentionally. Requires the masked + protected
+# CI/CD variable NPM_TOKEN — an npm "Automation" token scoped to the
+# @behaviors-sh org.
+.release:
+  extends: .bun
+  stage: release
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+      when: manual
+      allow_failure: true
+    - when: never
+  before_script:
+    - bun install --frozen-lockfile
+    - echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
+
+release:spec:
+  extends: .release
+  script:
+    - bun --filter @behaviors-sh/spec build
+    - cd packages/spec && bun publish --access public
+
+release:dsl:
+  extends: .release
+  needs: ["release:spec"]
+  script:
+    - bun --filter @behaviors-sh/dsl build
+    - cd packages/dsl && bun publish --access public
+
+release:cli:
+  extends: .release
+  needs: ["release:dsl"]
+  script:
+    - bun --filter @behaviors-sh/cli build
+    - cd packages/cli && bun publish --access public
 
 # ---- Stage: mirror -----------------------------------------------------------
 

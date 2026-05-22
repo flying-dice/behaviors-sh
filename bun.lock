@@ -17,7 +17,6 @@
         "behaviors-sh": "./dist/index.js",
       },
       "dependencies": {
-        "@behaviors-sh/runtime": "workspace:*",
         "@hono/mcp": "^0.2.5",
         "@hono/node-server": "^1.13.4",
         "@modelcontextprotocol/sdk": "^1.29.0",
@@ -26,6 +25,7 @@
         "zod": "^4.4.3",
       },
       "devDependencies": {
+        "@behaviors-sh/runtime": "workspace:*",
         "@types/bun": "latest",
         "typescript": "~6.0.2",
       },
