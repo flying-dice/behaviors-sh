@@ -5,20 +5,13 @@ description: Open a trace file in the behaviors-sh browser canvas — status-col
 
 # Inspecting executions
 
-You drove an execution. The runtime wrote a self-contained JSON document to disk at `trace_output`. This page is about opening that file in the browser canvas viewer — the same shape the [tree builder](/guide/writing-trees) uses, with the execution overlaid.
+Every execution writes a self-contained JSON trace file to `trace_output`. Open that file in the browser canvas viewer to see the tree light up node by node, with the agent's reasoning available on every click.
 
 ## Open the viewer
 
-```sh
-bun run cli              # serves the UI on http://127.0.0.1:3000
-bun run dev:client       # or dev-server the client at :5173
-```
+Visit [app.behaviors.sh](https://app.behaviors.sh) (or run `bun run dev:client` from a clone for a local copy). In the left rail, click **Executions**, then **Open trace file**, then pick any `*.json` written by the runtime — usually under `.behaviors-sh/executions/`, though the runtime writes wherever you pointed it.
 
-Open the printed URL in your browser.
-
-In the left rail, click **Executions**, then **Open trace file**. Pick any `*.json` written by the runtime. The file lives in your `trace_output` directory — usually under `.behaviors-sh/executions/`, but the runtime writes wherever you pointed it.
-
-The execution stays in the "Opened traces" list for the rest of the tab session. Reload the tab and the list clears — re-pick the file to bring it back. Nothing is persisted in the browser.
+The execution stays in the "Opened traces" list for the rest of the tab session. Reload and the list clears — re-pick the file to bring it back. Nothing is persisted in the browser.
 
 ## The canvas
 

@@ -5,13 +5,11 @@ description: Wire behaviors-sh into Claude Code, Claude Desktop, or any agent th
 
 # Registering an MCP client
 
-behaviors-sh ships as a single MCP server. You register it once with your agent's MCP client; the client spawns the server on demand and routes tool calls to it.
-
-There is no global install. `npx -y @behaviors-sh/cli mcp` does the work — the client runs that command, the server starts on stdio, twelve tools become available.
+Point your agent's MCP client at `npx -y @behaviors-sh/cli mcp`. The client spawns the server on demand; twelve tools become available. No global install needed.
 
 ## Claude Code
 
-Project-scoped (`./.mcp.json`, checked into the repo):
+Add an entry under `mcpServers`. Project-scoped (`./.mcp.json`, checked into the repo) or user-scoped (`~/.claude.json`) — same shape either way:
 
 ```json
 {
@@ -24,16 +22,16 @@ Project-scoped (`./.mcp.json`, checked into the repo):
 }
 ```
 
-User-scoped (`~/.claude.json`): same shape under `mcpServers`. Restart Claude Code. The twelve tools appear as `mcp__behaviors-sh__next_step`, `…__eval`, `…__submit`, etc.
+Restart Claude Code. The tools appear as `mcp__behaviors-sh__next_step`, `…__eval`, `…__submit`, and so on.
 
 ## Claude Desktop
 
-Edit the platform-specific config file:
+Edit the platform's config file:
 
 - macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
 - Windows: `%APPDATA%\Claude\claude_desktop_config.json`
 
-Same `mcpServers` block as above. Restart the app.
+Add the same `mcpServers` block as above. Restart the app.
 
 ## Any other MCP client
 
@@ -43,17 +41,17 @@ If the client supports stdio MCP servers, point it at the same command:
 npx -y @behaviors-sh/cli mcp
 ```
 
-It speaks the standard protocol — no behaviors-sh-specific handshake. The first `next_step` on every execution surfaces the protocol gate; that's the only ritual.
+No behaviors-sh-specific handshake — the first `next_step` on every execution surfaces the protocol gate, and that's the only ritual.
 
 ## Streamable HTTP
 
-For multi-process setups or remote clients, run the server yourself and let the client connect over HTTP:
+For multi-process setups or remote agents, run the server yourself and connect over HTTP:
 
 ```sh
 npx -y @behaviors-sh/cli mcp --http --port 3001
 ```
 
-`POST /mcp` accepts the Streamable HTTP transport. Stateless — each request gets a fresh `McpServer` + transport pair; runtime state persists in the URI-addressed stores.
+`POST /mcp` accepts the Streamable HTTP transport. Stateless: each request gets a fresh `McpServer` + transport pair; runtime state lives in the URI-addressed stores, shared across requests.
 
 ## Next
 

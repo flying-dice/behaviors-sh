@@ -5,11 +5,13 @@ description: Build the bundled hello-world tree from scratch with the TypeScript
 
 # Writing trees
 
-This page walks you through writing a tree by re-creating the bundled `hello-world`. By the end you have a working tree you can drive over MCP. behaviors-sh accepts trees in TypeScript (the DSL), YAML, or JSON; this guide uses TypeScript because it's the most ergonomic and what the bundled examples use.
+Re-create the bundled `hello-world` tree from scratch with the TypeScript DSL. At the end you have a working tree you can drive over MCP.
+
+behaviors-sh accepts trees as TypeScript, YAML, or JSON; this guide uses TypeScript because the DSL gives the strongest IDE support and matches the bundled examples.
 
 ## What you build
 
-A single `hello-world.ts` file that exports a sequence with four nodes: a time-of-day classifier, a three-way selector (morning / afternoon / evening), and a final announce step. The DSL compiles to JSON via `.toJson()`; that JSON is what the runtime reads.
+A `hello-world.ts` that exports a sequence with three children: a time-of-day classifier, a three-way selector (morning / afternoon / evening), and a final announce step. The DSL compiles to JSON via `.toJson()`; that JSON is what the runtime reads.
 
 ## 1. Create the package
 

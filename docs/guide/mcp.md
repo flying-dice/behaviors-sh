@@ -5,38 +5,19 @@ description: behaviors-sh exposes the runtime as a Model Context Protocol server
 
 # Driving over MCP
 
-`behaviors-sh mcp` exposes the runtime as a Model Context Protocol (MCP) server. Agents that natively speak MCP drive an execution through structured tool calls — no shell parsing, no per-step subprocess spawn, typed input/output schemas.
+The runtime is exposed as a Model Context Protocol server. Agents that speak MCP drive an execution through structured tool calls — no shell parsing, no per-step subprocess spawn, typed input/output schemas.
 
-Two transports are built in: STDIO (for local agents that spawn the server themselves) and Streamable HTTP (for a runtime any fleet of agents can reach).
+Two transports are built in:
 
-## Start the server
+- **STDIO** — the agent spawns the server on demand. Used by Claude Code, Claude Desktop, and any client that supports stdio servers. See [Registering an MCP client](/guide/mcp-clients).
+- **Streamable HTTP** — the server outlives the agent. Used by fleets, multi-process setups, or any case where a central runtime owns the trace store.
 
 ```sh
-bun run cli mcp              # STDIO — on stdin/stdout
-bun run cli mcp --http       # Streamable HTTP on :3001/mcp
-bun run cli mcp --http --port 4000 --host 0.0.0.0
+npx -y @behaviors-sh/cli mcp                       # STDIO on stdin/stdout
+npx -y @behaviors-sh/cli mcp --http --port 3001    # Streamable HTTP at POST /mcp
 ```
 
-The STDIO process stays alive on stdin/stdout until the client disconnects. Nothing is written to stdout except JSON-RPC frames; logs go to stderr.
-
-You normally don't invoke the STDIO server yourself — you register it in your MCP client and the client spawns it on demand.
-
-## Register with Claude Code
-
-The repo ships a project-scoped `.mcp.json`:
-
-```json
-{
-  "mcpServers": {
-    "behaviors-sh": {
-      "command": "bun",
-      "args": ["packages/cli/src/index.ts", "mcp"]
-    }
-  }
-}
-```
-
-Open the repo in Claude Code. It detects the project config, asks for approval, and once accepted the twelve tools appear as `mcp__behaviors-sh__*`. Restart Claude Code if you change the tool surface (Claude doesn't reload `.mcp.json` automatically).
+The same tool surface drives both. `registerRuntimeTools(server, runtime)` is shared; the transports are thin wrappers over the same verbs.
 
 ## The phase machine
 
@@ -87,20 +68,7 @@ All tools are URI-addressed — the caller picks where the trace lands (`trace_o
 | `get_execution(trace_output)` | Return the full execution document. |
 | `read_trace(trace_output, from?, to?)` | Slice the append-only trace. |
 
-## URI schemes
-
-Tree inputs and execution outputs are addressed by URI; the scheme picks the reader/writer:
-
-| Scheme | Reader / writer |
-| --- | --- |
-| `file://` | File on disk. The default for local development. |
-| `memory://<id>` | In-process map, keyed by the caller-supplied id. Lost on restart; useful for tests and ephemeral runs. |
-
-`http(s)://` and `s3://` are next — the routing layer in `packages/cli/src/mcp/io/` makes each new scheme a `.register()` call.
-
 ## Worked example
-
-Same nine logical steps as the CLI flow, expressed as tool calls. Pseudocode form:
 
 ```text
 1. start_execution(
@@ -125,13 +93,6 @@ Same nine logical steps as the CLI flow, expressed as tool calls. Pseudocode for
 ```
 
 Three tool calls per action in the worst case — `next_step` + (`var_read` and/or `var_write`) + (`submit` or `eval`). The agent only ever sees the next request.
-
-## Choosing a transport
-
-- **STDIO** for a local agent (Claude Code, Claude Desktop) that you trust to manage the runtime's lifecycle. The agent spawns the server, drives the loop, and the server dies when the agent does.
-- **Streamable HTTP** when the runtime needs to outlive the agent — fleet deployments, multiple agents driving the same workflow set, or a central authority that owns the trace store. Each request is independent; runtime state lives in the URI-addressed scopes.
-
-Same tool surface either way. `registerRuntimeTools(server, runtime)` is shared between the two transports — they're thin wrappers over the same core verbs.
 
 ## Limitations
 

@@ -34,11 +34,13 @@ tree_uri:     memory://hello-world-test
 trace_output: memory://run-1
 ```
 
-Two executions with different ids are isolated; two with the same id share state. The map lives in the runtime, so it dies when the process dies. The HTTP transport keeps a single runtime across requests, which means memory:// runs survive between requests on the same server — that's the only "persistence" they get.
+Two ids are isolated; two executions with the same id share state. The map lives in the runtime, so it dies when the process dies. Under the HTTP transport the runtime is shared across requests, so `memory://` runs survive between requests on the same server — that's the only persistence they get.
 
 ## Why URIs
 
-A URI tells the runtime three things in one string: **where** the data lives, **how** to reach it, and **which** address space it belongs to. A bare path tells you one (where) and assumes the other two. As soon as a second backend appears — S3, HTTP, a database — the bare-path model breaks; you have to thread an out-of-band scheme through every call site. URIs put the scheme inline, so each new backend is a single registration.
+A URI tells the runtime three things in one string: **where** the data lives, **how** to reach it, and **which** address space it belongs to. A bare path answers only the first and assumes the other two.
+
+The moment a second backend appears — S3, HTTP, a database — the bare-path model breaks: you thread an out-of-band scheme through every call site. URIs put the scheme inline, so each new backend is a single registration.
 
 ## Adding a scheme
 
