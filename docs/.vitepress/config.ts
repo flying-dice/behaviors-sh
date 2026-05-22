@@ -119,6 +119,7 @@ export default defineConfig({
 		nav: [
 			{ text: "Home", link: "/" },
 			{ text: "Get started", link: "/getting-started" },
+			{ text: "Concepts", link: "/concepts/" },
 			{ text: "Guide", link: "/guide/writing-trees" },
 		],
 
@@ -126,6 +127,18 @@ export default defineConfig({
 			{
 				text: "Introduction",
 				items: [{ text: "Get started", link: "/getting-started" }],
+			},
+			{
+				text: "Concepts",
+				items: [
+					{ text: "Why behaviour trees?", link: "/concepts/" },
+					{ text: "How it works", link: "/concepts/how-it-works" },
+					{ text: "State", link: "/concepts/state" },
+					{
+						text: "Branches and actions",
+						link: "/concepts/branches-and-actions",
+					},
+				],
 			},
 			{
 				text: "Guide",

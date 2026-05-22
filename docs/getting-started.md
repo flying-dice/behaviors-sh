@@ -1,88 +1,70 @@
 ---
-description: Five-minute walkthrough — clone behaviors-sh, hand the hello-world tree to your agent, watch it drive a workflow end-to-end, then open the trace in the canvas viewer.
+description: Five-minute walkthrough to register the behaviors-sh MCP server, hand a behaviour tree to your agent, and watch it drive a workflow end-to-end.
 ---
 
 # Get started
 
-A five-minute walkthrough: clone the repo, plug it into Claude Code as an MCP server, hand the hello-world tree to your agent, then open the trace it produced in the browser viewer.
+A five-minute walkthrough: register behaviors-sh, hand a tree to your agent, and watch it drive. For the vocabulary behind the moving parts, see [Why behaviour trees?](/concepts/).
 
 ::: tip Terms used below
-`$VAR` is the per-execution read-write scope, `$CONST` is the read-only seed, `instruct` is an action step that asks the agent to do work, and `evaluate` is an action step that asks the agent to judge a precondition.
+`$VAR` is the per-execution blackboard, `instruct` is an action step that asks the agent to do work, and `evaluate` is an action step that asks the agent to judge a precondition. All three are defined in the [Concepts](/concepts/) tier.
 :::
 
-## 1. Clone and install
+## 1. Register behaviors-sh as an MCP server
 
-behaviors-sh isn't on a registry yet. Clone the repo and let bun resolve the workspace:
-
-```sh
-git clone https://gitlab.beluga-sirius.ts.net/flying-dice/behaviors-sh.git
-cd behaviors-sh
-bun install
-```
-
-Verify the CLI:
-
-```sh
-bun run cli mcp --help
-```
-
-You see the `mcp` subcommand help. If you do not, double-check that bun resolved the workspace packages.
-
-## 2. Wire it into Claude Code
-
-The repo ships a project-scoped `.mcp.json`:
+In any agent that speaks MCP — Claude Code, Claude Desktop, your own client — register `@behaviors-sh/cli` as a server. For Claude Code, add a project-scoped `.mcp.json`:
 
 ```json
 {
   "mcpServers": {
     "behaviors-sh": {
-      "command": "bun",
-      "args": ["packages/cli/src/index.ts", "mcp"]
+      "command": "npx",
+      "args": ["-y", "@behaviors-sh/cli", "mcp"]
     }
   }
 }
 ```
 
-Open the cloned repo in Claude Code. On launch it asks to approve the project-scoped server; accept, and twelve tools become available as `mcp__behaviors-sh__*`.
+Restart the client. The twelve runtime tools appear as `mcp__behaviors-sh__*`.
 
-> Prefer a different MCP client? Run `bun run cli mcp` directly for STDIO, or `bun run cli mcp --http --port 3001` for Streamable HTTP at `POST http://127.0.0.1:3001/mcp`.
+Verify by listing tools in your client; you should see `next_step`, `eval`, `submit`, `var_read`, `var_write`, and the rest.
 
-## 3. Materialise the hello-world tree
+## 2. Get a tree
 
-`trees/hello-world` is a small tree: classify the time of day, then pick the matching greeting from a three-way selector. It exercises three primitives — `sequence`, `selector`, `action` — in a few dozen lines. Materialise it from the TypeScript DSL to a JSON file the runtime can read:
+Materialise the bundled `hello-world` tree to disk:
 
 ```sh
-bun -e 'import { helloWorld } from "./trees/hello-world/src"; \
-import { writeFileSync, mkdirSync } from "node:fs"; \
-mkdirSync(".behaviors-sh/trees", { recursive: true }); \
-writeFileSync(".behaviors-sh/trees/hello-world.json", helloWorld.toJson());'
+git clone https://github.com/flying-dice/behaviors-sh.git
+cd behaviors-sh && bun install
+bun -e 'import {helloWorld} from "./trees/hello-world/src"; \
+  import {mkdirSync, writeFileSync} from "node:fs"; \
+  mkdirSync(".behaviors-sh/trees", {recursive: true}); \
+  writeFileSync(".behaviors-sh/trees/hello-world.json", helloWorld.toJson());'
 ```
 
-`tree.json` now sits at `.behaviors-sh/trees/hello-world.json`.
+`hello-world` is a small tree: classify the time of day, then pick the matching greeting from a three-way selector. It exercises three of the four behaviour-tree primitives — `sequence`, `selector`, and `action` — in a few dozen lines. The JSON lands at `.behaviors-sh/trees/hello-world.json`.
 
-## 4. Hand it off to your agent
+## 3. Hand it off to your agent
 
-In Claude Code, send:
+In Claude Code, ChatGPT, or any agent that speaks MCP, send:
 
 ```text
-Drive the behaviour tree at
-file:///<absolute>/.behaviors-sh/trees/hello-world.json
-and write the trace to
-file:///<absolute>/.behaviors-sh/executions/first-run.json
+Drive the behaviors-sh hello-world tree end-to-end.
 
-Use the mcp__behaviors-sh tools: start_execution, then loop
-next_step → eval/submit until you see { status: "done" }.
-Acknowledge the protocol gate first. Write any $VAR values
-the instructs ask for via var_write before submitting.
+  tree_uri:     file:///<abs>/.behaviors-sh/trees/hello-world.json
+  trace_output: file:///<abs>/.behaviors-sh/executions/first-run.json
+
+Call start_execution, acknowledge the protocol gate, then loop
+next_step → eval / submit until you see status: done.
 ```
 
 That is the entire human-side interaction. The agent reads the protocol from the gate instruct, creates the execution, and drives the loop autonomously.
 
-## 5. Watch the agent drive the loop
+## 4. Watch the agent drive the loop
 
-Each turn, the agent calls one tool and reads the JSON response.
+Each turn, the agent calls one tool and reads its JSON response.
 
-The first `next_step` on any execution is a runtime-level gate — every execution starts here regardless of which tree it runs:
+The first `next_step` on any execution is a runtime-level gate that hands the agent the execution protocol — every execution starts here, regardless of which tree it runs:
 
 ```json
 {
@@ -104,7 +86,7 @@ After the gate, `next_step` returns the tree's first real step:
 {
   "type": "instruct",
   "name": "Determine_Time",
-  "instruction": "Check the system clock to get the current hour. Classify as: before 12:00 = \"morning\", 12:00-17:00 = \"afternoon\", after 17:00 = \"evening\". Store the classification string at $VAR.Hello_World__time_of_day."
+  "instruction": "Check the system clock to get the current hour..."
 }
 ```
 
@@ -125,7 +107,7 @@ The next call returns an `evaluate`:
 }
 ```
 
-The agent reads `$VAR` via `var_read`, decides the precondition holds, and answers:
+The agent reads the expression, decides it holds, and answers:
 
 ```text
 eval(trace_output, true)
@@ -139,31 +121,21 @@ The loop repeats — `next_step` → do the work or judge the precondition → `
 
 The agent only ever sees the next request.
 
-## 6. Open the trace in the canvas
+## 5. Open the trace in the viewer
 
-Start the desktop UI:
+Every state change is written to the trace file at `trace_output`. Open it in the browser canvas to see the tree light up: green nodes succeeded, red nodes failed, uncoloured nodes were never ticked.
 
-```sh
-bun run cli
-```
-
-Click **Executions** in the left rail, then **Open trace file**, then pick `.behaviors-sh/executions/first-run.json`. The tree renders as a canvas with status-coloured node borders — emerald for success, red for failure, amber-pulsing for the in-flight cursor. Click any node to see, on the right:
-
-- the original `instruct` / `evaluate` text the tree asked,
-- the agent's narration of what it did,
-- its reasoning (the `note` field),
-- inline `$VAR.x` / `$CONST.y` references as hoverable badges showing the live value.
-
-For the hello-world run above, the cursor advanced through the root sequence (`Hello_World` → `Determine_Time` → `Choose_Greeting`) and the selector chose `Morning_Greeting` after its `evaluate` precondition held — the afternoon and evening branches were never entered.
+For the `hello-world` run above, the cursor advanced through the root sequence (`Hello_World` → `Determine_Time` → `Choose_Greeting`) and the selector chose `Morning_Greeting` after its `evaluate` precondition held — the afternoon and evening branches were never entered.
 
 ## What that gives you
 
-Your agent drove a structured workflow without a 2,000-line system prompt, without a JSON schema in its context, and without chain-of-thought reasoning. The tree handed it exactly one task at a time, and only let it advance when the task was complete.
+Your agent drove a structured workflow without a 2,000-line system prompt, without a JSON schema in its context, and without chain-of-thought. The tree handed it exactly one task at a time, and only let it advance when the task was complete.
 
 That is the core idea: **deterministic structure for non-deterministic agents.**
 
 ## Next
 
-- [Writing trees](/guide/writing-trees) — author your own tree with the TypeScript DSL.
-- [Driving over MCP](/guide/mcp) — the full twelve-tool surface and the phase machine behind it.
-- [Inspecting executions](/guide/inspecting-executions) — every panel in the canvas viewer and what it tells you.
+- [Why behaviour trees?](/concepts/) — the problem they solve.
+- [State](/concepts/state) — `$VAR` and `$CONST`, the two scopes the runtime exposes.
+- [How it works](/concepts/how-it-works) — the runtime loop end-to-end.
+- [Branches and actions](/concepts/branches-and-actions) — the four primitives.

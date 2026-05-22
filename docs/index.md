@@ -1,24 +1,27 @@
 ---
 layout: home
-title: behaviors-sh — Behaviour Trees for AI Agents
+title: behaviors-sh — Behaviour Trees for AI Agents and Agentic Workflows
 titleTemplate: false
-description: Treat agent instructions like the software they are. Clear steps, predictable behavior, real answers when something goes wrong. behaviors-sh is an open-source behaviour-tree runtime for AI agents — exposed over MCP, with a browser canvas to watch a run unfold.
+description: Treat agent instructions like the software they are. Clear steps, predictable behavior, real answers when something goes wrong. behaviors-sh is an open-source runtime for AI agents — deterministic, durable, resumable, and exposed over MCP so any agent that speaks the protocol can drive it.
 
 hero:
   name: "behaviors-sh"
-  text: '<s>Hoping.</s> <span class="accent">Behaving.</span> <s>Wondering.</s> <span class="accent">Watching.</span>'
+  text: '<s>Hoping.</s> <span class="accent">Behaving.</span>'
+  image:
+    src: /mark.svg
+    alt: behaviors-sh
   actions:
     - theme: brand
       text: Get started
       link: /getting-started
     - theme: alt
-      text: Drive over MCP
+      text: How it works
       link: /guide/mcp
 ---
 
 ## One instruction at a time
 
-Agents start guessing when they try to do too much. Hide the full plan, ask for a single instruction, and let your agent focus on the present. The agent only ever sees the next step. The plan stays in the tree, not in the prompt.
+Agents start guessing when they try to do too much. Hide the full plan, ask for a single instruction, and allow your agent to focus on the present. The agent only ever sees the next step. The plan stays in the tree, not in the prompt.
 
 <div class="attention-split">
   <div class="attention-panel attention-before">
@@ -48,66 +51,49 @@ the ranked list to <span class="attention-var">$VAR.violations</span>.</pre>
   </div>
 </div>
 
-## Watch the agent work
+## Observability built in
 
-Never guess where your agent got stuck. The runtime writes a self-contained trace file as it runs; open it in the browser canvas to see exactly which branches fired, what the agent wrote into `$VAR`, and where the cursor sat when it finished.
+Never guess where your agent got stuck. The runtime shows the tree in real time, logging each step. So you can see exactly what ran, what was skipped, and how far it got.
 
 <TreeSvg src="/example.svg" :height="520" />
 
-Green nodes ran and succeeded, red ran and failed, the pink ring marks the cursor. Click any node in the live viewer to see its evaluate/instruct prompt, the agent's narration, and its reasoning — `$VAR` and `$CONST` references become hoverable badges showing the current value.
-
 ## YAML. JSON. TypeScript.
 
-Whether you prefer code first or plain text, the TypeScript DSL gives composability and IDE support; YAML and JSON give a no-tooling approach. They all compile to the same runtime tree.
+Whether you prefer code first or plain text, the TypeScript DSL gives composability and IDE support; YAML and JSON give a no tooling approach.
 
 <DslDemo />
 
-## Drive it over MCP
-
-The runtime is exposed as a Model Context Protocol server (STDIO or Streamable HTTP). Any agent that speaks MCP can drive a tree — Claude Code, Claude Desktop, ChatGPT, your own client. Twelve tools, all URI-addressed: the caller picks where the trace lands, the runtime writes there.
-
-```text
-start_execution(tree_uri, trace_output)   → protocol-gate instruct
-submit(trace_output, "success")           → gate accepted
-
-next_step(trace_output)                   → instruct | evaluate | done | failure
-var_write(trace_output, key, value)       → store an agent output
-submit(trace_output, "success")           → advance the action
-#  repeat next_step → … → submit until { status: "done" }
-```
-
-`next_step` is replay-safe — calling it again mid-step returns the same request unchanged, so a flaky retry doesn't desync the cursor.
-
 ## Share with the tools you love
 
-Publish to npm, share through GitHub, ship a YAML file in a gist — the runtime reads from any URI. The runtime never sees the distribution; it just reads the tree at the URI you point it at.
+Publish to npm, share through GitHub or bring your own tooling.
 
 <InstallDemo />
 
 ## Hand over to your agent
 
-In Claude Code, the project-scoped `.mcp.json` wires the runtime as an MCP server. The agent gets twelve tools (`mcp__behaviors-sh__next_step`, `…__submit`, `…__var_write`, etc.) and a brief that says "drive this tree". That is the entire human-side interaction.
+Claude Code, ChatGPT, or any agent that speaks MCP — the brief is the same. Paste it. The agent understands and walks the tree until the end.
 
 ```text
-Drive the tree at file:///abs/path/to/tree.yaml and write the trace to
-file:///abs/path/to/run.json. Acknowledge the protocol gate, then loop
-next_step → submit/eval until you see { status: "done" }.
+Register the @behaviors-sh/cli MCP server, then drive the workflow against this repo:
+
+  start_execution(tree_uri: "file:///path/to/srp-refactor.json",
+                  trace_output: "file:///path/to/run.json")
+  next_step → eval / submit until status: done
 ```
 
-> For the long-form walkthrough — clone, configure, drive hello-world from Claude — see [Get started](/getting-started).
+> For the long-form walkthrough — register the MCP server, add a tree, drive it from your agent — see [Get started](/getting-started).
 
 ## From local to fleet
 
 Whether running locally or with a fleet of agents, the engine, DSL, and protocol stay the same.
 
-- ✓ **Core engine** — deterministic execution, one step at a time. Resumable and replayable.
-- ✓ **DSL** — author workflows in YAML, JSON, or TypeScript that compile to one tree shape.
-- ✓ **STDIO MCP server** — native protocol for local agents; works with Claude Code out of the box.
-- ✓ **HTTP MCP server** — host a central runtime any fleet of agents can reach.
-- ✓ **Browser canvas viewer** — open a trace file, see the tree light up, inspect every node.
+- ✓ **Core engine** — Deterministic execution, one step at a time. Resumable and replayable.
+- ✓ **DSL** — Author workflows in YAML, JSON, or TypeScript that compile to one tree shape.
+- ✓ **STDIO MCP server** — Native protocol for local agents. `npx @behaviors-sh/cli mcp` and you're done.
+- → **HTTP MCP server** — Host central workflows any fleet of agents can reach.
 
 > MCP is the [Model Context Protocol](https://modelcontextprotocol.io/) — the wire format agents already speak.
 
 ## Dive in
 
-[Get started](/getting-started) · [Driving over MCP](/guide/mcp) · [View on GitHub](https://gitlab.beluga-sirius.ts.net/flying-dice/behaviors-sh)
+[Get started](/getting-started) · [Drive over MCP](/guide/mcp) · [View on GitHub](https://github.com/flying-dice/behaviors-sh)
