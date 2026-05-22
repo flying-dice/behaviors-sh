@@ -9,6 +9,8 @@ You define a tree. The agent drives execution.
 
 Two halves run side by side: the YAML tree on one side, the MCP tool exchange on the other, and the cursor moving between them. A single node enters the active state, the agent answers the request, the runtime advances, and the next node lights up.
 
+<AbtreeDemo />
+
 ## The exchange
 
 On one side, a small `deploy` tree — a `sequence` with three `action` children: `Run_Tests`, `Build_Image`, and `Push_Image`. Each action carries one or more `evaluate` or `instruct` steps.
