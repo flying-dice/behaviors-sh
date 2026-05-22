@@ -109,20 +109,21 @@ pages:
 # release plugin can reference a tag that already exists.
 #
 # Manual-only (click ▶ on `release` from the main pipeline view) so
-# nothing slips out unintentionally. Requires three CI/CD variables:
+# nothing slips out unintentionally. Requires two CI/CD variables:
 #
 #   NPM_TOKEN     — masked + protected. npm "Automation" token scoped
 #                   to the @behaviors-sh org. `bun publish` reads it
 #                   from .npmrc.
-#   GITLAB_TOKEN  — masked + protected. Project / personal access
-#                   token with `write_repository` scope on this
-#                   project. Used by @semantic-release/git to push
-#                   the release commit + tag back to GitLab.
 #   GITHUB_TOKEN  — masked + protected. GitHub PAT (or fine-grained
 #                   token) with `contents: write` on
 #                   flying-dice/behaviors-sh. Used to push the
 #                   release commit + tag to the mirror and to create
 #                   the GitHub release via the API.
+#
+# Pushing the release commit + tag back to GitLab uses the built-in
+# CI_JOB_TOKEN — no long-lived GitLab token required. The project
+# must have "Allow access to this project with a CI_JOB_TOKEN" enabled
+# in Settings → CI/CD → Token Access, with push permission granted.
 release:
   extends: .bun
   stage: release
@@ -135,7 +136,7 @@ release:
     - apt-get update -qq && apt-get install -y -qq git ca-certificates
     - git config user.email "release-bot@behaviors.sh"
     - git config user.name "behaviors-sh release bot"
-    - git remote set-url origin "https://oauth2:${GITLAB_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git"
+    - git remote set-url origin "https://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git"
     - git remote add github "https://x-access-token:${GITHUB_TOKEN}@github.com/flying-dice/behaviors-sh.git"
     - bun install --frozen-lockfile
     - echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > .npmrc
