@@ -19,10 +19,18 @@
 		"docs:preview": "vitepress preview docs",
 		"lint": "biome check .",
 		"lint:ci": "biome ci .",
-		"lint:fix": "biome check . --write"
+		"lint:fix": "biome check . --write",
+		"release": "semantic-release"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.4.14",
+		"@semantic-release/changelog": "^6.0.3",
+		"@semantic-release/commit-analyzer": "^13.0.0",
+		"@semantic-release/exec": "^6.0.3",
+		"@semantic-release/git": "^10.0.1",
+		"@semantic-release/github": "^10.0.0",
+		"@semantic-release/release-notes-generator": "^14.0.0",
+		"semantic-release": "^24.0.0",
 		"vitepress": "^2.0.0-alpha.17",
 		"vue": "3.5.34"
 	}
