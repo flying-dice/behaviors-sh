@@ -1,0 +1,424 @@
+/**
+ * Customize default theme styling by overriding CSS variables:
+ * https://github.com/vuejs/vitepress/blob/main/src/client/theme-default/styles/vars.css
+ */
+
+/**
+ * Colors
+ *
+ * Each colors have exact same color scale system with 3 levels of solid
+ * colors with different brightness, and 1 soft color.
+ *
+ * - `XXX-1`: The most solid color used mainly for colored text. It must
+ *   satisfy the contrast ratio against when used on top of `XXX-soft`.
+ *
+ * - `XXX-2`: The color used mainly for hover state of the button.
+ *
+ * - `XXX-3`: The color for solid background, such as bg color of the button.
+ *   It must satisfy the contrast ratio with pure white (#ffffff) text on
+ *   top of it.
+ *
+ * - `XXX-soft`: The color used for subtle background such as custom container
+ *   or badges. It must satisfy the contrast ratio when putting `XXX-1` colors
+ *   on top of it.
+ *
+ *   The soft color must be semi transparent alpha channel. This is crucial
+ *   because it allows adding multiple "soft" colors on top of each other
+ *   to create an accent, such as when having inline code block inside
+ *   custom containers.
+ *
+ * - `default`: The color used purely for subtle indication without any
+ *   special meanings attached to it such as bg color for menu hover state.
+ *
+ * - `brand`: Used for primary brand colors, such as link text, button with
+ *   brand theme, etc.
+ *
+ * - `tip`: Used to indicate useful information. The default theme uses the
+ *   brand color for this by default.
+ *
+ * - `warning`: Used to indicate warning to the users. Used in custom
+ *   container, badges, etc.
+ *
+ * - `danger`: Used to show error, or dangerous message to the users. Used
+ *   in custom container, badges, etc.
+ * -------------------------------------------------------------------------- */
+
+:root {
+	--vp-c-default-1: var(--vp-c-gray-1);
+	--vp-c-default-2: var(--vp-c-gray-2);
+	--vp-c-default-3: var(--vp-c-gray-3);
+	--vp-c-default-soft: var(--vp-c-gray-soft);
+
+	/* Brand chain tuned to complement the pink hero logo
+     (docs/public/abtree-mark.svg). Light mode uses lower-saturation
+     variants for AA contrast on white; dark mode uses the high-key
+     Dracula values that match the logo stroke. */
+	--vp-c-brand-1: #d62786;
+	--vp-c-brand-2: #8c5cf2;
+	--vp-c-brand-3: #d62786;
+	--vp-c-brand-soft: rgba(214, 39, 134, 0.14);
+
+	--vp-c-tip-1: var(--vp-c-brand-1);
+	--vp-c-tip-2: var(--vp-c-brand-2);
+	--vp-c-tip-3: var(--vp-c-brand-3);
+	--vp-c-tip-soft: var(--vp-c-brand-soft);
+
+	--vp-c-warning-1: var(--vp-c-yellow-1);
+	--vp-c-warning-2: var(--vp-c-yellow-2);
+	--vp-c-warning-3: var(--vp-c-yellow-3);
+	--vp-c-warning-soft: var(--vp-c-yellow-soft);
+
+	--vp-c-danger-1: var(--vp-c-red-1);
+	--vp-c-danger-2: var(--vp-c-red-2);
+	--vp-c-danger-3: var(--vp-c-red-3);
+	--vp-c-danger-soft: var(--vp-c-red-soft);
+}
+
+/**
+ * Component: Button
+ * -------------------------------------------------------------------------- */
+
+:root {
+	--vp-button-brand-border: transparent;
+	--vp-button-brand-text: var(--vp-c-white);
+	--vp-button-brand-bg: var(--vp-c-brand-3);
+	--vp-button-brand-hover-border: transparent;
+	--vp-button-brand-hover-text: var(--vp-c-white);
+	--vp-button-brand-hover-bg: var(--vp-c-brand-2);
+	--vp-button-brand-active-border: transparent;
+	--vp-button-brand-active-text: var(--vp-c-white);
+	--vp-button-brand-active-bg: var(--vp-c-brand-1);
+}
+
+/**
+ * Component: Home
+ * -------------------------------------------------------------------------- */
+
+:root {
+	--vp-home-hero-name-color: transparent;
+	--vp-home-hero-name-background: -webkit-linear-gradient(
+		120deg,
+		#bd34fe 30%,
+		#41d1ff
+	);
+
+	--vp-home-hero-image-background-image: linear-gradient(
+		-45deg,
+		#bd34fe 50%,
+		#47caff 50%
+	);
+	--vp-home-hero-image-filter: blur(44px);
+}
+
+@media (min-width: 640px) {
+	:root {
+		--vp-home-hero-image-filter: blur(56px);
+	}
+}
+
+@media (min-width: 960px) {
+	:root {
+		--vp-home-hero-image-filter: blur(68px);
+	}
+}
+
+/**
+ * Component: Home — subtle pulse on the hero image
+ * -------------------------------------------------------------------------- */
+
+@keyframes vp-hero-backglow-pulse {
+	0%,
+	100% {
+		transform: translate(-50%, -50%) scale(1);
+		opacity: 1;
+	}
+	50% {
+		transform: translate(-50%, -50%) scale(1.08);
+		opacity: 0.85;
+	}
+}
+
+@keyframes vp-hero-logo-pulse {
+	0%,
+	100% {
+		transform: translate(-50%, -50%) scale(1);
+	}
+	50% {
+		transform: translate(-50%, -50%) scale(1.025);
+	}
+}
+
+.VPHome .VPHero .image-bg {
+	animation: vp-hero-backglow-pulse 4s ease-in-out infinite;
+	will-change: transform, opacity;
+}
+
+.VPHome .VPHero .image-src {
+	animation: vp-hero-logo-pulse 4s ease-in-out infinite;
+	will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.VPHome .VPHero .image-bg,
+	.VPHome .VPHero .image-src {
+		animation: none;
+	}
+}
+
+/**
+ * Component: Custom Block
+ * -------------------------------------------------------------------------- */
+
+:root {
+	--vp-custom-block-tip-border: transparent;
+	--vp-custom-block-tip-text: var(--vp-c-text-1);
+	--vp-custom-block-tip-bg: var(--vp-c-brand-soft);
+	--vp-custom-block-tip-code-bg: var(--vp-c-brand-soft);
+}
+
+/**
+ * Dark-mode brand tuning to match the hero logo stroke (#ff79c6).
+ * -------------------------------------------------------------------------- */
+
+.dark {
+	--vp-c-brand-1: #ff79c6;
+	--vp-c-brand-2: #bd93f9;
+	--vp-c-brand-3: #ff79c6;
+	--vp-c-brand-soft: rgba(255, 121, 198, 0.16);
+
+	/* The bright Dracula pink fails WCAG against white text (1.94:1), so
+     dark-mode buttons swap to a dark substrate-coloured label. */
+	--vp-button-brand-text: #1b1b1f;
+	--vp-button-brand-hover-text: #1b1b1f;
+	--vp-button-brand-active-text: #1b1b1f;
+}
+
+/**
+ * Layout: widen the desktop content column.
+ *
+ * VitePress defaults to 1440px page / 1376px doc container / 752px article
+ * which leaves a lot of empty space on wide displays — especially on doc
+ * pages with embedded SVG diagrams and YAML blocks.
+ * -------------------------------------------------------------------------- */
+
+:root {
+	--vp-layout-max-width: 1760px;
+}
+
+@media (min-width: 1280px) {
+	.VPDoc .container {
+		max-width: 1600px !important;
+	}
+	.VPDoc .content {
+		max-width: 1200px !important;
+	}
+	.VPDoc .content-container {
+		max-width: none !important;
+	}
+	.VPDoc .vp-doc {
+		max-width: none !important;
+	}
+	.VPDoc:not(.has-sidebar) .container {
+		max-width: 1440px !important;
+	}
+	.VPDoc:not(.has-sidebar) .content {
+		max-width: 1120px !important;
+	}
+}
+
+/* Hide flagged blocks on touch devices regardless of viewport width.
+ * Catches phones, tablets, and touch laptops — anything where the
+ * pointer is coarse and there's no hover capability. Use this on
+ * interactive demos that pan/zoom or animate beyond the screen. */
+@media (hover: none) and (pointer: coarse) {
+	.hide-on-touch {
+		display: none !important;
+	}
+}
+
+/* ─── Home-page fold typography ──────────────────────────────────────────
+ * Each h2 in the home body is the headline for a single fold. Override
+ * the default vp-doc h2 styling — strip the divider rule, increase
+ * the font size, add generous top margin, and centre on mobile. The
+ * paragraph that follows is the fold's body copy: constrained width,
+ * larger leading, centre-aligned on mobile to match the headline.
+ *
+ * Selector scoped to `.VPHome` so non-home pages are untouched.
+ */
+.VPHome .vp-doc h2 {
+	margin-top: 96px;
+	padding-top: 0;
+	border-top: none;
+	font-size: 32px;
+	line-height: 1.1;
+	letter-spacing: -0.5px;
+	font-weight: 700;
+	text-align: center;
+}
+.VPHome .vp-doc h2 .header-anchor {
+	display: none;
+}
+.VPHome .vp-doc h2 + p {
+	max-width: 720px;
+	margin: 24px auto 0;
+	font-size: 17px;
+	line-height: 1.6;
+	text-align: center;
+	color: var(--vp-c-text-2);
+}
+
+@media (min-width: 640px) {
+	.VPHome .vp-doc h2 {
+		font-size: 44px;
+		margin-top: 128px;
+	}
+	.VPHome .vp-doc h2 + p {
+		font-size: 19px;
+	}
+}
+
+@media (min-width: 960px) {
+	.VPHome .vp-doc h2 {
+		font-size: 56px;
+		margin-top: 160px;
+		text-align: left;
+	}
+	.VPHome .vp-doc h2 + p {
+		margin-left: 0;
+		margin-right: 0;
+		text-align: left;
+		font-size: 20px;
+	}
+}
+
+/* First fold's headline does not need the full top margin — it follows
+ * AbtreeContrast directly. */
+.VPHome .vp-doc > h2:first-of-type {
+	margin-top: 64px;
+}
+@media (min-width: 960px) {
+	.VPHome .vp-doc > h2:first-of-type {
+		margin-top: 96px;
+	}
+}
+
+/* Closing fold: terser. The headline and the three text-link CTAs sit
+ * centred regardless of breakpoint — the page-spanning desktop
+ * left-alignment is overridden here. */
+.VPHome .vp-doc h2:last-of-type {
+	text-align: center;
+}
+.VPHome .vp-doc h2:last-of-type + p {
+	text-align: center;
+	margin-left: auto;
+	margin-right: auto;
+	font-size: 18px;
+}
+
+/* ─── Home-page attention-split widget ───────────────────────────────────
+ * The "New attention, not new prompts." fold needs a single visual that
+ * lands the context-window inversion. Left panel: a blurred wall of
+ * skill-file text the old contract handed the agent in one go. Right
+ * panel: the single instruction the runtime hands the agent now. */
+.attention-split {
+	display: flex;
+	gap: 18px;
+	align-items: stretch;
+	margin: 40px auto 0;
+	max-width: 960px;
+	font-family: "IBM Plex Mono", "Fira Mono", monospace;
+}
+.attention-panel {
+	flex: 1;
+	min-width: 0;
+	background: #0e0e14;
+	border: 1px solid rgba(255, 255, 255, 0.08);
+	border-radius: 12px;
+	padding: 16px 18px;
+	overflow: hidden;
+	position: relative;
+}
+.attention-tag {
+	font:
+		700 10px / 1 "IBM Plex Mono",
+		monospace;
+	letter-spacing: 2px;
+	text-transform: uppercase;
+	color: #6272a4;
+	margin-bottom: 12px;
+}
+.attention-panel pre {
+	margin: 0;
+	font:
+		500 12px / 1.55 "IBM Plex Mono",
+		"Fira Mono",
+		monospace;
+	white-space: pre;
+	overflow: hidden;
+	color: #f8f8f2;
+}
+.attention-before {
+	max-height: 240px;
+}
+.attention-before .attention-tag {
+	color: rgba(98, 114, 164, 0.7);
+}
+.attention-before pre {
+	color: rgba(248, 248, 242, 0.32);
+	filter: blur(0.5px);
+	mask-image: linear-gradient(180deg, #000 60%, transparent 100%);
+	-webkit-mask-image: linear-gradient(180deg, #000 60%, transparent 100%);
+}
+.attention-after {
+	border-color: rgba(255, 121, 198, 0.32);
+	box-shadow: 0 10px 32px -16px rgba(255, 121, 198, 0.45);
+}
+.attention-after .attention-tag {
+	color: #ff79c6;
+}
+.attention-kind {
+	display: inline-block;
+	padding: 2px 7px;
+	margin-bottom: 8px;
+	font:
+		700 10px / 1 "IBM Plex Mono",
+		monospace;
+	letter-spacing: 1.4px;
+	text-transform: uppercase;
+	color: #0e0e14;
+	background: #ff79c6;
+	border-radius: 4px;
+}
+.attention-action {
+	display: block;
+	font-weight: 700;
+	color: #f1fa8c;
+	font-size: 14px;
+	margin-bottom: 12px;
+}
+.attention-var {
+	color: #ff79c6;
+}
+
+.attention-arrow {
+	flex-shrink: 0;
+	align-self: center;
+	font-size: 28px;
+	font-weight: 700;
+	color: #ff79c6;
+	user-select: none;
+}
+
+@media (max-width: 720px) {
+	.attention-split {
+		flex-direction: column;
+		gap: 12px;
+		margin-top: 32px;
+	}
+	.attention-arrow {
+		transform: rotate(90deg);
+	}
+	.attention-before {
+		max-height: 180px;
+	}
+}

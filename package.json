@@ -16,6 +16,13 @@
     "cli": "bun --filter @behaviors-sh/cli start",
     "cli:headless": "bun --filter @behaviors-sh/cli headless",
     "compile": "bun --filter @behaviors-sh/cli compile",
-    "check": "bun --filter @behaviors-sh/client check"
+    "check": "bun --filter @behaviors-sh/client check",
+    "docs:dev": "vitepress dev docs --host",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs"
+  },
+  "devDependencies": {
+    "vitepress": "^2.0.0-alpha.17",
+    "vue": "3.5.34"
   }
 }
