@@ -1,0 +1,71 @@
+stages:
+  - check
+  - test
+  - docs
+  - deploy
+
+# ---- Reused pieces -----------------------------------------------------------
+
+.bun:
+  image: oven/bun:latest
+  before_script:
+    - bun install --frozen-lockfile
+
+# ---- Stage: check ------------------------------------------------------------
+
+# TypeScript typechecks across every backend workspace package. Catches
+# the cross-package regressions a single-package `tsc --noEmit` misses.
+typecheck:
+  extends: .bun
+  stage: check
+  script:
+    - bunx tsc --noEmit -p packages/spec/tsconfig.json
+    - bunx tsc --noEmit -p packages/runtime/tsconfig.json
+    - bunx tsc --noEmit -p packages/cli/tsconfig.json
+    - bunx tsc --noEmit -p packages/server/tsconfig.json
+    - bunx tsc --noEmit -p packages/dsl/tsconfig.json
+
+# ---- Stage: test -------------------------------------------------------------
+
+# `bun test` walks every package's tests/ folder (spec, runtime, cli).
+# The HTTP MCP smoke test spawns a real Bun.serve listener, so we leave
+# the default oven/bun image alone — it ships everything we need.
+test:
+  extends: .bun
+  stage: test
+  script:
+    - bun test
+
+# ---- Stage: docs -------------------------------------------------------------
+
+# Verify that the docs build succeeds. Keeps the dist as an artifact for
+# the `pages` job in the deploy stage to publish on main.
+docs:build:
+  extends: .bun
+  stage: docs
+  script:
+    - bun run docs:build
+  artifacts:
+    paths:
+      - docs/.vitepress/dist
+    expire_in: 1 day
+    when: always
+
+# ---- Stage: deploy -----------------------------------------------------------
+
+# GitLab Pages publishes whatever ends up in `public/` after this job
+# runs. We rename the vitepress dist so we don't duplicate the build.
+pages:
+  extends: .bun
+  stage: deploy
+  needs:
+    - job: docs:build
+      artifacts: true
+  script:
+    - mv docs/.vitepress/dist public
+  artifacts:
+    paths:
+      - public
+    expire_in: 30 days
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
