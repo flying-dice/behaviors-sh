@@ -3,6 +3,7 @@
   import * as Tooltip from '$lib/components/ui/tooltip';
   import FolderKanban from '@lucide/svelte/icons/folder-kanban';
   import Store from '@lucide/svelte/icons/store';
+  import Activity from '@lucide/svelte/icons/activity';
   import Sun from '@lucide/svelte/icons/sun';
   import Moon from '@lucide/svelte/icons/moon';
   import TreeMark from './TreeMark.svelte';
@@ -21,6 +22,7 @@
 
   const items: { id: Route; label: string; icon: typeof FolderKanban }[] = [
     { id: 'home', label: 'Collection', icon: FolderKanban },
+    { id: 'executions', label: 'Executions', icon: Activity },
     { id: 'marketplace', label: 'Marketplace', icon: Store },
   ];
 </script>

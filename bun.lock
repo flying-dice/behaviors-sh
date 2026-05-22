@@ -5,17 +5,6 @@
     "": {
       "name": "behaviors-ui",
     },
-    "packages/behavior-spec": {
-      "name": "@behaviors-ui/behavior-spec",
-      "version": "0.0.0",
-      "dependencies": {
-        "zod": "^4.4.3",
-      },
-      "devDependencies": {
-        "@types/bun": "latest",
-        "typescript": "~6.0.2",
-      },
-    },
     "packages/cli": {
       "name": "@behaviors-ui/cli",
       "version": "0.0.0",
@@ -23,9 +12,12 @@
         "behaviors-ui": "./src/index.ts",
       },
       "dependencies": {
+        "@behaviors-ui/runtime": "workspace:*",
         "@behaviors-ui/server": "workspace:*",
+        "@modelcontextprotocol/sdk": "^1.29.0",
         "commander": "^14.0.3",
         "webview-bun": "^2.4.0",
+        "zod": "^4.4.3",
       },
       "devDependencies": {
         "@types/bun": "latest",
@@ -37,7 +29,11 @@
       "version": "0.0.0",
       "dependencies": {
         "@apidevtools/json-schema-ref-parser": "^15.3.5",
-        "@behaviors-ui/behavior-spec": "workspace:*",
+        "@behaviors-ui/spec": "workspace:*",
+        "@behaviors-ui/tree-clean-code-review": "workspace:*",
+        "@behaviors-ui/tree-code-review": "workspace:*",
+        "@behaviors-ui/tree-hello-world": "workspace:*",
+        "@behaviors-ui/tree-refine-plan": "workspace:*",
         "@lucide/svelte": "^1.16.0",
         "@tailwindcss/vite": "^4.3.0",
         "bits-ui": "^2.18.1",
@@ -63,6 +59,32 @@
         "vite-plugin-node-polyfills": "^0.26.0",
       },
     },
+    "packages/dsl": {
+      "name": "@behaviors-ui/dsl",
+      "version": "0.0.0",
+      "dependencies": {
+        "@behaviors-ui/spec": "workspace:*",
+        "object-hash": "^3.0.0",
+      },
+      "devDependencies": {
+        "@types/bun": "latest",
+        "@types/object-hash": "^3.0.6",
+        "typescript": "~6.0.2",
+      },
+    },
+    "packages/runtime": {
+      "name": "@behaviors-ui/runtime",
+      "version": "0.0.0",
+      "dependencies": {
+        "@apidevtools/json-schema-ref-parser": "^15.3.5",
+        "@behaviors-ui/spec": "workspace:*",
+        "zod": "^4.4.3",
+      },
+      "devDependencies": {
+        "@types/bun": "latest",
+        "typescript": "~6.0.2",
+      },
+    },
     "packages/server": {
       "name": "@behaviors-ui/server",
       "version": "0.0.0",
@@ -80,17 +102,88 @@
         "typescript": "~6.0.2",
       },
     },
+    "packages/spec": {
+      "name": "@behaviors-ui/spec",
+      "version": "0.0.0",
+      "dependencies": {
+        "zod": "^4.4.3",
+      },
+      "devDependencies": {
+        "@types/bun": "latest",
+        "typescript": "~6.0.2",
+      },
+    },
+    "trees/clean-code-review": {
+      "name": "@behaviors-ui/tree-clean-code-review",
+      "version": "0.1.0",
+      "dependencies": {
+        "@behaviors-ui/dsl": "workspace:*",
+        "@behaviors-ui/spec": "workspace:*",
+      },
+      "devDependencies": {
+        "@types/bun": "latest",
+        "typescript": "~6.0.2",
+      },
+    },
+    "trees/code-review": {
+      "name": "@behaviors-ui/tree-code-review",
+      "version": "0.1.0",
+      "dependencies": {
+        "@behaviors-ui/dsl": "workspace:*",
+        "@behaviors-ui/spec": "workspace:*",
+      },
+      "devDependencies": {
+        "@types/bun": "latest",
+        "typescript": "~6.0.2",
+      },
+    },
+    "trees/hello-world": {
+      "name": "@behaviors-ui/tree-hello-world",
+      "version": "0.1.0",
+      "dependencies": {
+        "@behaviors-ui/dsl": "workspace:*",
+        "@behaviors-ui/spec": "workspace:*",
+      },
+      "devDependencies": {
+        "@types/bun": "latest",
+        "typescript": "~6.0.2",
+      },
+    },
+    "trees/refine-plan": {
+      "name": "@behaviors-ui/tree-refine-plan",
+      "version": "0.1.0",
+      "dependencies": {
+        "@behaviors-ui/dsl": "workspace:*",
+        "@behaviors-ui/spec": "workspace:*",
+      },
+      "devDependencies": {
+        "@types/bun": "latest",
+        "typescript": "~6.0.2",
+      },
+    },
   },
   "packages": {
     "@apidevtools/json-schema-ref-parser": ["@apidevtools/json-schema-ref-parser@15.3.5", "", { "dependencies": { "js-yaml": "^4.1.1" }, "peerDependencies": { "@types/json-schema": "^7.0.15" } }, "sha512-orNOYXw3hYXxxisXMldjzjBzqqTLBPbwOtHg7ovBPvfBHDue1qM9YJENZ3W2BQuS+7z4ThogMbEzEsov57Itkg=="],
-
-    "@behaviors-ui/behavior-spec": ["@behaviors-ui/behavior-spec@workspace:packages/behavior-spec"],
 
     "@behaviors-ui/cli": ["@behaviors-ui/cli@workspace:packages/cli"],
 
     "@behaviors-ui/client": ["@behaviors-ui/client@workspace:packages/client"],
 
+    "@behaviors-ui/dsl": ["@behaviors-ui/dsl@workspace:packages/dsl"],
+
+    "@behaviors-ui/runtime": ["@behaviors-ui/runtime@workspace:packages/runtime"],
+
     "@behaviors-ui/server": ["@behaviors-ui/server@workspace:packages/server"],
+
+    "@behaviors-ui/spec": ["@behaviors-ui/spec@workspace:packages/spec"],
+
+    "@behaviors-ui/tree-clean-code-review": ["@behaviors-ui/tree-clean-code-review@workspace:trees/clean-code-review"],
+
+    "@behaviors-ui/tree-code-review": ["@behaviors-ui/tree-code-review@workspace:trees/code-review"],
+
+    "@behaviors-ui/tree-hello-world": ["@behaviors-ui/tree-hello-world@workspace:trees/hello-world"],
+
+    "@behaviors-ui/tree-refine-plan": ["@behaviors-ui/tree-refine-plan@workspace:trees/refine-plan"],
 
     "@emnapi/core": ["@emnapi/core@1.10.0", "", { "dependencies": { "@emnapi/wasi-threads": "1.2.1", "tslib": "^2.4.0" } }, "sha512-yq6OkJ4p82CAfPl0u9mQebQHKPJkY7WrIuk205cTYnYe+k2Z8YBh11FrbRG/H6ihirqcacOgl2BIO8oyMQLeXw=="],
 
@@ -233,6 +326,8 @@
     "@types/json-schema": ["@types/json-schema@7.0.15", "", {}, "sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA=="],
 
     "@types/node": ["@types/node@24.12.4", "", { "dependencies": { "undici-types": "~7.16.0" } }, "sha512-GUUEShf+PBCGW2KaXwcIt3Yk+e3pkKwWKb9GSyM9WQVE+ep2jzmHdGsHzu4wgcZy5fN9FBdVzjpBQsYlpfpgLA=="],
+
+    "@types/object-hash": ["@types/object-hash@3.0.6", "", {}, "sha512-fOBV8C1FIu2ELinoILQ+ApxcUKz4ngq+IWUYrxSGjXzzjUALijilampwkMgEtJ+h2njAW3pi853QpzNVCHB73w=="],
 
     "@types/trusted-types": ["@types/trusted-types@2.0.7", "", {}, "sha512-ScaPdn1dQczgbl0QFTeTOmVHFULt394XJgOQNoyVhZ6r2vLnMLJfBPd53SB52T/3G36VI1/g2MZaX0cwDuXsfw=="],
 
@@ -557,6 +652,8 @@
     "node-stdlib-browser": ["node-stdlib-browser@1.3.1", "", { "dependencies": { "assert": "^2.0.0", "browser-resolve": "^2.0.0", "browserify-zlib": "^0.2.0", "buffer": "^5.7.1", "console-browserify": "^1.1.0", "constants-browserify": "^1.0.0", "create-require": "^1.1.1", "crypto-browserify": "^3.12.1", "domain-browser": "4.22.0", "events": "^3.0.0", "https-browserify": "^1.0.0", "isomorphic-timers-promises": "^1.0.1", "os-browserify": "^0.3.0", "path-browserify": "^1.0.1", "pkg-dir": "^5.0.0", "process": "^0.11.10", "punycode": "^1.4.1", "querystring-es3": "^0.2.1", "readable-stream": "^3.6.0", "stream-browserify": "^3.0.0", "stream-http": "^3.2.0", "string_decoder": "^1.0.0", "timers-browserify": "^2.0.4", "tty-browserify": "0.0.1", "url": "^0.11.4", "util": "^0.12.4", "vm-browserify": "^1.0.1" } }, "sha512-X75ZN8DCLftGM5iKwoYLA3rjnrAEs97MkzvSd4q2746Tgpg8b8XWiBGiBG4ZpgcAqBgtgPHTiAc8ZMCvZuikDw=="],
 
     "object-assign": ["object-assign@4.1.1", "", {}, "sha512-rJgTQnkUnH1sFw8yT6VSU3zD3sWmu6sZhIseY8VX+GRu3P6F7Fu+JNDoXfklElbLJSnc3FUQHVe4cU5hj+BcUg=="],
+
+    "object-hash": ["object-hash@3.0.0", "", {}, "sha512-RSn9F68PjH9HqtltsSnqYC1XXoWe9Bju5+213R98cNGttag9q9yAOTzdbsqvIa7aNm5WffBZFpWYr2aWrklWAw=="],
 
     "object-inspect": ["object-inspect@1.13.4", "", {}, "sha512-W67iLl4J2EXEGTbfeHCffrjDfitvLANg0UlX3wFUUSTx92KXRFegMHUVgSqE+wvhAbi4WqjGg9czysTV2Epbew=="],
 

@@ -4,6 +4,7 @@
   import Home from './Home.svelte';
   import TreeEditor from './TreeEditor.svelte';
   import Marketplace from './Marketplace.svelte';
+  import Executions from '$lib/executions/Executions.svelte';
   import * as ws from '$lib/workspace/store.svelte';
 
   let route = $state<Route>('home');
@@ -84,6 +85,8 @@
             onMarketplace={() => (route = 'marketplace')}
           />
         {/if}
+      {:else if route === 'executions'}
+        <Executions testid="executions" />
       {:else}
         <Marketplace testid="marketplace" onInstall={() => (route = 'home')} />
       {/if}

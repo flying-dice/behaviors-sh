@@ -1,5 +1,5 @@
 {
-  "name": "@behaviors-ui/behavior-spec",
+  "name": "@behaviors-ui/runtime",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -7,10 +7,11 @@
     ".": "./src/index.ts"
   },
   "scripts": {
-    "build": "bun scripts/build.ts",
     "test": "bun test"
   },
   "dependencies": {
+    "@apidevtools/json-schema-ref-parser": "^15.3.5",
+    "@behaviors-ui/spec": "workspace:*",
     "zod": "^4.4.3"
   },
   "devDependencies": {

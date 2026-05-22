@@ -1,6 +1,6 @@
 <script lang="ts">
   import { makeTid, errorMessage } from "$lib/utils";
-  import type { BehaviourNode } from '@behaviors-ui/behavior-spec';
+  import type { BehaviourNode } from '@behaviors-ui/spec';
   import * as Dialog from '$lib/components/ui/dialog';
   import { Button } from '$lib/components/ui/button';
   import { Input } from '$lib/components/ui/input';

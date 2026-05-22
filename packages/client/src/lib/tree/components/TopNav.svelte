@@ -7,7 +7,7 @@
   import Kbd from './Kbd.svelte';
   import FileMenu from './FileMenu.svelte';
 
-  export type Route = 'home' | 'designer' | 'marketplace';
+  export type Route = 'home' | 'designer' | 'marketplace' | 'executions';
 
   interface Props {
     route: Route;
@@ -33,6 +33,7 @@
     home: 'Collection',
     designer: 'Designer',
     marketplace: 'Marketplace',
+    executions: 'Executions',
   };
 </script>
 

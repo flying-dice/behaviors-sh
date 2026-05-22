@@ -2,6 +2,8 @@
 import { Command, InvalidArgumentError } from 'commander'
 import { startServer } from '@behaviors-ui/server'
 import { assets } from './embedded-assets.ts'
+import { runHttpMcp } from './mcp/http.ts'
+import { runStdioMcp } from './mcp/stdio.ts'
 import pkg from '../package.json' with { type: 'json' }
 
 function intArg(name: string) {
@@ -122,9 +124,10 @@ async function runWebview(opts: CliOptions): Promise<void> {
 const program = new Command()
   .name('behaviors-ui')
   .description(
-    'Run the behaviors UI as a desktop webview or a headless server.\n\n' +
+    'Run the behaviors UI as a desktop webview, a headless server, or an MCP server.\n\n' +
       '  (default)   open the UI in a native webview window\n' +
-      '  --headless  start the server only (no GUI)',
+      '  --headless  start the HTTP server only (no GUI)\n' +
+      '  mcp         expose the runtime over MCP (STDIO)',
   )
   .version(pkg.version, '-v, --version')
   .option('--headless', 'run the server without a GUI window')
@@ -138,5 +141,41 @@ const program = new Command()
     if (opts.headless) await runHeadless(opts)
     else await runWebview(opts)
   })
+
+program
+  .command('mcp')
+  .description(
+    'Expose the behaviour-tree runtime over MCP.\n' +
+      '  (default)  STDIO transport (use when launched by an MCP client over stdin/stdout)\n' +
+      '  --http     Streamable HTTP transport on POST /mcp (use for remote clients / multi-process setups)',
+  )
+  .option('--http', 'serve over Streamable HTTP at POST /mcp instead of STDIO')
+  .option('-p, --port <n>', 'port for --http mode (default: 3001, or $PORT)', intArg('port'))
+  .option('-H, --host <name>', 'hostname to bind in --http mode', '127.0.0.1')
+  .option(
+    '--executions-dir <path>',
+    'base directory for listing file:// executions (default: $BEHAVIORS_UI_EXECUTIONS_DIR or <cwd>/.behaviors-ui/executions)',
+  )
+  .option('--cwd <path>', 'working directory for resolving relative tree paths')
+  .action(
+    async (opts: {
+      http?: boolean
+      port?: number
+      host?: string
+      executionsDir?: string
+      cwd?: string
+    }) => {
+      if (opts.http) {
+        await runHttpMcp({
+          port: opts.port,
+          host: opts.host,
+          executionsDir: opts.executionsDir,
+          cwd: opts.cwd,
+        })
+      } else {
+        await runStdioMcp({ executionsDir: opts.executionsDir, cwd: opts.cwd })
+      }
+    },
+  )
 
 await program.parseAsync(process.argv)

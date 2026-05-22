@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "behaviors-ui": {
+      "command": "bun",
+      "args": [
+        "packages/cli/src/index.ts",
+        "mcp"
+      ]
+    }
+  }
+}

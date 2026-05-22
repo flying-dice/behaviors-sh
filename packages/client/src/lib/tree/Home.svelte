@@ -1,6 +1,6 @@
 <script lang="ts">
   import { makeTid, errorMessage } from "$lib/utils";
-  import type { BehaviourNode } from '@behaviors-ui/behavior-spec';
+  import type { BehaviourNode } from '@behaviors-ui/spec';
   import { Card, CardContent } from '$lib/components/ui/card';
   import { Badge } from '$lib/components/ui/badge';
   import { Button } from '$lib/components/ui/button';
@@ -12,13 +12,16 @@
   import HardDrive from '@lucide/svelte/icons/hard-drive';
   import Globe from '@lucide/svelte/icons/globe';
   import FileUp from '@lucide/svelte/icons/file-up';
+  import Sparkles from '@lucide/svelte/icons/sparkles';
   import TreeCard from './components/TreeCard.svelte';
   import NewWorkspaceDialog from './components/NewWorkspaceDialog.svelte';
   import ImportTreeDialog from './components/ImportTreeDialog.svelte';
   import NewTreeDialog from './components/NewTreeDialog.svelte';
   import RenameTreeDialog from './components/RenameTreeDialog.svelte';
   import DeleteTreeDialog from './components/DeleteTreeDialog.svelte';
+  import QuickStartDialog from './components/QuickStartDialog.svelte';
   import Kbd from './components/Kbd.svelte';
+  import { QUICK_START_EXAMPLES } from './quickstart-examples';
   import * as ws from '$lib/workspace/store.svelte';
 
   interface Props {
@@ -103,6 +106,10 @@
     deleteTarget = id;
     deleteOpen = true;
   }
+
+  // ---- Quick start ------------------------------------------------------
+
+  let quickStartOpen = $state(false);
 </script>
 
 <ScrollArea class="h-full" data-testid={testid}>
@@ -142,6 +149,48 @@
             </div>
             <div class="font-semibold">Open from device</div>
             <div class="text-xs text-muted-foreground">Load a JSON or YAML file</div>
+          </button>
+        </div>
+
+        <!-- Quick start strip: a curated jump-off for first-time users.
+             Lives under the primary entry tiles so it's discoverable but
+             doesn't compete with the "new workspace" CTA. -->
+        <div class="mt-10 w-full max-w-[520px]" data-testid={tid('landing-quickstart')}>
+          <div class="mb-3 flex items-center gap-2">
+            <Sparkles class="size-3 text-primary" />
+            <h2 class="text-[11px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
+              Or pick a template
+            </h2>
+            <span class="h-px flex-1 bg-border/60"></span>
+          </div>
+          <button
+            type="button"
+            onclick={() => (quickStartOpen = true)}
+            data-testid={tid('landing-quickstart-open')}
+            class="group relative w-full overflow-hidden rounded-lg border bg-card/40 p-5 text-left transition-colors hover:border-primary/60 hover:bg-card/70"
+          >
+            <div
+              aria-hidden="true"
+              class="pointer-events-none absolute -right-16 -top-16 h-40 w-40 rounded-full bg-primary/10 blur-3xl transition-opacity group-hover:opacity-80"
+            ></div>
+            <div class="relative flex items-start justify-between gap-4">
+              <div>
+                <div class="text-[13px] font-semibold tracking-tight">Guided quick start</div>
+                <p class="mt-1 text-[11.5px] leading-relaxed text-muted-foreground">
+                  Drop a working tree into a fresh workspace — pick a use case and you're off.
+                </p>
+                <div class="mt-3 flex flex-wrap items-center gap-1.5">
+                  {#each QUICK_START_EXAMPLES as ex (ex.id)}
+                    <span class="rounded-sm border bg-background/60 px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground">
+                      {ex.title}
+                    </span>
+                  {/each}
+                </div>
+              </div>
+              <div class="grid size-9 shrink-0 place-items-center rounded-md border border-primary/40 bg-primary/10 text-primary transition-transform group-hover:translate-x-0.5">
+                <Sparkles class="size-[15px]" />
+              </div>
+            </div>
           </button>
         </div>
 
@@ -196,6 +245,13 @@
           <div class="flex min-w-[200px] flex-col gap-2.5">
             <Button onclick={() => (newOpen = true)} data-testid={tid('new-tree')}>
               <PlusIcon /> New tree
+            </Button>
+            <Button
+              variant="outline"
+              onclick={() => (quickStartOpen = true)}
+              data-testid={tid('quick-start')}
+            >
+              <Sparkles /> Quick start
             </Button>
             <Button variant="outline" onclick={() => importDialog.start()} data-testid={tid('import-tree')}>
               <FileUp /> Import tree
@@ -299,4 +355,11 @@
   onSubmit={submitWs}
   onClose={() => (wsDialogOpen = false)}
   testid={tid?.('ws')}
+/>
+
+<QuickStartDialog
+  bind:open={quickStartOpen}
+  onClose={() => (quickStartOpen = false)}
+  onCreated={(id) => onOpenTree(id)}
+  testid={tid?.('quick-start')}
 />

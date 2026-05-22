@@ -1,6 +1,6 @@
 <script lang="ts">
   import { makeTid } from "$lib/utils";
-  import type { BehaviourNode } from '@behaviors-ui/behavior-spec';
+  import type { BehaviourNode } from '@behaviors-ui/spec';
   import { ScrollArea } from '$lib/components/ui/scroll-area';
   import { Separator } from '$lib/components/ui/separator';
   import Folder from '@lucide/svelte/icons/folder';

@@ -10,12 +10,16 @@
     "dev": "bun --watch src/index.ts",
     "start": "bun src/index.ts",
     "headless": "bun src/index.ts --headless",
-    "compile": "bun scripts/compile.ts"
+    "compile": "bun scripts/compile.ts",
+    "test": "bun test"
   },
   "dependencies": {
+    "@behaviors-ui/runtime": "workspace:*",
     "@behaviors-ui/server": "workspace:*",
+    "@modelcontextprotocol/sdk": "^1.29.0",
     "commander": "^14.0.3",
-    "webview-bun": "^2.4.0"
+    "webview-bun": "^2.4.0",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@types/bun": "latest",

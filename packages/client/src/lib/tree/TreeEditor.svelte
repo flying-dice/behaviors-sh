@@ -1,6 +1,6 @@
 <script lang="ts">
   import { makeTid } from "$lib/utils";
-  import type { BehaviourNode } from '@behaviors-ui/behavior-spec';
+  import type { BehaviourNode } from '@behaviors-ui/spec';
   import * as ws from '$lib/workspace/store.svelte';
   import BehaviourCanvas from './components/BehaviourCanvas.svelte';
   import BehaviourCanvasToolbar from './components/BehaviourCanvasToolbar.svelte';

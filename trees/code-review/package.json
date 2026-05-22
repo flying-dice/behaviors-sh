@@ -1,0 +1,21 @@
+{
+  "name": "@behaviors-ui/tree-code-review",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Review uncommitted changes in the working tree: gate on triviality, gather CLAUDE.md context, run five parallel reviewers, score, filter, and report.",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "files": [
+    "src"
+  ],
+  "dependencies": {
+    "@behaviors-ui/spec": "workspace:*",
+    "@behaviors-ui/dsl": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "typescript": "~6.0.2"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "name": "@behaviors-ui/tree-hello-world",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Greet a user based on time of day. Demonstrates sequence, selector, action, and delegate primitives.",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "files": [
+    "src"
+  ],
+  "dependencies": {
+    "@behaviors-ui/spec": "workspace:*",
+    "@behaviors-ui/dsl": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "typescript": "~6.0.2"
+  }
+}
