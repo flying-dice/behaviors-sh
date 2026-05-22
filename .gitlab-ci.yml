@@ -37,13 +37,28 @@ typecheck:
 # ---- Stage: test -------------------------------------------------------------
 
 # `bun test` walks every package's tests/ folder (spec, runtime, cli).
-# The HTTP MCP smoke test spawns a real Bun.serve listener, so we leave
-# the default oven/bun image alone — it ships everything we need.
 test:
   extends: .bun
   stage: test
   script:
     - bun test
+
+# Bundle the CLI for Node + smoke-test the resulting dist on a real
+# Node runtime. This is the artifact we'd publish to npm, so we
+# verify it boots without Bun-only globals leaking in. The smoke test
+# uses `--version` because it's the cheapest entry that still touches
+# the full import graph.
+cli:build:
+  extends: .bun
+  stage: test
+  script:
+    - bun --filter @behaviors-sh/cli build
+    - apt-get update -qq && apt-get install -y -qq nodejs
+    - node packages/cli/dist/index.js --version
+  artifacts:
+    paths:
+      - packages/cli/dist
+    expire_in: 1 day
 
 # ---- Stage: docs -------------------------------------------------------------
 

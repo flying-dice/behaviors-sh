@@ -1,8 +1,8 @@
 // HTTP MCP entrypoint: wires the runtime against the default URI-scheme
 // adapters and serves MCP over Streamable HTTP at `POST /mcp`.
 //
-// Standalone Bun server (not mounted on @behaviors-sh/server) so callers
-// can run MCP without pulling in the UI server. `GET /health` is exposed
+// Standalone Hono app served via `@hono/node-server` so callers can
+// run MCP without pulling in the UI server. `GET /health` is exposed
 // for liveness checks.
 //
 // Stateless mode — each request gets a fresh McpServer + transport
@@ -15,10 +15,11 @@ import {
 	buildRuntime,
 	defaultExecutionsDir,
 	ensureDir,
-	type Runtime,
 } from "@behaviors-sh/runtime";
+import { StreamableHTTPTransport } from "@hono/mcp";
+import { type ServerType, serve } from "@hono/node-server";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { WebStandardStreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js";
+import { Hono } from "hono";
 import pkg from "../../package.json" with { type: "json" };
 import { buildDefaultIoAdapters } from "./io/index.ts";
 import { registerRuntimeTools } from "./register-runtime-tools.ts";
@@ -49,54 +50,50 @@ export async function runHttpMcp(
 	});
 	const runtime = buildRuntime({ trees, executionsRead, executionsWrite });
 
-	const bun = Bun.serve({
-		port,
-		hostname: host,
-		fetch: async (req) => {
-			const url = new URL(req.url);
-			if (url.pathname === "/health") {
-				return new Response(JSON.stringify({ ok: true }), {
-					headers: { "content-type": "application/json" },
-				});
-			}
-			if (url.pathname === "/mcp") {
-				return handleMcpRequest(req, runtime);
-			}
-			return new Response("Not Found", { status: 404 });
-		},
+	const app = new Hono();
+
+	app.get("/health", (c) => c.json({ ok: true }));
+
+	app.all("/mcp", async (c) => {
+		// Fresh McpServer + transport per request. The SDK rejects reuse
+		// of a stateless transport, and the server is bound to its
+		// transport at `connect()` time, so the pair must be 1:1 per
+		// request.
+		const mcp = new McpServer({ name: "behaviors-sh", version: pkg.version });
+		registerRuntimeTools(mcp, runtime);
+		const transport = new StreamableHTTPTransport({
+			sessionIdGenerator: undefined,
+			enableJsonResponse: true,
+		});
+		await mcp.connect(transport);
+		try {
+			const res = await transport.handleRequest(c);
+			return res ?? c.body(null, 204);
+		} finally {
+			await mcp.close().catch(() => {});
+		}
 	});
 
-	const url = `http://${host}:${bun.port}`;
+	const server: ServerType = await new Promise((resolve) => {
+		const s = serve({ fetch: app.fetch, port, hostname: host }, () => {
+			resolve(s);
+		});
+	});
+
+	const actualPort =
+		typeof server.address() === "object" && server.address()
+			? (server.address() as { port: number }).port
+			: port;
+	const url = `http://${host}:${actualPort}`;
 	console.log(
 		`[cli] mcp http ready — ${url}/mcp (executionsDir=${executionsDir})`,
 	);
 
 	return {
 		url,
-		stop: async () => {
-			bun.stop(true);
-		},
+		stop: () =>
+			new Promise<void>((resolve, reject) =>
+				server.close((err) => (err ? reject(err) : resolve())),
+			),
 	};
-}
-
-async function handleMcpRequest(
-	req: Request,
-	runtime: Runtime,
-): Promise<Response> {
-	// Fresh McpServer + transport per request. The SDK rejects reuse of
-	// a stateless transport, and the server is bound to its transport
-	// at `connect()` time, so the pair must be 1:1 per request.
-	const server = new McpServer({ name: "behaviors-sh", version: pkg.version });
-	registerRuntimeTools(server, runtime);
-	const transport = new WebStandardStreamableHTTPServerTransport({
-		sessionIdGenerator: undefined,
-		enableJsonResponse: true,
-	});
-	await server.connect(transport);
-	try {
-		return await transport.handleRequest(req);
-	} finally {
-		// Release resources held by the per-request server/transport pair.
-		await server.close().catch(() => {});
-	}
 }

@@ -1,5 +1,4 @@
-#!/usr/bin/env bun
-import { startServer } from "@behaviors-sh/server";
+#!/usr/bin/env node
 import { Command, InvalidArgumentError } from "commander";
 import pkg from "../package.json" with { type: "json" };
 import { runHttpMcp } from "./mcp/http.ts";
@@ -15,55 +14,17 @@ function intArg(name: string) {
 	};
 }
 
-interface ServeOptions {
-	port?: number;
-	host?: string;
-}
-
-function trapSignals(cleanup: () => void): void {
-	const shutdown = (code: number) => {
-		cleanup();
-		process.exit(code);
-	};
-	process.on("SIGINT", () => shutdown(130));
-	process.on("SIGTERM", () => shutdown(143));
-}
-
-async function runServer(opts: ServeOptions): Promise<void> {
-	const running = startServer({
-		port: opts.port,
-		hostname: opts.host,
-	});
-	trapSignals(() => {
-		try {
-			running.stop();
-		} catch {}
-	});
-	console.log(`[cli] open ${running.url} in your browser (Ctrl+C to stop)`);
-}
-
 const program = new Command()
 	.name("behaviors-sh")
 	.description(
-		"Run the behaviors-sh HTTP UI server or expose the runtime over MCP.\n\n" +
-			"  (default)   start the HTTP UI on http://127.0.0.1:3000\n" +
-			"  mcp         expose the runtime over MCP (STDIO or HTTP)",
+		"Expose the behaviour-tree runtime over MCP. Drop-in for any agent that speaks the protocol — Claude Code, Claude Desktop, or your own client.",
 	)
-	.version(pkg.version, "-v, --version")
-	.option(
-		"-p, --port <n>",
-		"port to listen on (default: 3000, or $PORT)",
-		intArg("port"),
-	)
-	.option("-H, --host <name>", "hostname to bind", "127.0.0.1")
-	.action(async (opts: ServeOptions) => {
-		await runServer(opts);
-	});
+	.version(pkg.version, "-v, --version");
 
 program
-	.command("mcp")
+	.command("mcp", { isDefault: true })
 	.description(
-		"Expose the behaviour-tree runtime over MCP.\n" +
+		"Run the runtime as an MCP server.\n" +
 			"  (default)  STDIO transport (use when launched by an MCP client over stdin/stdout)\n" +
 			"  --http     Streamable HTTP transport on POST /mcp (use for remote clients / multi-process setups)",
 	)
