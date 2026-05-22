@@ -3,6 +3,7 @@ stages:
   - test
   - docs
   - deploy
+  - mirror
 
 # ---- Reused pieces -----------------------------------------------------------
 
@@ -69,3 +70,27 @@ pages:
     expire_in: 30 days
   rules:
     - if: $CI_COMMIT_BRANCH == "main"
+
+# ---- Stage: mirror -----------------------------------------------------------
+
+# Replicate main → github.com/flying-dice/behaviors-sh via SSH. Uses a
+# per-project deploy key stored as the protected file CI/CD variable
+# `GITHUB_MIRROR_SSH_KEY`; matched against a write-enabled deploy key on
+# the GitHub side. `git push --mirror` keeps refs + tags in sync so the
+# GitHub repo always represents the GitLab head.
+mirror:github:
+  image: alpine/git:latest
+  stage: mirror
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+  variables:
+    # Disable the default clone — we set up our own with the mirror remote.
+    GIT_STRATEGY: none
+  script:
+    - mkdir -p ~/.ssh && chmod 700 ~/.ssh
+    - cp "$GITHUB_MIRROR_SSH_KEY" ~/.ssh/id_ed25519 && chmod 600 ~/.ssh/id_ed25519
+    - ssh-keyscan -t rsa,ed25519,ecdsa github.com >> ~/.ssh/known_hosts 2>/dev/null
+    - git clone --mirror "$CI_REPOSITORY_URL" repo.git
+    - cd repo.git
+    - git remote add github git@github.com:flying-dice/behaviors-sh.git
+    - git push --mirror github
