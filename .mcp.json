@@ -1,11 +1,8 @@
 {
-  "mcpServers": {
-    "behaviors-sh": {
-      "command": "bun",
-      "args": [
-        "packages/cli/src/index.ts",
-        "mcp"
-      ]
-    }
-  }
+	"mcpServers": {
+		"behaviors-sh": {
+			"command": "bun",
+			"args": ["packages/cli/src/index.ts", "mcp"]
+		}
+	}
 }

@@ -1,27 +1,27 @@
 <script lang="ts">
-  import { makeTid } from "$lib/utils";
-  import { Card, CardContent } from '$lib/components/ui/card';
-  import { Badge } from '$lib/components/ui/badge';
-  import { Button } from '$lib/components/ui/button';
-  import { ScrollArea } from '$lib/components/ui/scroll-area';
-  import ChevronLeft from '@lucide/svelte/icons/chevron-left';
-  import Download from '@lucide/svelte/icons/download';
-  import GitBranch from '@lucide/svelte/icons/git-branch';
-  import Star from '@lucide/svelte/icons/star';
-  import Check from '@lucide/svelte/icons/check';
-  import type { MarketItem } from '../marketplace-data';
-  import ShapeThumb from './ShapeThumb.svelte';
+import Check from "@lucide/svelte/icons/check";
+import ChevronLeft from "@lucide/svelte/icons/chevron-left";
+import Download from "@lucide/svelte/icons/download";
+import GitBranch from "@lucide/svelte/icons/git-branch";
+import Star from "@lucide/svelte/icons/star";
+import { Badge } from "$lib/components/ui/badge";
+import { Button } from "$lib/components/ui/button";
+import { Card, CardContent } from "$lib/components/ui/card";
+import { ScrollArea } from "$lib/components/ui/scroll-area";
+import { makeTid } from "$lib/utils";
+import type { MarketItem } from "../marketplace-data";
+import ShapeThumb from "./ShapeThumb.svelte";
 
-  interface Props {
-    item: MarketItem;
-    onBack: () => void;
-    onInstall: () => void;
-    testid?: string;
-  }
-  let { item, onBack, onInstall, testid }: Props = $props();
-  const tid = $derived(makeTid(testid));
+interface Props {
+	item: MarketItem;
+	onBack: () => void;
+	onInstall: () => void;
+	testid?: string;
+}
+let { item, onBack, onInstall, testid }: Props = $props();
+const tid = $derived(makeTid(testid));
 
-  const accent = $derived(`hsl(var(--abtree-${item.colorHint}))`);
+const accent = $derived(`hsl(var(--abtree-${item.colorHint}))`);
 </script>
 
 <ScrollArea class="h-full" data-testid={testid}>

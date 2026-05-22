@@ -1,40 +1,34 @@
 <script lang="ts">
-  import { makeTid } from "$lib/utils";
-  import { Button } from '$lib/components/ui/button';
-  import Search from '@lucide/svelte/icons/search';
-  import Share2 from '@lucide/svelte/icons/share-2';
-  import Settings from '@lucide/svelte/icons/settings';
-  import Kbd from './Kbd.svelte';
-  import FileMenu from './FileMenu.svelte';
+import Search from "@lucide/svelte/icons/search";
+import Settings from "@lucide/svelte/icons/settings";
+import Share2 from "@lucide/svelte/icons/share-2";
+import { Button } from "$lib/components/ui/button";
+import { makeTid } from "$lib/utils";
+import FileMenu from "./FileMenu.svelte";
+import Kbd from "./Kbd.svelte";
 
-  export type Route = 'home' | 'designer' | 'marketplace' | 'executions';
+export type Route = "home" | "designer" | "marketplace" | "executions";
 
-  interface Props {
-    route: Route;
-    onNavigate: (r: Route) => void;
-    treeName: string;
-    onShare: () => void;
-    onSettings: () => void;
-    testid?: string;
-  }
+interface Props {
+	route: Route;
+	onNavigate: (r: Route) => void;
+	treeName: string;
+	onShare: () => void;
+	onSettings: () => void;
+	testid?: string;
+}
 
-  let {
-    route,
-    onNavigate,
-    treeName,
-    onShare,
-    onSettings,
-    testid,
-  }: Props = $props();
+let { route, onNavigate, treeName, onShare, onSettings, testid }: Props =
+	$props();
 
-  const tid = $derived(makeTid(testid));
+const tid = $derived(makeTid(testid));
 
-  const routeLabel: Record<Route, string> = {
-    home: 'Collection',
-    designer: 'Designer',
-    marketplace: 'Marketplace',
-    executions: 'Executions',
-  };
+const routeLabel: Record<Route, string> = {
+	home: "Collection",
+	designer: "Designer",
+	marketplace: "Marketplace",
+	executions: "Executions",
+};
 </script>
 
 <header

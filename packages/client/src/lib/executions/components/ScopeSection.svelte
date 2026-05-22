@@ -1,49 +1,49 @@
 <script lang="ts">
-  import { makeTid } from '$lib/utils';
-  import Variable from '@lucide/svelte/icons/variable';
-  import Lock from '@lucide/svelte/icons/lock';
-  import { kindOf, splitNamespacedKey } from '../scope';
-  import ScopeValue from './ScopeValue.svelte';
+import Lock from "@lucide/svelte/icons/lock";
+import Variable from "@lucide/svelte/icons/variable";
+import { makeTid } from "$lib/utils";
+import { kindOf, splitNamespacedKey } from "../scope";
+import ScopeValue from "./ScopeValue.svelte";
 
-  interface Props {
-    title: string;
-    sigil: '$VAR' | '$CONST';
-    kind: 'var' | 'const';
-    description: string;
-    data: Record<string, unknown>;
-    emptyMessage: string;
-    testid?: string;
-  }
-  let { title, sigil, kind, description, data, emptyMessage, testid }: Props =
-    $props();
+interface Props {
+	title: string;
+	sigil: "$VAR" | "$CONST";
+	kind: "var" | "const";
+	description: string;
+	data: Record<string, unknown>;
+	emptyMessage: string;
+	testid?: string;
+}
+let { title, sigil, kind, description, data, emptyMessage, testid }: Props =
+	$props();
 
-  const tid = $derived(makeTid(testid));
+const tid = $derived(makeTid(testid));
 
-  // Sort entries by namespace then local key for stable ordering.
-  const entries = $derived.by(() => {
-    return Object.entries(data ?? {})
-      .map(([key, value]) => ({
-        key,
-        value,
-        split: splitNamespacedKey(key),
-      }))
-      .sort((a, b) => {
-        const ns = (a.split.namespace ?? '').localeCompare(
-          b.split.namespace ?? '',
-        );
-        if (ns !== 0) return ns;
-        return a.split.local.localeCompare(b.split.local);
-      });
-  });
+// Sort entries by namespace then local key for stable ordering.
+const entries = $derived.by(() => {
+	return Object.entries(data ?? {})
+		.map(([key, value]) => ({
+			key,
+			value,
+			split: splitNamespacedKey(key),
+		}))
+		.sort((a, b) => {
+			const ns = (a.split.namespace ?? "").localeCompare(
+				b.split.namespace ?? "",
+			);
+			if (ns !== 0) return ns;
+			return a.split.local.localeCompare(b.split.local);
+		});
+});
 
-  const isEmpty = $derived(entries.length === 0);
+const isEmpty = $derived(entries.length === 0);
 
-  // Per-row "is this slot populated?" dot. For $VAR this means a
-  // non-null value has been written; for $CONST it's always "set"
-  // (constants exist or they don't).
-  function isPopulated(value: unknown): boolean {
-    return kindOf(value) !== 'null';
-  }
+// Per-row "is this slot populated?" dot. For $VAR this means a
+// non-null value has been written; for $CONST it's always "set"
+// (constants exist or they don't).
+function isPopulated(value: unknown): boolean {
+	return kindOf(value) !== "null";
+}
 </script>
 
 <section data-testid={testid} class="grid gap-2">

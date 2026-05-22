@@ -24,11 +24,10 @@ export function getPathForNode(
 	if (root === target) return path;
 	if (root.type !== "action" && root.type !== "ref") {
 		for (let i = 0; i < root.children.length; i++) {
-			const found = getPathForNode(
-				root.children[i] as NormalizedNode,
-				target,
-				[...path, i],
-			);
+			const found = getPathForNode(root.children[i] as NormalizedNode, target, [
+				...path,
+				i,
+			]);
 			if (found) return found;
 		}
 	}

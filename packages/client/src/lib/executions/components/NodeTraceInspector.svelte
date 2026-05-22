@@ -1,104 +1,104 @@
 <script lang="ts">
-  import { makeTid } from '$lib/utils';
-  import type {
-    ExecutionDocument,
-    NodeStatus,
-    TraceEntry as TraceEntryT,
-  } from '@behaviors-sh/spec';
-  import { ScrollArea } from '$lib/components/ui/scroll-area';
-  import { Badge } from '$lib/components/ui/badge';
-  import Activity from '@lucide/svelte/icons/activity';
-  import MousePointerSquare from '@lucide/svelte/icons/mouse-pointer-square-dashed';
-  import { KIND_META, kindOf } from '$lib/tree/behaviour-layout';
-  import { getAt, pathsEqual } from '$lib/tree/tree-ops';
-  import type { Path } from '$lib/tree/tree-ops';
-  import { decodeCursor, promptForCursor, statusKeyForPath } from '../cursor';
-  import TraceEntry from './TraceEntry.svelte';
+import type {
+	ExecutionDocument,
+	NodeStatus,
+	TraceEntry as TraceEntryT,
+} from "@behaviors-sh/spec";
+import Activity from "@lucide/svelte/icons/activity";
+import MousePointerSquare from "@lucide/svelte/icons/mouse-pointer-square-dashed";
+import { Badge } from "$lib/components/ui/badge";
+import { ScrollArea } from "$lib/components/ui/scroll-area";
+import { KIND_META, kindOf } from "$lib/tree/behaviour-layout";
+import type { Path } from "$lib/tree/tree-ops";
+import { getAt, pathsEqual } from "$lib/tree/tree-ops";
+import { makeTid } from "$lib/utils";
+import { decodeCursor, promptForCursor, statusKeyForPath } from "../cursor";
+import TraceEntry from "./TraceEntry.svelte";
 
-  interface Props {
-    doc: ExecutionDocument;
-    selected: Path | null;
-    inFlightPath: Path | null;
-    testid?: string;
-  }
-  let { doc, selected, inFlightPath, testid }: Props = $props();
+interface Props {
+	doc: ExecutionDocument;
+	selected: Path | null;
+	inFlightPath: Path | null;
+	testid?: string;
+}
+let { doc, selected, inFlightPath, testid }: Props = $props();
 
-  const tid = $derived(makeTid(testid));
+const tid = $derived(makeTid(testid));
 
-  // Node at the selected path (when one is selected).
-  const node = $derived.by(() => {
-    if (!selected) return null;
-    try {
-      return getAt(doc.tree, selected);
-    } catch {
-      return null;
-    }
-  });
+// Node at the selected path (when one is selected).
+const node = $derived.by(() => {
+	if (!selected) return null;
+	try {
+		return getAt(doc.tree, selected);
+	} catch {
+		return null;
+	}
+});
 
-  const kind = $derived(node ? kindOf(node) : null);
-  const meta = $derived(kind ? KIND_META[kind] : null);
+const kind = $derived(node ? kindOf(node) : null);
+const meta = $derived(kind ? KIND_META[kind] : null);
 
-  const status = $derived.by<NodeStatus | undefined>(() => {
-    if (!selected) return undefined;
-    return doc.runtime.node_status[statusKeyForPath(selected)];
-  });
+const status = $derived.by<NodeStatus | undefined>(() => {
+	if (!selected) return undefined;
+	return doc.runtime.node_status[statusKeyForPath(selected)];
+});
 
-  const stepIdx = $derived.by<number | null>(() => {
-    if (!selected) return null;
-    const v = doc.runtime.step_index[statusKeyForPath(selected)];
-    return typeof v === 'number' ? v : null;
-  });
+const stepIdx = $derived.by<number | null>(() => {
+	if (!selected) return null;
+	const v = doc.runtime.step_index[statusKeyForPath(selected)];
+	return typeof v === "number" ? v : null;
+});
 
-  const retryCount = $derived.by<number | null>(() => {
-    if (!selected) return null;
-    const v = doc.runtime.retry_count[statusKeyForPath(selected)];
-    return typeof v === 'number' ? v : null;
-  });
+const retryCount = $derived.by<number | null>(() => {
+	if (!selected) return null;
+	const v = doc.runtime.retry_count[statusKeyForPath(selected)];
+	return typeof v === "number" ? v : null;
+});
 
-  const totalSteps = $derived.by<number | null>(() => {
-    if (!node) return null;
-    if ('steps' in node && Array.isArray(node.steps)) return node.steps.length;
-    return null;
-  });
+const totalSteps = $derived.by<number | null>(() => {
+	if (!node) return null;
+	if ("steps" in node && Array.isArray(node.steps)) return node.steps.length;
+	return null;
+});
 
-  // Composites never emit their own trace entries — only the action
-  // leaves below them do. Filter by prefix so selecting a composite
-  // shows everything that happened in its subtree; selecting a leaf
-  // narrows to that one action.
-  function pathStartsWith(path: number[], prefix: number[]): boolean {
-    if (prefix.length > path.length) return false;
-    for (let i = 0; i < prefix.length; i++) {
-      if (path[i] !== prefix[i]) return false;
-    }
-    return true;
-  }
+// Composites never emit their own trace entries — only the action
+// leaves below them do. Filter by prefix so selecting a composite
+// shows everything that happened in its subtree; selecting a leaf
+// narrows to that one action.
+function pathStartsWith(path: number[], prefix: number[]): boolean {
+	if (prefix.length > path.length) return false;
+	for (let i = 0; i < prefix.length; i++) {
+		if (path[i] !== prefix[i]) return false;
+	}
+	return true;
+}
 
-  const entries = $derived.by<{ entry: TraceEntryT; index: number }[]>(() => {
-    if (!selected) return [];
-    const matches: { entry: TraceEntryT; index: number }[] = [];
-    doc.trace.forEach((entry, index) => {
-      const c = decodeCursor(entry.cursor);
-      if (!c) return;
-      if (pathStartsWith(c.path, selected)) {
-        matches.push({ entry, index });
-      }
-    });
-    return matches.reverse();
-  });
+const entries = $derived.by<{ entry: TraceEntryT; index: number }[]>(() => {
+	if (!selected) return [];
+	const matches: { entry: TraceEntryT; index: number }[] = [];
+	doc.trace.forEach((entry, index) => {
+		const c = decodeCursor(entry.cursor);
+		if (!c) return;
+		if (pathStartsWith(c.path, selected)) {
+			matches.push({ entry, index });
+		}
+	});
+	return matches.reverse();
+});
 
-  const isComposite = $derived(meta?.isComposite ?? false);
+const isComposite = $derived(meta?.isComposite ?? false);
 
-  const isLive = $derived(
-    !!selected && !!inFlightPath && pathsEqual(selected, inFlightPath),
-  );
+const isLive = $derived(
+	!!selected && !!inFlightPath && pathsEqual(selected, inFlightPath),
+);
 
-  const STATUS_RING: Record<NodeStatus, string> = {
-    success:
-      'bg-emerald-500/15 text-emerald-600 dark:text-emerald-300 ring-emerald-500/30',
-    failure: 'bg-red-500/15 text-red-600 dark:text-red-300 ring-red-500/30',
-    running:
-      'bg-amber-500/15 text-amber-600 dark:text-amber-300 ring-amber-500/30',
-  };
+const STATUS_RING: Record<NodeStatus, string> = {
+	success:
+		"bg-emerald-500/15 text-emerald-600 dark:text-emerald-300 ring-emerald-500/30",
+	failure: "bg-red-500/15 text-red-600 dark:text-red-300 ring-red-500/30",
+	running:
+		"bg-amber-500/15 text-amber-600 dark:text-amber-300 ring-amber-500/30",
+};
 </script>
 
 <div

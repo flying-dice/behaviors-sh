@@ -1,13 +1,13 @@
 <script lang="ts">
-  import { classifyStatus, STATUS_CLASSES, STATUS_DOT } from '../format';
+import { classifyStatus, STATUS_CLASSES, STATUS_DOT } from "../format";
 
-  interface Props {
-    status: string;
-    testid?: string;
-  }
-  let { status, testid }: Props = $props();
+interface Props {
+	status: string;
+	testid?: string;
+}
+let { status, testid }: Props = $props();
 
-  const kind = $derived(classifyStatus(status));
+const kind = $derived(classifyStatus(status));
 </script>
 
 <span

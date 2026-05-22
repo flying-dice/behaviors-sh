@@ -1,18 +1,18 @@
 {
-  "compilerOptions": {
-    "target": "ESNext",
-    "module": "ESNext",
-    "moduleResolution": "bundler",
-    "types": ["bun"],
-    "lib": ["ESNext"],
-    "strict": true,
-    "skipLibCheck": true,
-    "noEmit": true,
-    "esModuleInterop": true,
-    "allowImportingTsExtensions": true,
-    "resolveJsonModule": true,
-    "verbatimModuleSyntax": true,
-    "moduleDetection": "force"
-  },
-  "include": ["src/**/*.ts", "scripts/**/*.ts"]
+	"compilerOptions": {
+		"target": "ESNext",
+		"module": "ESNext",
+		"moduleResolution": "bundler",
+		"types": ["bun"],
+		"lib": ["ESNext"],
+		"strict": true,
+		"skipLibCheck": true,
+		"noEmit": true,
+		"esModuleInterop": true,
+		"allowImportingTsExtensions": true,
+		"resolveJsonModule": true,
+		"verbatimModuleSyntax": true,
+		"moduleDetection": "force"
+	},
+	"include": ["src/**/*.ts", "scripts/**/*.ts"]
 }

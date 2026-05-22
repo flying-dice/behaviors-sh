@@ -1,45 +1,45 @@
 <script lang="ts">
-  import { makeTid, errorMessage } from "$lib/utils";
-  import { Button } from '$lib/components/ui/button';
-  import { Input } from '$lib/components/ui/input';
-  import { Label } from '$lib/components/ui/label';
-  import * as Dialog from '$lib/components/ui/dialog';
-  import DanglingRefsWarning from './DanglingRefsWarning.svelte';
-  import * as ws from '$lib/workspace/store.svelte';
+import { Button } from "$lib/components/ui/button";
+import * as Dialog from "$lib/components/ui/dialog";
+import { Input } from "$lib/components/ui/input";
+import { Label } from "$lib/components/ui/label";
+import { errorMessage, makeTid } from "$lib/utils";
+import * as ws from "$lib/workspace/store.svelte";
+import DanglingRefsWarning from "./DanglingRefsWarning.svelte";
 
-  interface Props {
-    open: boolean;
-    treeId: string;
-    testid?: string;
-  }
-  let { open = $bindable(), treeId, testid }: Props = $props();
-  const tid = $derived(makeTid(testid));
+interface Props {
+	open: boolean;
+	treeId: string;
+	testid?: string;
+}
+let { open = $bindable(), treeId, testid }: Props = $props();
+const tid = $derived(makeTid(testid));
 
-  let newId = $state('');
-  let error = $state('');
+let newId = $state("");
+let error = $state("");
 
-  const refHits = $derived(treeId ? ws.findTreeRefs(treeId) : ([] as string[]));
+const refHits = $derived(treeId ? ws.findTreeRefs(treeId) : ([] as string[]));
 
-  $effect(() => {
-    if (open) {
-      newId = treeId;
-      error = '';
-    }
-  });
+$effect(() => {
+	if (open) {
+		newId = treeId;
+		error = "";
+	}
+});
 
-  function submit() {
-    const trimmed = newId.trim();
-    if (!trimmed || trimmed === treeId) {
-      open = false;
-      return;
-    }
-    try {
-      ws.renameTree(treeId, trimmed);
-      open = false;
-    } catch (err) {
-      error = errorMessage(err);
-    }
-  }
+function submit() {
+	const trimmed = newId.trim();
+	if (!trimmed || trimmed === treeId) {
+		open = false;
+		return;
+	}
+	try {
+		ws.renameTree(treeId, trimmed);
+		open = false;
+	} catch (err) {
+		error = errorMessage(err);
+	}
+}
 </script>
 
 <Dialog.Root bind:open>

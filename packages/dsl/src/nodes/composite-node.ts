@@ -23,10 +23,6 @@ export interface CompositePayload {
 export class CompositeNode extends Node<CompositeKind, CompositePayload> {
 	readonly children: Node[] = [];
 
-	constructor(kind: CompositeKind, name: string) {
-		super(kind, name);
-	}
-
 	protected payload(): CompositePayload {
 		return { children: this.children };
 	}

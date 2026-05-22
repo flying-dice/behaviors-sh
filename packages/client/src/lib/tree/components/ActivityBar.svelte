@@ -1,30 +1,30 @@
 <script lang="ts">
-  import { makeTid } from "$lib/utils";
-  import * as Tooltip from '$lib/components/ui/tooltip';
-  import FolderKanban from '@lucide/svelte/icons/folder-kanban';
-  import Store from '@lucide/svelte/icons/store';
-  import Activity from '@lucide/svelte/icons/activity';
-  import Sun from '@lucide/svelte/icons/sun';
-  import Moon from '@lucide/svelte/icons/moon';
-  import TreeMark from './TreeMark.svelte';
-  import type { Route } from './TopNav.svelte';
+import Activity from "@lucide/svelte/icons/activity";
+import FolderKanban from "@lucide/svelte/icons/folder-kanban";
+import Moon from "@lucide/svelte/icons/moon";
+import Store from "@lucide/svelte/icons/store";
+import Sun from "@lucide/svelte/icons/sun";
+import * as Tooltip from "$lib/components/ui/tooltip";
+import { makeTid } from "$lib/utils";
+import type { Route } from "./TopNav.svelte";
+import TreeMark from "./TreeMark.svelte";
 
-  interface Props {
-    route: Route;
-    onNavigate: (r: Route) => void;
-    theme: 'dark' | 'light';
-    onToggleTheme: () => void;
-    testid?: string;
-  }
-  let { route, onNavigate, theme, onToggleTheme, testid }: Props = $props();
+interface Props {
+	route: Route;
+	onNavigate: (r: Route) => void;
+	theme: "dark" | "light";
+	onToggleTheme: () => void;
+	testid?: string;
+}
+let { route, onNavigate, theme, onToggleTheme, testid }: Props = $props();
 
-  const tid = $derived(makeTid(testid));
+const tid = $derived(makeTid(testid));
 
-  const items: { id: Route; label: string; icon: typeof FolderKanban }[] = [
-    { id: 'home', label: 'Collection', icon: FolderKanban },
-    { id: 'executions', label: 'Executions', icon: Activity },
-    { id: 'marketplace', label: 'Marketplace', icon: Store },
-  ];
+const items: { id: Route; label: string; icon: typeof FolderKanban }[] = [
+	{ id: "home", label: "Collection", icon: FolderKanban },
+	{ id: "executions", label: "Executions", icon: Activity },
+	{ id: "marketplace", label: "Marketplace", icon: Store },
+];
 </script>
 
 <Tooltip.Provider delayDuration={400}>

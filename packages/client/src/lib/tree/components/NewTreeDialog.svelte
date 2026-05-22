@@ -1,44 +1,44 @@
 <script lang="ts">
-  import { makeTid } from "$lib/utils";
-  import type { BehaviourNode } from '@behaviors-sh/spec';
-  import * as Dialog from '$lib/components/ui/dialog';
-  import { Button } from '$lib/components/ui/button';
-  import { Input } from '$lib/components/ui/input';
-  import { Label } from '$lib/components/ui/label';
-  import { defaultAction, defaultComposite } from '../tree-ops';
+import type { BehaviourNode } from "@behaviors-sh/spec";
+import { Button } from "$lib/components/ui/button";
+import * as Dialog from "$lib/components/ui/dialog";
+import { Input } from "$lib/components/ui/input";
+import { Label } from "$lib/components/ui/label";
+import { makeTid } from "$lib/utils";
+import { defaultAction, defaultComposite } from "../tree-ops";
 
-  type NodeType = 'action' | 'sequence' | 'selector' | 'parallel';
+type NodeType = "action" | "sequence" | "selector" | "parallel";
 
-  interface Props {
-    open: boolean;
-    error?: string;
-    onSubmit: (id: string, node: BehaviourNode) => void;
-    onClose: () => void;
-    testid?: string;
-  }
-  let { open = $bindable(), error, onSubmit, onClose, testid }: Props = $props();
-  const tid = $derived(makeTid(testid));
+interface Props {
+	open: boolean;
+	error?: string;
+	onSubmit: (id: string, node: BehaviourNode) => void;
+	onClose: () => void;
+	testid?: string;
+}
+let { open = $bindable(), error, onSubmit, onClose, testid }: Props = $props();
+const tid = $derived(makeTid(testid));
 
-  let id = $state('');
-  let nodeType = $state<NodeType>('action');
+let id = $state("");
+let nodeType = $state<NodeType>("action");
 
-  $effect(() => {
-    if (open) {
-      id = '';
-      nodeType = 'action';
-    }
-  });
+$effect(() => {
+	if (open) {
+		id = "";
+		nodeType = "action";
+	}
+});
 
-  function seedNode(type: NodeType, name: string): BehaviourNode {
-    if (type === 'action') return defaultAction(name);
-    return defaultComposite(type, name);
-  }
+function seedNode(type: NodeType, name: string): BehaviourNode {
+	if (type === "action") return defaultAction(name);
+	return defaultComposite(type, name);
+}
 
-  function submit() {
-    const trimmed = id.trim();
-    if (!trimmed) return;
-    onSubmit(trimmed, seedNode(nodeType, trimmed));
-  }
+function submit() {
+	const trimmed = id.trim();
+	if (!trimmed) return;
+	onSubmit(trimmed, seedNode(nodeType, trimmed));
+}
 </script>
 
 <Dialog.Root bind:open>

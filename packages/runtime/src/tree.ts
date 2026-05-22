@@ -11,34 +11,19 @@ import type { NodeStatus, NormalizedNode, TickResult } from "./types.ts";
 
 export interface Tick {
 	tickRoot(uri: string, root: NormalizedNode): TickResult;
-	tickNode(
-		uri: string,
-		path: number[],
-		node: NormalizedNode,
-	): TickResult;
+	tickNode(uri: string, path: number[], node: NormalizedNode): TickResult;
 	getNodeResult(uri: string, path: number[]): NodeStatus | null;
-	setNodeResult(
-		uri: string,
-		path: number[],
-		status: NodeStatus,
-	): void;
+	setNodeResult(uri: string, path: number[], status: NodeStatus): void;
 	getStepIndex(uri: string, path: number[]): number;
 	setStepIndex(uri: string, path: number[], step: number): void;
 }
 
 export function createTick(runtimeStore: RuntimeStore): Tick {
-	function getNodeResult(
-		uri: string,
-		path: number[],
-	): NodeStatus | null {
+	function getNodeResult(uri: string, path: number[]): NodeStatus | null {
 		return runtimeStore.getStatus(uri, path);
 	}
 
-	function setNodeResult(
-		uri: string,
-		path: number[],
-		status: NodeStatus,
-	) {
+	function setNodeResult(uri: string, path: number[], status: NodeStatus) {
 		runtimeStore.setStatus(uri, path, status);
 	}
 
@@ -138,10 +123,7 @@ export function createTick(runtimeStore: RuntimeStore): Tick {
 				const childPath = [...path, i];
 				const child = node.children[i] as NormalizedNode;
 				let childStatus = getNodeResult(uri, childPath);
-				if (
-					childStatus === "failure" &&
-					maybeRetry(uri, childPath, child)
-				) {
+				if (childStatus === "failure" && maybeRetry(uri, childPath, child)) {
 					childStatus = null; // child reset — re-tick fresh
 				}
 				if (childStatus === "failure") return { type: "failure" };
@@ -174,10 +156,7 @@ export function createTick(runtimeStore: RuntimeStore): Tick {
 				const childPath = [...path, i];
 				const child = node.children[i] as NormalizedNode;
 				let childStatus = getNodeResult(uri, childPath);
-				if (
-					childStatus === "failure" &&
-					maybeRetry(uri, childPath, child)
-				) {
+				if (childStatus === "failure" && maybeRetry(uri, childPath, child)) {
 					childStatus = null;
 				}
 				if (childStatus === "success") return { type: "done" };
@@ -207,10 +186,7 @@ export function createTick(runtimeStore: RuntimeStore): Tick {
 				const childPath = [...path, i];
 				const child = node.children[i] as NormalizedNode;
 				let childStatus = getNodeResult(uri, childPath);
-				if (
-					childStatus === "failure" &&
-					maybeRetry(uri, childPath, child)
-				) {
+				if (childStatus === "failure" && maybeRetry(uri, childPath, child)) {
 					childStatus = null;
 				}
 				if (childStatus === "failure") return { type: "failure" };
@@ -232,7 +208,6 @@ export function createTick(runtimeStore: RuntimeStore): Tick {
 				if (!firstPending) firstPending = result;
 			}
 			if (allDone) return { type: "done" };
-			// biome-ignore lint/style/noNonNullAssertion: !allDone implies at least one pending child was recorded.
 			return firstPending!;
 		}
 

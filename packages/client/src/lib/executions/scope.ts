@@ -4,20 +4,20 @@
 // identifier and the namespace as subordinate context.
 
 export type ValueKind =
-	| 'null'
-	| 'boolean'
-	| 'number'
-	| 'string'
-	| 'array'
-	| 'object';
+	| "null"
+	| "boolean"
+	| "number"
+	| "string"
+	| "array"
+	| "object";
 
 export function kindOf(value: unknown): ValueKind {
-	if (value === null || value === undefined) return 'null';
-	if (typeof value === 'boolean') return 'boolean';
-	if (typeof value === 'number') return 'number';
-	if (typeof value === 'string') return 'string';
-	if (Array.isArray(value)) return 'array';
-	return 'object';
+	if (value === null || value === undefined) return "null";
+	if (typeof value === "boolean") return "boolean";
+	if (typeof value === "number") return "number";
+	if (typeof value === "string") return "string";
+	if (Array.isArray(value)) return "array";
+	return "object";
 }
 
 export interface SplitKey {
@@ -26,7 +26,7 @@ export interface SplitKey {
 }
 
 export function splitNamespacedKey(key: string): SplitKey {
-	const idx = key.indexOf('__');
+	const idx = key.indexOf("__");
 	if (idx === -1) return { namespace: null, local: key };
 	return { namespace: key.slice(0, idx), local: key.slice(idx + 2) };
 }
@@ -41,7 +41,7 @@ export function splitNamespacedKey(key: string): SplitKey {
 // explicitly disallows a trailing dot so sentence punctuation
 // (`Wrote to $VAR.greeting.`) doesn't get swallowed into the key.
 
-export type ScopeKind = 'var' | 'const';
+export type ScopeKind = "var" | "const";
 
 export interface ScopeRef {
 	scope: ScopeKind;
@@ -50,8 +50,8 @@ export interface ScopeRef {
 }
 
 export type Token =
-	| { kind: 'text'; text: string }
-	| { kind: 'ref'; ref: ScopeRef };
+	| { kind: "text"; text: string }
+	| { kind: "ref"; ref: ScopeRef };
 
 const REF_PATTERN =
 	/\$(VAR|CONST)\.([A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z0-9_]+)*)/g;
@@ -63,17 +63,17 @@ export function tokenizeText(text: string): Token[] {
 	for (const match of text.matchAll(REF_PATTERN)) {
 		const start = match.index ?? 0;
 		if (start > lastEnd) {
-			tokens.push({ kind: 'text', text: text.slice(lastEnd, start) });
+			tokens.push({ kind: "text", text: text.slice(lastEnd, start) });
 		}
-		const scope: ScopeKind = match[1] === 'VAR' ? 'var' : 'const';
+		const scope: ScopeKind = match[1] === "VAR" ? "var" : "const";
 		tokens.push({
-			kind: 'ref',
-			ref: { scope, key: match[2] ?? '', raw: match[0] },
+			kind: "ref",
+			ref: { scope, key: match[2] ?? "", raw: match[0] },
 		});
 		lastEnd = start + match[0].length;
 	}
 	if (lastEnd < text.length) {
-		tokens.push({ kind: 'text', text: text.slice(lastEnd) });
+		tokens.push({ kind: "text", text: text.slice(lastEnd) });
 	}
 	return tokens;
 }
@@ -86,14 +86,15 @@ export function resolveRef(
 	varScope: Record<string, unknown>,
 	constScope: Record<string, unknown>,
 ): { exists: boolean; value: unknown } {
-	const source = ref.scope === 'var' ? varScope : constScope;
+	const source = ref.scope === "var" ? varScope : constScope;
 	// Walk dotted paths so `$VAR.user.email` resolves through nested
 	// objects. The flat-key case (no dots) hits the first iteration.
-	const segments = ref.key.split('.');
+	const segments = ref.key.split(".");
 	let cur: unknown = source;
 	for (const seg of segments) {
-		if (cur === null || cur === undefined) return { exists: false, value: undefined };
-		if (typeof cur !== 'object') return { exists: false, value: undefined };
+		if (cur === null || cur === undefined)
+			return { exists: false, value: undefined };
+		if (typeof cur !== "object") return { exists: false, value: undefined };
 		const map = cur as Record<string, unknown>;
 		if (!(seg in map)) return { exists: false, value: undefined };
 		cur = map[seg];

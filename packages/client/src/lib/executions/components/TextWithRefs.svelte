@@ -1,16 +1,16 @@
 <script lang="ts">
-  import { resolveRef, tokenizeText } from '../scope';
-  import ScopeRefBadge from './ScopeRefBadge.svelte';
+import { resolveRef, tokenizeText } from "../scope";
+import ScopeRefBadge from "./ScopeRefBadge.svelte";
 
-  interface Props {
-    text: string;
-    varScope: Record<string, unknown>;
-    constScope: Record<string, unknown>;
-    testid?: string;
-  }
-  let { text, varScope, constScope, testid }: Props = $props();
+interface Props {
+	text: string;
+	varScope: Record<string, unknown>;
+	constScope: Record<string, unknown>;
+	testid?: string;
+}
+let { text, varScope, constScope, testid }: Props = $props();
 
-  const tokens = $derived(tokenizeText(text));
+const tokens = $derived(tokenizeText(text));
 </script>
 
 {#if tokens.length === 0}{:else}<span data-testid={testid}

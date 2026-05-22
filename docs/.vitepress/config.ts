@@ -2,7 +2,8 @@ import { defineConfig } from "vitepress";
 
 const SITE_URL = "https://behaviors-sh.dev";
 const SITE_TITLE = "behaviors-sh";
-const SITE_TAGLINE = "Behaviour Trees for AI Agents — with a canvas to watch them work";
+const SITE_TAGLINE =
+	"Behaviour Trees for AI Agents — with a canvas to watch them work";
 const SITE_DESCRIPTION =
 	"behaviors-sh is an open-source behaviour-tree runtime for AI agents. Author trees in YAML, JSON, or TypeScript; drive them through MCP from Claude, ChatGPT, or any agent that speaks the protocol; open the trace in a browser canvas to see exactly what ran.";
 const OG_IMAGE = `${SITE_URL}/mark.svg`;

@@ -1,39 +1,39 @@
 <script lang="ts">
-  import { makeTid } from "$lib/utils";
-  import type { BehaviourNode } from '@behaviors-sh/spec';
-  import { ScrollArea } from '$lib/components/ui/scroll-area';
-  import { Separator } from '$lib/components/ui/separator';
-  import Folder from '@lucide/svelte/icons/folder';
-  import ArrowLeft from '@lucide/svelte/icons/arrow-left';
-  import { Button } from '$lib/components/ui/button';
-  import { type TreeSummary } from '$lib/workspace/store.svelte';
-  import OutlineRow from './OutlineRow.svelte';
-  import type { Path } from '../tree-ops';
+import type { BehaviourNode } from "@behaviors-sh/spec";
+import ArrowLeft from "@lucide/svelte/icons/arrow-left";
+import Folder from "@lucide/svelte/icons/folder";
+import { Button } from "$lib/components/ui/button";
+import { ScrollArea } from "$lib/components/ui/scroll-area";
+import { Separator } from "$lib/components/ui/separator";
+import { makeTid } from "$lib/utils";
+import type { TreeSummary } from "$lib/workspace/store.svelte";
+import type { Path } from "../tree-ops";
+import OutlineRow from "./OutlineRow.svelte";
 
-  interface Props {
-    workspaceName: string;
-    trees: TreeSummary[];
-    currentTreeId: string;
-    root: BehaviourNode;
-    selected: Path | null;
-    onSwitchTree: (id: string) => void;
-    onSelect: (path: Path) => void;
-    onBack: () => void;
-    testid?: string;
-  }
+interface Props {
+	workspaceName: string;
+	trees: TreeSummary[];
+	currentTreeId: string;
+	root: BehaviourNode;
+	selected: Path | null;
+	onSwitchTree: (id: string) => void;
+	onSelect: (path: Path) => void;
+	onBack: () => void;
+	testid?: string;
+}
 
-  let {
-    workspaceName,
-    trees,
-    currentTreeId,
-    root,
-    selected,
-    onSwitchTree,
-    onSelect,
-    onBack,
-    testid,
-  }: Props = $props();
-  const tid = $derived(makeTid(testid));
+let {
+	workspaceName,
+	trees,
+	currentTreeId,
+	root,
+	selected,
+	onSwitchTree,
+	onSelect,
+	onBack,
+	testid,
+}: Props = $props();
+const tid = $derived(makeTid(testid));
 </script>
 
 <aside data-testid={testid} class="flex h-full flex-col border-r bg-card">

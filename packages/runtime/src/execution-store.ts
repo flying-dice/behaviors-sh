@@ -40,12 +40,10 @@ function setPath(
 	// biome-ignore lint/suspicious/noExplicitAny: dot-notation walker; cur is intentionally untyped.
 	let cur: any = obj;
 	for (let i = 0; i < segs.length - 1; i++) {
-		// biome-ignore lint/style/noNonNullAssertion: bounded by segs.length - 1.
 		const seg = segs[i]!;
 		if (cur[seg] === null || typeof cur[seg] !== "object") cur[seg] = {};
 		cur = cur[seg];
 	}
-	// biome-ignore lint/style/noNonNullAssertion: segs is non-empty (path checked above).
 	cur[segs[segs.length - 1]!] = value;
 }
 
@@ -121,8 +119,7 @@ export function createExecutionStore(deps: ExecutionStoreDeps): ExecutionStore {
 			// the run; `$CONST` is never written after create. `state` only
 			// matters on the root; on inner nodes the schema permits it but
 			// the runtime ignores it.
-			const rootState =
-				seed.tree.type !== "ref" ? (seed.tree.state ?? {}) : {};
+			const rootState = seed.tree.type !== "ref" ? (seed.tree.state ?? {}) : {};
 			const doc: ExecutionDocument = {
 				...seed,
 				schema_version: EXECUTION_SCHEMA_VERSION,

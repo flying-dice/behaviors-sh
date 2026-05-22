@@ -1,21 +1,21 @@
 {
-  "name": "@behaviors-sh/runtime",
-  "private": true,
-  "version": "0.0.0",
-  "type": "module",
-  "exports": {
-    ".": "./src/index.ts"
-  },
-  "scripts": {
-    "test": "bun test"
-  },
-  "dependencies": {
-    "@apidevtools/json-schema-ref-parser": "^15.3.5",
-    "@behaviors-sh/spec": "workspace:*",
-    "zod": "^4.4.3"
-  },
-  "devDependencies": {
-    "@types/bun": "latest",
-    "typescript": "~6.0.2"
-  }
+	"name": "@behaviors-sh/runtime",
+	"private": true,
+	"version": "0.0.0",
+	"type": "module",
+	"exports": {
+		".": "./src/index.ts"
+	},
+	"scripts": {
+		"test": "bun test"
+	},
+	"dependencies": {
+		"@apidevtools/json-schema-ref-parser": "^15.3.5",
+		"@behaviors-sh/spec": "workspace:*",
+		"zod": "^4.4.3"
+	},
+	"devDependencies": {
+		"@types/bun": "latest",
+		"typescript": "~6.0.2"
+	}
 }

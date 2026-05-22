@@ -4,7 +4,7 @@
 // (used to bucket trace entries by node) and a small helper for the
 // in-flight cursor on the doc itself.
 
-import type { ExecutionDocument, ParsedTree } from '@behaviors-sh/spec';
+import type { ExecutionDocument, ParsedTree } from "@behaviors-sh/spec";
 
 export interface DecodedCursor {
 	path: number[];
@@ -12,12 +12,12 @@ export interface DecodedCursor {
 }
 
 export function decodeCursor(encoded: string): DecodedCursor | null {
-	if (!encoded || encoded === 'null') return null;
+	if (!encoded || encoded === "null") return null;
 	try {
 		const parsed = JSON.parse(encoded) as unknown;
 		if (parsed === null || Array.isArray(parsed)) return null;
 		const candidate = parsed as Partial<DecodedCursor>;
-		if (!Array.isArray(candidate.path) || typeof candidate.step !== 'number') {
+		if (!Array.isArray(candidate.path) || typeof candidate.step !== "number") {
 			return null;
 		}
 		return { path: candidate.path, step: candidate.step };
@@ -32,15 +32,15 @@ export function decodeCursor(encoded: string): DecodedCursor | null {
 // These helpers translate between the two so the canvas overlay can
 // look up status without leaking format details into components.
 export function statusKeyForPath(path: number[]): string {
-	return path.join('.');
+	return path.join(".");
 }
 
 export function canvasKeyForPath(path: number[]): string {
-	return path.join('.') || 'root';
+	return path.join(".") || "root";
 }
 
 export function inFlightPath(doc: ExecutionDocument): number[] | null {
-	if (doc.phase !== 'evaluating' && doc.phase !== 'performing') return null;
+	if (doc.phase !== "evaluating" && doc.phase !== "performing") return null;
 	const c = decodeCursor(doc.cursor);
 	return c?.path ?? null;
 }
@@ -54,19 +54,20 @@ export function inFlightPath(doc: ExecutionDocument): number[] | null {
 export function promptForCursor(
 	tree: ParsedTree,
 	encoded: string,
-): { kind: 'evaluate' | 'instruct'; text: string } | null {
+): { kind: "evaluate" | "instruct"; text: string } | null {
 	const c = decodeCursor(encoded);
 	if (!c) return null;
 	let node: ParsedTree = tree;
 	for (const i of c.path) {
-		if (node.type === 'ref' || node.type === 'action') return null;
+		if (node.type === "ref" || node.type === "action") return null;
 		const child = node.children[i];
 		if (!child) return null;
 		node = child;
 	}
-	if (node.type !== 'action') return null;
+	if (node.type !== "action") return null;
 	const step = node.steps[c.step];
 	if (!step) return null;
-	if (step.kind === 'evaluate') return { kind: 'evaluate', text: step.expression };
-	return { kind: 'instruct', text: step.instruction };
+	if (step.kind === "evaluate")
+		return { kind: "evaluate", text: step.expression };
+	return { kind: "instruct", text: step.instruction };
 }

@@ -1,37 +1,37 @@
 <script lang="ts">
-  import { makeTid } from '$lib/utils';
-  import type { ExecutionDocument } from '@behaviors-sh/spec';
-  import { ScrollArea } from '$lib/components/ui/scroll-area';
-  import * as Tabs from '$lib/components/ui/tabs';
-  import Activity from '@lucide/svelte/icons/activity';
-  import Database from '@lucide/svelte/icons/database';
-  import Cpu from '@lucide/svelte/icons/cpu';
-  import type { Path } from '$lib/tree/tree-ops';
-  import NodeTraceInspector from './NodeTraceInspector.svelte';
-  import ScopeSection from './ScopeSection.svelte';
+import type { ExecutionDocument } from "@behaviors-sh/spec";
+import Activity from "@lucide/svelte/icons/activity";
+import Cpu from "@lucide/svelte/icons/cpu";
+import Database from "@lucide/svelte/icons/database";
+import { ScrollArea } from "$lib/components/ui/scroll-area";
+import * as Tabs from "$lib/components/ui/tabs";
+import type { Path } from "$lib/tree/tree-ops";
+import { makeTid } from "$lib/utils";
+import NodeTraceInspector from "./NodeTraceInspector.svelte";
+import ScopeSection from "./ScopeSection.svelte";
 
-  interface Props {
-    doc: ExecutionDocument;
-    selected: Path | null;
-    inFlightPath: Path | null;
-    testid?: string;
-  }
-  let { doc, selected, inFlightPath, testid }: Props = $props();
+interface Props {
+	doc: ExecutionDocument;
+	selected: Path | null;
+	inFlightPath: Path | null;
+	testid?: string;
+}
+let { doc, selected, inFlightPath, testid }: Props = $props();
 
-  const tid = $derived(makeTid(testid));
+const tid = $derived(makeTid(testid));
 
-  let tab = $state<'activity' | 'state' | 'engine'>('activity');
+let tab = $state<"activity" | "state" | "engine">("activity");
 
-  // Empty-state for the State tab when both scopes are empty (e.g.
-  // tree has no `state` declarations).
-  const stateEmpty = $derived(
-    Object.keys(doc.var ?? {}).length === 0 &&
-      Object.keys(doc.const ?? {}).length === 0,
-  );
+// Empty-state for the State tab when both scopes are empty (e.g.
+// tree has no `state` declarations).
+const stateEmpty = $derived(
+	Object.keys(doc.var ?? {}).length === 0 &&
+		Object.keys(doc.const ?? {}).length === 0,
+);
 
-  function fmt(v: unknown): string {
-    return JSON.stringify(v, null, 2);
-  }
+function fmt(v: unknown): string {
+	return JSON.stringify(v, null, 2);
+}
 </script>
 
 <aside

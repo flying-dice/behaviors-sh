@@ -1,37 +1,43 @@
 <script lang="ts">
-  import { makeTid } from "$lib/utils";
-  import * as Dialog from '$lib/components/ui/dialog';
-  import { Button } from '$lib/components/ui/button';
-  import { Input } from '$lib/components/ui/input';
-  import { Label } from '$lib/components/ui/label';
+import { Button } from "$lib/components/ui/button";
+import * as Dialog from "$lib/components/ui/dialog";
+import { Input } from "$lib/components/ui/input";
+import { Label } from "$lib/components/ui/label";
+import { makeTid } from "$lib/utils";
 
-  interface Props {
-    open: boolean;
-    initialName: string;
-    initialVersion: string;
-    onSubmit: (name: string, version: string) => void;
-    testid?: string;
-  }
-  let { open = $bindable(), initialName, initialVersion, onSubmit, testid }: Props = $props();
-  const tid = $derived(makeTid(testid));
+interface Props {
+	open: boolean;
+	initialName: string;
+	initialVersion: string;
+	onSubmit: (name: string, version: string) => void;
+	testid?: string;
+}
+let {
+	open = $bindable(),
+	initialName,
+	initialVersion,
+	onSubmit,
+	testid,
+}: Props = $props();
+const tid = $derived(makeTid(testid));
 
-  let name = $state('');
-  let version = $state('');
+let name = $state("");
+let version = $state("");
 
-  $effect(() => {
-    if (open) {
-      name = initialName;
-      version = initialVersion;
-    }
-  });
+$effect(() => {
+	if (open) {
+		name = initialName;
+		version = initialVersion;
+	}
+});
 
-  function submit() {
-    const n = name.trim();
-    const v = version.trim();
-    if (!n || !v) return;
-    onSubmit(n, v);
-    open = false;
-  }
+function submit() {
+	const n = name.trim();
+	const v = version.trim();
+	if (!n || !v) return;
+	onSubmit(n, v);
+	open = false;
+}
 </script>
 
 <Dialog.Root bind:open>

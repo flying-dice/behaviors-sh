@@ -1,17 +1,17 @@
 <script lang="ts">
-  import { makeTid } from "$lib/utils";
-  import { Button } from '$lib/components/ui/button';
-  import * as Dialog from '$lib/components/ui/dialog';
-  import Trash2 from '@lucide/svelte/icons/trash-2';
+import Trash2 from "@lucide/svelte/icons/trash-2";
+import { Button } from "$lib/components/ui/button";
+import * as Dialog from "$lib/components/ui/dialog";
+import { makeTid } from "$lib/utils";
 
-  interface Props {
-    open: boolean;
-    slotName: string;
-    onConfirm: () => void;
-    testid?: string;
-  }
-  let { open = $bindable(), slotName, onConfirm, testid }: Props = $props();
-  const tid = $derived(makeTid(testid));
+interface Props {
+	open: boolean;
+	slotName: string;
+	onConfirm: () => void;
+	testid?: string;
+}
+let { open = $bindable(), slotName, onConfirm, testid }: Props = $props();
+const tid = $derived(makeTid(testid));
 </script>
 
 <Dialog.Root bind:open>

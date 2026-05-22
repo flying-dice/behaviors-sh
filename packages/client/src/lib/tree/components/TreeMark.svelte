@@ -1,18 +1,18 @@
 <script lang="ts">
-  interface Props {
-    size?: number;
-    stroke?: number;
-    color?: string;
-    class?: string;
-    testid?: string;
-  }
-  let {
-    size = 22,
-    stroke = 2.5,
-    color = 'currentColor',
-    class: className = '',
-    testid,
-  }: Props = $props();
+interface Props {
+	size?: number;
+	stroke?: number;
+	color?: string;
+	class?: string;
+	testid?: string;
+}
+let {
+	size = 22,
+	stroke = 2.5,
+	color = "currentColor",
+	class: className = "",
+	testid,
+}: Props = $props();
 </script>
 
 <svg

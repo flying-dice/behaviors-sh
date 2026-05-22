@@ -1,47 +1,47 @@
 <script lang="ts">
-  import ActivityBar from './components/ActivityBar.svelte';
-  import TopNav, { type Route } from './components/TopNav.svelte';
-  import Home from './Home.svelte';
-  import TreeEditor from './TreeEditor.svelte';
-  import Marketplace from './Marketplace.svelte';
-  import Executions from '$lib/executions/Executions.svelte';
-  import * as ws from '$lib/workspace/store.svelte';
+import Executions from "$lib/executions/Executions.svelte";
+import * as ws from "$lib/workspace/store.svelte";
+import ActivityBar from "./components/ActivityBar.svelte";
+import TopNav, { type Route } from "./components/TopNav.svelte";
+import Home from "./Home.svelte";
+import Marketplace from "./Marketplace.svelte";
+import TreeEditor from "./TreeEditor.svelte";
 
-  let route = $state<Route>('home');
-  let currentTreeId = $state<string | null>(null);
-  let theme = $state<'dark' | 'light'>('dark');
+let route = $state<Route>("home");
+let currentTreeId = $state<string | null>(null);
+let theme = $state<"dark" | "light">("dark");
 
-  // Derive the breadcrumb name from the open tree, if any.
-  const currentTreeName = $derived.by(() => {
-    if (!currentTreeId) return '—';
-    const node = ws.getTree(currentTreeId);
-    if (!node) return currentTreeId;
-    return 'name' in node ? node.name : currentTreeId;
-  });
+// Derive the breadcrumb name from the open tree, if any.
+const currentTreeName = $derived.by(() => {
+	if (!currentTreeId) return "—";
+	const node = ws.getTree(currentTreeId);
+	if (!node) return currentTreeId;
+	return "name" in node ? node.name : currentTreeId;
+});
 
-  function toggleTheme() {
-    theme = theme === 'dark' ? 'light' : 'dark';
-    document.documentElement.classList.toggle('dark', theme === 'dark');
-  }
+function toggleTheme() {
+	theme = theme === "dark" ? "light" : "dark";
+	document.documentElement.classList.toggle("dark", theme === "dark");
+}
 
-  const workspaceOpen = $derived(ws.isOpen());
+const workspaceOpen = $derived(ws.isOpen());
 
-  $effect(() => {
-    if (!workspaceOpen && route === 'designer') {
-      currentTreeId = null;
-      route = 'home';
-    }
-  });
+$effect(() => {
+	if (!workspaceOpen && route === "designer") {
+		currentTreeId = null;
+		route = "home";
+	}
+});
 
-  function openTree(id: string) {
-    currentTreeId = id;
-    route = 'designer';
-  }
+function openTree(id: string) {
+	currentTreeId = id;
+	route = "designer";
+}
 
-  function backToCollections() {
-    currentTreeId = null;
-    route = 'home';
-  }
+function backToCollections() {
+	currentTreeId = null;
+	route = "home";
+}
 </script>
 
 <div data-testid="app-root" class="grid h-screen grid-cols-[auto_1fr]">

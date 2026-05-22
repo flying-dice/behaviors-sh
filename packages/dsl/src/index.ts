@@ -74,11 +74,11 @@ export {
 export { Node } from "./nodes/node.ts";
 export type { NodeState, StateScope } from "./nodes/state.ts";
 export {
-	constant,
 	type ConstantRef,
+	constant,
 	type Ref,
-	variable,
 	type VariableRef,
+	variable,
 } from "./refs.ts";
 export { evaluate, instruct, type Step } from "./steps.ts";
 

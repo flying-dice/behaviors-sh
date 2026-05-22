@@ -1,249 +1,274 @@
 <script lang="ts">
-  import { makeTid } from "$lib/utils";
-  import type { BehaviourNode } from '@behaviors-sh/spec';
-  import * as ws from '$lib/workspace/store.svelte';
-  import BehaviourCanvas from './components/BehaviourCanvas.svelte';
-  import BehaviourCanvasToolbar from './components/BehaviourCanvasToolbar.svelte';
-  import BehaviourLeftRail from './components/BehaviourLeftRail.svelte';
-  import BehaviourInspector from './components/BehaviourInspector.svelte';
-  import { ScrollArea } from '$lib/components/ui/scroll-area';
-  import BehaviourStatusBar from './components/BehaviourStatusBar.svelte';
-  import CanvasNodeMenu from './components/CanvasNodeMenu.svelte';
-  import { ZOOM_FIT_MAX, ZOOM_MIN, computeLayout, countNodes } from './behaviour-layout';
-  import { nodeToYaml } from './behaviour-yaml';
-  import { dereferenceTree } from './dereference';
-  import {
-    type Path,
-    addStep,
-    defaultAction,
-    getAt,
-    insertChild,
-    move,
-    moveStep,
-    parentOf,
-    removeAt,
-    removeStep,
-    setCompositeType,
-    setDescription,
-    setName,
-    setRef,
-    setRetries,
-    setStepBody,
-    updateAt,
-    wrap,
-  type CompositeType,
-  } from './tree-ops';
+import type { BehaviourNode } from "@behaviors-sh/spec";
+import { ScrollArea } from "$lib/components/ui/scroll-area";
+import { makeTid } from "$lib/utils";
+import * as ws from "$lib/workspace/store.svelte";
+import {
+	computeLayout,
+	countNodes,
+	ZOOM_FIT_MAX,
+	ZOOM_MIN,
+} from "./behaviour-layout";
+import { nodeToYaml } from "./behaviour-yaml";
+import BehaviourCanvas from "./components/BehaviourCanvas.svelte";
+import BehaviourCanvasToolbar from "./components/BehaviourCanvasToolbar.svelte";
+import BehaviourInspector from "./components/BehaviourInspector.svelte";
+import BehaviourLeftRail from "./components/BehaviourLeftRail.svelte";
+import BehaviourStatusBar from "./components/BehaviourStatusBar.svelte";
+import CanvasNodeMenu from "./components/CanvasNodeMenu.svelte";
+import { dereferenceTree } from "./dereference";
+import {
+	addStep,
+	type CompositeType,
+	defaultAction,
+	getAt,
+	insertChild,
+	move,
+	moveStep,
+	type Path,
+	parentOf,
+	removeAt,
+	removeStep,
+	setCompositeType,
+	setDescription,
+	setName,
+	setRef,
+	setRetries,
+	setStepBody,
+	updateAt,
+	wrap,
+} from "./tree-ops";
 
-  interface Props {
-    treeId: string;
-    onBack: () => void;
-    onSwitchTree: (id: string) => void;
-    testid?: string;
-  }
-  let { treeId, onBack, onSwitchTree, testid }: Props = $props();
-  const tid = $derived(makeTid(testid));
+interface Props {
+	treeId: string;
+	onBack: () => void;
+	onSwitchTree: (id: string) => void;
+	testid?: string;
+}
+let { treeId, onBack, onSwitchTree, testid }: Props = $props();
+const tid = $derived(makeTid(testid));
 
-  let selected = $state<Path | null>(null);
-  let pan = $state({ x: 32, y: 16 });
-  let zoom = $state(0.85);
-  let canvasWrap = $state<HTMLDivElement | null>(null);
+let selected = $state<Path | null>(null);
+let pan = $state({ x: 32, y: 16 });
+let zoom = $state(0.85);
+let canvasWrap = $state<HTMLDivElement | null>(null);
 
-  const DOCK_MIN = 320;
-  let dockWidth = $state(Math.max(DOCK_MIN, Math.round(window.innerWidth * 0.25)));
-  let dragging = $state(false);
+const DOCK_MIN = 320;
+let dockWidth = $state(
+	Math.max(DOCK_MIN, Math.round(window.innerWidth * 0.25)),
+);
+let dragging = $state(false);
 
-  function onResizeStart(e: PointerEvent) {
-    dragging = true;
-    const startX = e.clientX;
-    const startW = dockWidth;
-    const onMove = (ev: PointerEvent) => {
-      const delta = startX - ev.clientX;
-      dockWidth = Math.max(DOCK_MIN, startW + delta);
-    };
-    const onUp = () => {
-      dragging = false;
-      window.removeEventListener('pointermove', onMove);
-      window.removeEventListener('pointerup', onUp);
-    };
-    window.addEventListener('pointermove', onMove);
-    window.addEventListener('pointerup', onUp);
-  }
+function onResizeStart(e: PointerEvent) {
+	dragging = true;
+	const startX = e.clientX;
+	const startW = dockWidth;
+	const onMove = (ev: PointerEvent) => {
+		const delta = startX - ev.clientX;
+		dockWidth = Math.max(DOCK_MIN, startW + delta);
+	};
+	const onUp = () => {
+		dragging = false;
+		window.removeEventListener("pointermove", onMove);
+		window.removeEventListener("pointerup", onUp);
+	};
+	window.addEventListener("pointermove", onMove);
+	window.addEventListener("pointerup", onUp);
+}
 
-  let menuOpen = $state(false);
-  let menuX = $state(0);
-  let menuY = $state(0);
+let menuOpen = $state(false);
+let menuX = $state(0);
+let menuY = $state(0);
 
-  function openContextMenu(_path: Path, x: number, y: number) {
-    menuX = x;
-    menuY = y;
-    menuOpen = true;
-  }
+function openContextMenu(_path: Path, x: number, y: number) {
+	menuX = x;
+	menuY = y;
+	menuOpen = true;
+}
 
-  const workspace = $derived(ws.getWorkspace());
-  const root = $derived(ws.getTree(treeId));
-  const trees = $derived(ws.listTrees());
-  const dirty = $derived(ws.isDirty());
+const workspace = $derived(ws.getWorkspace());
+const root = $derived(ws.getTree(treeId));
+const trees = $derived(ws.listTrees());
+const dirty = $derived(ws.isDirty());
 
-  $effect(() => {
-    if (!root) onBack();
-  });
+$effect(() => {
+	if (!root) onBack();
+});
 
-  // Snap selection back to null if a structural edit invalidated the path.
-  $effect(() => {
-    if (!root || selected == null) return;
-    try {
-      getAt(root, selected);
-    } catch {
-      selected = null;
-    }
-  });
+// Snap selection back to null if a structural edit invalidated the path.
+$effect(() => {
+	if (!root || selected == null) return;
+	try {
+		getAt(root, selected);
+	} catch {
+		selected = null;
+	}
+});
 
-  const selectedNode = $derived.by<BehaviourNode | null>(() => {
-    if (!root || selected == null) return null;
-    try {
-      return getAt(root, selected);
-    } catch {
-      return null;
-    }
-  });
+const selectedNode = $derived.by<BehaviourNode | null>(() => {
+	if (!root || selected == null) return null;
+	try {
+		return getAt(root, selected);
+	} catch {
+		return null;
+	}
+});
 
-  // YAML for the right-hand panel is the *dereferenced* tree, so copying
-  // it gives a self-contained snippet. We resolve internal `$ref`s via
-  // @apidevtools/json-schema-ref-parser, then serialise. Until the async
-  // dereference completes, the raw tree YAML stands in.
-  let yaml = $state('');
-  $effect(() => {
-    const ws = workspace;
-    const tree = root;
-    if (!ws || !tree) {
-      yaml = '';
-      return;
-    }
-    yaml = nodeToYaml(tree);
-    let cancelled = false;
-    dereferenceTree(ws, treeId).then((deref) => {
-      if (cancelled) return;
-      yaml = nodeToYaml(deref ?? tree);
-    });
-    return () => {
-      cancelled = true;
-    };
-  });
-  const nodeCount = $derived(root ? countNodes(root) : 0);
-  const isComposite = $derived.by(() => {
-    const n = selectedNode;
-    return !!n && !('$ref' in n) && n.type !== 'action';
-  });
-  const isRef = $derived.by(() => !!selectedNode && '$ref' in selectedNode);
-  const isRoot = $derived(selected != null && selected.length === 0);
+// YAML for the right-hand panel is the *dereferenced* tree, so copying
+// it gives a self-contained snippet. We resolve internal `$ref`s via
+// @apidevtools/json-schema-ref-parser, then serialise. Until the async
+// dereference completes, the raw tree YAML stands in.
+let yaml = $state("");
+$effect(() => {
+	const ws = workspace;
+	const tree = root;
+	if (!ws || !tree) {
+		yaml = "";
+		return;
+	}
+	yaml = nodeToYaml(tree);
+	let cancelled = false;
+	dereferenceTree(ws, treeId).then((deref) => {
+		if (cancelled) return;
+		yaml = nodeToYaml(deref ?? tree);
+	});
+	return () => {
+		cancelled = true;
+	};
+});
+const nodeCount = $derived(root ? countNodes(root) : 0);
+const isComposite = $derived.by(() => {
+	const n = selectedNode;
+	return !!n && !("$ref" in n) && n.type !== "action";
+});
+const isRef = $derived.by(() => !!selectedNode && "$ref" in selectedNode);
+const isRoot = $derived(selected != null && selected.length === 0);
 
-  function apply(transform: (r: BehaviourNode) => BehaviourNode) {
-    if (!root) return;
-    try {
-      ws.replaceTree(treeId, transform(root));
-    } catch (err) {
-      console.error(err);
-    }
-  }
+function apply(transform: (r: BehaviourNode) => BehaviourNode) {
+	if (!root) return;
+	try {
+		ws.replaceTree(treeId, transform(root));
+	} catch (err) {
+		console.error(err);
+	}
+}
 
-  function patchSelected(fn: (node: BehaviourNode) => BehaviourNode) {
-    if (selected == null) return;
-    apply((r) => updateAt(r, selected!, fn));
-  }
+function patchSelected(fn: (node: BehaviourNode) => BehaviourNode) {
+	if (selected == null) return;
+	apply((r) => updateAt(r, selected!, fn));
+}
 
-  function onSetName(v: string) { patchSelected((n) => setName(n, v)); }
-  function onSetDescription(v: string) { patchSelected((n) => setDescription(n, v)); }
-  function onSetRetries(v: string) { patchSelected((n) => setRetries(n, v)); }
-  function onSetCompositeType(v: CompositeType) { patchSelected((n) => setCompositeType(n, v)); }
-  function onSetRef(v: string) { patchSelected((n) => setRef(n, v)); }
-  function onAddStep(kind: 'evaluate' | 'instruct') { patchSelected((n) => addStep(n, kind)); }
-  function onRemoveStep(idx: number) { patchSelected((n) => removeStep(n, idx)); }
-  function onMoveStep(from: number, to: number) { patchSelected((n) => moveStep(n, from, to)); }
-  function onSetStepBody(idx: number, value: string) { patchSelected((n) => setStepBody(n, idx, value)); }
+function onSetName(v: string) {
+	patchSelected((n) => setName(n, v));
+}
+function onSetDescription(v: string) {
+	patchSelected((n) => setDescription(n, v));
+}
+function onSetRetries(v: string) {
+	patchSelected((n) => setRetries(n, v));
+}
+function onSetCompositeType(v: CompositeType) {
+	patchSelected((n) => setCompositeType(n, v));
+}
+function onSetRef(v: string) {
+	patchSelected((n) => setRef(n, v));
+}
+function onAddStep(kind: "evaluate" | "instruct") {
+	patchSelected((n) => addStep(n, kind));
+}
+function onRemoveStep(idx: number) {
+	patchSelected((n) => removeStep(n, idx));
+}
+function onMoveStep(from: number, to: number) {
+	patchSelected((n) => moveStep(n, from, to));
+}
+function onSetStepBody(idx: number, value: string) {
+	patchSelected((n) => setStepBody(n, idx, value));
+}
 
-  function onWrap(type: CompositeType) {
-    if (!selectedNode || selected == null) return;
-    const wrapperName =
-      'name' in selectedNode ? `${selectedNode.name}-wrapper` : 'wrapper';
-    apply((r) => wrap(r, selected!, type, wrapperName));
-    selected = [...selected, 0];
-  }
+function onWrap(type: CompositeType) {
+	if (!selectedNode || selected == null) return;
+	const wrapperName =
+		"name" in selectedNode ? `${selectedNode.name}-wrapper` : "wrapper";
+	apply((r) => wrap(r, selected!, type, wrapperName));
+	selected = [...selected, 0];
+}
 
-  function onConvertToRef() {
-    patchSelected(() => ({ $ref: '' }));
-  }
+function onConvertToRef() {
+	patchSelected(() => ({ $ref: "" }));
+}
 
-  function onConvertRefToAction() {
-    patchSelected(() => defaultAction('step'));
-  }
+function onConvertRefToAction() {
+	patchSelected(() => defaultAction("step"));
+}
 
-  function switchToTree(id: string) {
-    selected = null;
-    onSwitchTree(id);
-  }
+function switchToTree(id: string) {
+	selected = null;
+	onSwitchTree(id);
+}
 
-  // ---- Structural toolbar (canvas-area buttons) ------------------------
+// ---- Structural toolbar (canvas-area buttons) ------------------------
 
-  function onAddChild() {
-    if (!isComposite || selected == null) return;
-    apply((r) => insertChild(r, selected!, defaultAction()));
-  }
+function onAddChild() {
+	if (!isComposite || selected == null) return;
+	apply((r) => insertChild(r, selected!, defaultAction()));
+}
 
-  function onAddSibling() {
-    if (isRoot || selected == null) return;
-    const parent = parentOf(selected)!;
-    const idx = selected[selected.length - 1]! + 1;
-    apply((r) => insertChild(r, parent, defaultAction(), idx));
-  }
+function onAddSibling() {
+	if (isRoot || selected == null) return;
+	const parent = parentOf(selected)!;
+	const idx = selected[selected.length - 1]! + 1;
+	apply((r) => insertChild(r, parent, defaultAction(), idx));
+}
 
-  function onDeleteSelected() {
-    if (selected == null) return;
-    if (isRoot) {
-      apply(() => defaultAction(treeId));
-      selected = null;
-      return;
-    }
-    const parent = parentOf(selected)!;
-    apply((r) => removeAt(r, selected!));
-    selected = parent;
-  }
+function onDeleteSelected() {
+	if (selected == null) return;
+	if (isRoot) {
+		apply(() => defaultAction(treeId));
+		selected = null;
+		return;
+	}
+	const parent = parentOf(selected)!;
+	apply((r) => removeAt(r, selected!));
+	selected = parent;
+}
 
-  function onMoveSelected(direction: -1 | 1) {
-    if (isRoot || selected == null) return;
-    apply((r) => move(r, selected!, direction));
-    const last = selected![selected!.length - 1]!;
-    selected = [...parentOf(selected!)!, last + direction];
-  }
+function onMoveSelected(direction: -1 | 1) {
+	if (isRoot || selected == null) return;
+	apply((r) => move(r, selected!, direction));
+	const last = selected![selected!.length - 1]!;
+	selected = [...parentOf(selected!)!, last + direction];
+}
 
-  // Frame the entire tree inside the canvas viewport. Used by the Fit
-  // toolbar button, by the initial mount, and whenever the user switches
-  // to a different tree.
-  function onFit() {
-    if (!root || !canvasWrap) return;
-    const layout = computeLayout(root);
-    const vw = canvasWrap.clientWidth;
-    const vh = canvasWrap.clientHeight;
-    if (!vw || !vh || !layout.width || !layout.height) return;
-    const padding = 48;
-    const zx = (vw - padding * 2) / layout.width;
-    const zy = (vh - padding * 2) / layout.height;
-    const newZoom = Math.max(ZOOM_MIN, Math.min(ZOOM_FIT_MAX, Math.min(zx, zy)));
-    const contentW = layout.width * newZoom;
-    const contentH = layout.height * newZoom;
-    zoom = newZoom;
-    pan = {
-      x: (vw - contentW) / 2,
-      y: (vh - contentH) / 2,
-    };
-  }
+// Frame the entire tree inside the canvas viewport. Used by the Fit
+// toolbar button, by the initial mount, and whenever the user switches
+// to a different tree.
+function onFit() {
+	if (!root || !canvasWrap) return;
+	const layout = computeLayout(root);
+	const vw = canvasWrap.clientWidth;
+	const vh = canvasWrap.clientHeight;
+	if (!vw || !vh || !layout.width || !layout.height) return;
+	const padding = 48;
+	const zx = (vw - padding * 2) / layout.width;
+	const zy = (vh - padding * 2) / layout.height;
+	const newZoom = Math.max(ZOOM_MIN, Math.min(ZOOM_FIT_MAX, Math.min(zx, zy)));
+	const contentW = layout.width * newZoom;
+	const contentH = layout.height * newZoom;
+	zoom = newZoom;
+	pan = {
+		x: (vw - contentW) / 2,
+		y: (vh - contentH) / 2,
+	};
+}
 
-  // Auto-fit when entering this editor or switching trees. We intentionally
-  // depend on `treeId` only — not on the workspace root — so refitting
-  // doesn't fight the user's manual pan/zoom after every edit.
-  $effect(() => {
-    void treeId;
-    queueMicrotask(onFit);
-  });
+// Auto-fit when entering this editor or switching trees. We intentionally
+// depend on `treeId` only — not on the workspace root — so refitting
+// doesn't fight the user's manual pan/zoom after every edit.
+$effect(() => {
+	void treeId;
+	queueMicrotask(onFit);
+});
 </script>
 
 {#if !root || !workspace}

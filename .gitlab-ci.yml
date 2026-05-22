@@ -14,6 +14,14 @@ stages:
 
 # ---- Stage: check ------------------------------------------------------------
 
+# Biome — formatter + linter, runs in CI mode so any deviation from
+# the committed formatting or any lint error fails the pipeline.
+biome:
+  extends: .bun
+  stage: check
+  script:
+    - bun run lint:ci
+
 # TypeScript typechecks across every backend workspace package. Catches
 # the cross-package regressions a single-package `tsc --noEmit` misses.
 typecheck:

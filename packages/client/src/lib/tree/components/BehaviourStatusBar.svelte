@@ -1,18 +1,19 @@
 <script lang="ts">
-  import { makeTid } from "$lib/utils";
-  import { pathKey } from '../behaviour-layout';
-  import type { Path } from '../tree-ops';
+import { makeTid } from "$lib/utils";
+import { pathKey } from "../behaviour-layout";
+import type { Path } from "../tree-ops";
 
-  interface Props {
-    workspaceName: string;
-    nodeCount: number;
-    selected: Path | null;
-    zoom: number;
-    dirty: boolean;
-    testid?: string;
-  }
-  let { workspaceName, nodeCount, selected, zoom, dirty, testid }: Props = $props();
-  const tid = $derived(makeTid(testid));
+interface Props {
+	workspaceName: string;
+	nodeCount: number;
+	selected: Path | null;
+	zoom: number;
+	dirty: boolean;
+	testid?: string;
+}
+let { workspaceName, nodeCount, selected, zoom, dirty, testid }: Props =
+	$props();
+const tid = $derived(makeTid(testid));
 </script>
 
 <footer

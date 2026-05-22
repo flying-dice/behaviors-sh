@@ -1,21 +1,21 @@
 {
-  "name": "@behaviors-sh/dsl",
-  "private": true,
-  "version": "0.0.0",
-  "type": "module",
-  "exports": {
-    ".": "./src/index.ts"
-  },
-  "scripts": {
-    "test": "bun test"
-  },
-  "dependencies": {
-    "@behaviors-sh/spec": "workspace:*",
-    "object-hash": "^3.0.0"
-  },
-  "devDependencies": {
-    "@types/bun": "latest",
-    "@types/object-hash": "^3.0.6",
-    "typescript": "~6.0.2"
-  }
+	"name": "@behaviors-sh/dsl",
+	"private": true,
+	"version": "0.0.0",
+	"type": "module",
+	"exports": {
+		".": "./src/index.ts"
+	},
+	"scripts": {
+		"test": "bun test"
+	},
+	"dependencies": {
+		"@behaviors-sh/spec": "workspace:*",
+		"object-hash": "^3.0.0"
+	},
+	"devDependencies": {
+		"@types/bun": "latest",
+		"@types/object-hash": "^3.0.6",
+		"typescript": "~6.0.2"
+	}
 }

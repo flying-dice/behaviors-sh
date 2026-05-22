@@ -1,144 +1,149 @@
 <script lang="ts">
-  import { makeTid } from "$lib/utils";
-  import type { BehaviourNode } from '@behaviors-sh/spec';
-  import {
-    KIND_META,
-    ZOOM_MAX,
-    ZOOM_MIN,
-    computeLayout,
-    computeWires,
-    leafPreview,
-    nodeColor,
-    pathKey,
-    type LayoutItem,
-  } from '../behaviour-layout';
-  import type { Path } from '../tree-ops';
-  import { pathsEqual } from '../tree-ops';
-  import { refToTreeId } from '../ref';
-  import type { TreeSummary } from '$lib/workspace/store.svelte';
-  import Kbd from './Kbd.svelte';
+import type { BehaviourNode } from "@behaviors-sh/spec";
+import { makeTid } from "$lib/utils";
+import type { TreeSummary } from "$lib/workspace/store.svelte";
+import {
+	computeLayout,
+	computeWires,
+	KIND_META,
+	type LayoutItem,
+	leafPreview,
+	nodeColor,
+	pathKey,
+	ZOOM_MAX,
+	ZOOM_MIN,
+} from "../behaviour-layout";
+import { refToTreeId } from "../ref";
+import type { Path } from "../tree-ops";
+import { pathsEqual } from "../tree-ops";
+import Kbd from "./Kbd.svelte";
 
-  interface Props {
-    root: BehaviourNode;
-    selected: Path | null;
-    pan: { x: number; y: number };
-    zoom: number;
-    trees: TreeSummary[];
-    onSelect: (path: Path | null) => void;
-    onPan: (pan: { x: number; y: number }) => void;
-    onZoom: (zoom: number) => void;
-    onContextMenu: (path: Path, x: number, y: number) => void;
-    onOpenLinkedTree: (id: string) => void;
-    testid?: string;
-  }
+interface Props {
+	root: BehaviourNode;
+	selected: Path | null;
+	pan: { x: number; y: number };
+	zoom: number;
+	trees: TreeSummary[];
+	onSelect: (path: Path | null) => void;
+	onPan: (pan: { x: number; y: number }) => void;
+	onZoom: (zoom: number) => void;
+	onContextMenu: (path: Path, x: number, y: number) => void;
+	onOpenLinkedTree: (id: string) => void;
+	testid?: string;
+}
 
-  let {
-    root,
-    selected,
-    pan,
-    zoom,
-    trees,
-    onSelect,
-    onPan,
-    onZoom,
-    onContextMenu,
-    onOpenLinkedTree,
-    testid,
-  }: Props = $props();
-  const tid = $derived(makeTid(testid));
+let {
+	root,
+	selected,
+	pan,
+	zoom,
+	trees,
+	onSelect,
+	onPan,
+	onZoom,
+	onContextMenu,
+	onOpenLinkedTree,
+	testid,
+}: Props = $props();
+const tid = $derived(makeTid(testid));
 
-  const treeNameById = $derived(
-    new Map(trees.map((t) => [t.id, t.name] as const)),
-  );
+const treeNameById = $derived(
+	new Map(trees.map((t) => [t.id, t.name] as const)),
+);
 
-  const layout = $derived(computeLayout(root));
-  const wires = $derived(computeWires(layout));
+const layout = $derived(computeLayout(root));
+const wires = $derived(computeWires(layout));
 
-  let wrap = $state<HTMLDivElement | null>(null);
-  let drag = $state<{ x: number; y: number; ox: number; oy: number } | null>(null);
+let wrap = $state<HTMLDivElement | null>(null);
+let drag = $state<{ x: number; y: number; ox: number; oy: number } | null>(
+	null,
+);
 
-  function onMouseDown(e: MouseEvent) {
-    const t = e.target as HTMLElement | null;
-    if (!t) return;
-    if (t === wrap || t.tagName === 'svg' || t.classList.contains('canvas-bg')) {
-      drag = { x: e.clientX, y: e.clientY, ox: pan.x, oy: pan.y };
-    }
-  }
+function onMouseDown(e: MouseEvent) {
+	const t = e.target as HTMLElement | null;
+	if (!t) return;
+	if (t === wrap || t.tagName === "svg" || t.classList.contains("canvas-bg")) {
+		drag = { x: e.clientX, y: e.clientY, ox: pan.x, oy: pan.y };
+	}
+}
 
-  function onMouseMove(e: MouseEvent) {
-    if (!drag) return;
-    onPan({ x: drag.ox + (e.clientX - drag.x), y: drag.oy + (e.clientY - drag.y) });
-  }
+function onMouseMove(e: MouseEvent) {
+	if (!drag) return;
+	onPan({
+		x: drag.ox + (e.clientX - drag.x),
+		y: drag.oy + (e.clientY - drag.y),
+	});
+}
 
-  function onMouseUp() {
-    drag = null;
-  }
+function onMouseUp() {
+	drag = null;
+}
 
-  function onWheel(e: WheelEvent) {
-    if (e.ctrlKey || e.metaKey) {
-      e.preventDefault();
-      const delta = -e.deltaY * 0.0015;
-      onZoom(Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, zoom * (1 + delta))));
-    } else {
-      onPan({ x: pan.x - e.deltaX, y: pan.y - e.deltaY });
-    }
-  }
+function onWheel(e: WheelEvent) {
+	if (e.ctrlKey || e.metaKey) {
+		e.preventDefault();
+		const delta = -e.deltaY * 0.0015;
+		onZoom(Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, zoom * (1 + delta))));
+	} else {
+		onPan({ x: pan.x - e.deltaX, y: pan.y - e.deltaY });
+	}
+}
 
-  function onCanvasClick(e: MouseEvent) {
-    const t = e.target as Element | null;
-    if (!t) return;
-    if (t.closest('.node-hit')) return;
-    onSelect(null);
-  }
+function onCanvasClick(e: MouseEvent) {
+	const t = e.target as Element | null;
+	if (!t) return;
+	if (t.closest(".node-hit")) return;
+	onSelect(null);
+}
 
-  function nodePath(it: LayoutItem) {
-    const { x, y, w, h } = it;
-    const chamfer = 12;
-    return `M${x + chamfer} ${y} H${x + w - chamfer} L${x + w} ${y + h / 2} L${x + w - chamfer} ${y + h} H${
-      x + chamfer
-    } L${x} ${y + h / 2} Z`;
-  }
+function nodePath(it: LayoutItem) {
+	const { x, y, w, h } = it;
+	const chamfer = 12;
+	return `M${x + chamfer} ${y} H${x + w - chamfer} L${x + w} ${y + h / 2} L${x + w - chamfer} ${y + h} H${
+		x + chamfer
+	} L${x} ${y + h / 2} Z`;
+}
 
-  function wirePath(from: LayoutItem, to: LayoutItem) {
-    const x1 = from.x + from.w / 2;
-    const y1 = from.y + from.h;
-    const x2 = to.x + to.w / 2;
-    const y2 = to.y;
-    const midY = y1 + (y2 - y1) / 2;
-    return `M${x1} ${y1} V${midY} H${x2} V${y2}`;
-  }
+function wirePath(from: LayoutItem, to: LayoutItem) {
+	const x1 = from.x + from.w / 2;
+	const y1 = from.y + from.h;
+	const x2 = to.x + to.w / 2;
+	const y2 = to.y;
+	const midY = y1 + (y2 - y1) / 2;
+	return `M${x1} ${y1} V${midY} H${x2} V${y2}`;
+}
 
-  function preview(text: string | undefined, n = 28) {
-    if (!text) return '';
-    const t = text.replace(/\s+/g, ' ');
-    return t.length > n ? t.slice(0, n - 1) + '…' : t;
-  }
+function preview(text: string | undefined, n = 28) {
+	if (!text) return "";
+	const t = text.replace(/\s+/g, " ");
+	return t.length > n ? `${t.slice(0, n - 1)}…` : t;
+}
 
-  function labelOf(node: BehaviourNode): string {
-    if ('$ref' in node) {
-      const id = refToTreeId(node.$ref);
-      if (!id) return 'pick a tree…';
-      return treeNameById.get(id) ?? id;
-    }
-    return node.name;
-  }
+function labelOf(node: BehaviourNode): string {
+	if ("$ref" in node) {
+		const id = refToTreeId(node.$ref);
+		if (!id) return "pick a tree…";
+		return treeNameById.get(id) ?? id;
+	}
+	return node.name;
+}
 
-  function refPreview(node: BehaviourNode): string | undefined {
-    if (!('$ref' in node)) return undefined;
-    const id = refToTreeId(node.$ref);
-    return id ? `↪ open tree` : 'no tree selected';
-  }
+function refPreview(node: BehaviourNode): string | undefined {
+	if (!("$ref" in node)) return undefined;
+	const id = refToTreeId(node.$ref);
+	return id ? `↪ open tree` : "no tree selected";
+}
 
-  function childrenCount(node: BehaviourNode): number {
-    if ('$ref' in node || node.type === 'action') return 0;
-    return node.children.length;
-  }
+function childrenCount(node: BehaviourNode): number {
+	if ("$ref" in node || node.type === "action") return 0;
+	return node.children.length;
+}
 
-  function tryOpenLink(node: BehaviourNode) {
-    if (!('$ref' in node)) return;
-    const id = refToTreeId(node.$ref);
-    if (id) onOpenLinkedTree(id);
-  }
+function tryOpenLink(node: BehaviourNode) {
+	if (!("$ref" in node)) return;
+	const id = refToTreeId(node.$ref);
+	if (id) onOpenLinkedTree(id);
+}
 </script>
 
 <svelte:window onmousemove={onMouseMove} onmouseup={onMouseUp} />

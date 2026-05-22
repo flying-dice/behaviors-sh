@@ -7,10 +7,16 @@ export type {
 	ActionNode,
 	BehaviourNode,
 	CompositeNode,
+	NodeState,
+	NormalizedActionNode,
+	NormalizedCompositeNode,
+	NormalizedNode,
+	NormalizedRefNode,
+	NormalizedStep,
+	ParsedTree,
 	RefNode,
 	Step,
 } from "@behaviors-sh/spec";
-
 export {
 	EXECUTION_SCHEMA_VERSION,
 	type ExecutionDocument,
@@ -20,16 +26,6 @@ export {
 	type RuntimeState,
 	type TraceEntry,
 	type TraceKind,
-} from "@behaviors-sh/spec";
-
-export type {
-	NodeState,
-	NormalizedActionNode,
-	NormalizedCompositeNode,
-	NormalizedNode,
-	NormalizedRefNode,
-	NormalizedStep,
-	ParsedTree,
 } from "@behaviors-sh/spec";
 
 export type TickResult =

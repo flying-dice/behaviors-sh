@@ -1,22 +1,20 @@
 <script lang="ts">
-  import { makeTid } from '$lib/utils';
-  import { kindOf, type ValueKind } from '../scope';
+import { makeTid } from "$lib/utils";
+import { kindOf, type ValueKind } from "../scope";
 
-  interface Props {
-    value: unknown;
-    testid?: string;
-  }
-  let { value, testid }: Props = $props();
+interface Props {
+	value: unknown;
+	testid?: string;
+}
+let { value, testid }: Props = $props();
 
-  const tid = $derived(makeTid(testid));
-  const kind: ValueKind = $derived(kindOf(value));
+const tid = $derived(makeTid(testid));
+const kind: ValueKind = $derived(kindOf(value));
 
-  const stringValue = $derived(kind === 'string' ? (value as string) : '');
-  const objectJson = $derived(
-    kind === 'array' || kind === 'object'
-      ? JSON.stringify(value, null, 2)
-      : '',
-  );
+const stringValue = $derived(kind === "string" ? (value as string) : "");
+const objectJson = $derived(
+	kind === "array" || kind === "object" ? JSON.stringify(value, null, 2) : "",
+);
 </script>
 
 <div data-testid={testid} class="min-w-0 text-[12px]">

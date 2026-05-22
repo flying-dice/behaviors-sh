@@ -1,32 +1,26 @@
 <script lang="ts">
-  import { makeTid } from '$lib/utils';
-  import { ZOOM_MAX, ZOOM_MIN } from '$lib/tree/behaviour-layout';
-  import { Button } from '$lib/components/ui/button';
-  import * as Tooltip from '$lib/components/ui/tooltip';
-  import Plus from '@lucide/svelte/icons/plus';
-  import Minus from '@lucide/svelte/icons/minus';
-  import Maximize from '@lucide/svelte/icons/maximize';
-  import PanelRightOpen from '@lucide/svelte/icons/panel-right-open';
-  import PanelRightClose from '@lucide/svelte/icons/panel-right-close';
+import Maximize from "@lucide/svelte/icons/maximize";
+import Minus from "@lucide/svelte/icons/minus";
+import PanelRightClose from "@lucide/svelte/icons/panel-right-close";
+import PanelRightOpen from "@lucide/svelte/icons/panel-right-open";
+import Plus from "@lucide/svelte/icons/plus";
+import { Button } from "$lib/components/ui/button";
+import * as Tooltip from "$lib/components/ui/tooltip";
+import { ZOOM_MAX, ZOOM_MIN } from "$lib/tree/behaviour-layout";
+import { makeTid } from "$lib/utils";
 
-  interface Props {
-    zoom: number;
-    inspectorOpen: boolean;
-    onZoom: (z: number) => void;
-    onFit: () => void;
-    onToggleInspector: () => void;
-    testid?: string;
-  }
-  let {
-    zoom,
-    inspectorOpen,
-    onZoom,
-    onFit,
-    onToggleInspector,
-    testid,
-  }: Props = $props();
+interface Props {
+	zoom: number;
+	inspectorOpen: boolean;
+	onZoom: (z: number) => void;
+	onFit: () => void;
+	onToggleInspector: () => void;
+	testid?: string;
+}
+let { zoom, inspectorOpen, onZoom, onFit, onToggleInspector, testid }: Props =
+	$props();
 
-  const tid = $derived(makeTid(testid));
+const tid = $derived(makeTid(testid));
 </script>
 
 <div

@@ -1,54 +1,54 @@
 <script lang="ts">
-  import Plus from '@lucide/svelte/icons/plus';
-  import Minus from '@lucide/svelte/icons/minus';
-  import XIcon from '@lucide/svelte/icons/x';
+import Minus from "@lucide/svelte/icons/minus";
+import Plus from "@lucide/svelte/icons/plus";
+import XIcon from "@lucide/svelte/icons/x";
 
-  interface Props {
-    /** Current value as a string. Empty string means "unset" / placeholder. */
-    value: string;
-    /** Inclusive minimum. Step buttons clamp here; typing is left to the parent. */
-    min?: number;
-    /** Inclusive maximum, or `Infinity`. */
-    max?: number;
-    step?: number;
-    placeholder?: string;
-    id?: string;
-    /**
-     * Root `data-testid`. Sub-elements get suffixed testids
-     * (`<testid>-dec`, `<testid>-input`, `<testid>-inc`) so tests can target
-     * the buttons and the field independently.
-     */
-    testid?: string;
-    onChange: (next: string) => void;
-  }
+interface Props {
+	/** Current value as a string. Empty string means "unset" / placeholder. */
+	value: string;
+	/** Inclusive minimum. Step buttons clamp here; typing is left to the parent. */
+	min?: number;
+	/** Inclusive maximum, or `Infinity`. */
+	max?: number;
+	step?: number;
+	placeholder?: string;
+	id?: string;
+	/**
+	 * Root `data-testid`. Sub-elements get suffixed testids
+	 * (`<testid>-dec`, `<testid>-input`, `<testid>-inc`) so tests can target
+	 * the buttons and the field independently.
+	 */
+	testid?: string;
+	onChange: (next: string) => void;
+}
 
-  let {
-    value,
-    min = 1,
-    max = Number.POSITIVE_INFINITY,
-    step = 1,
-    placeholder = '—',
-    id,
-    testid,
-    onChange,
-  }: Props = $props();
+let {
+	value,
+	min = 1,
+	max = Number.POSITIVE_INFINITY,
+	step = 1,
+	placeholder = "—",
+	id,
+	testid,
+	onChange,
+}: Props = $props();
 
-  const parsed = $derived.by(() => {
-    const t = value.trim();
-    if (!t) return null;
-    const n = Number(t);
-    return Number.isFinite(n) ? n : null;
-  });
-  const canDec = $derived(parsed != null && parsed > min);
-  const canInc = $derived(parsed == null || parsed < max);
-  const hasValue = $derived(value.trim().length > 0);
+const parsed = $derived.by(() => {
+	const t = value.trim();
+	if (!t) return null;
+	const n = Number(t);
+	return Number.isFinite(n) ? n : null;
+});
+const canDec = $derived(parsed != null && parsed > min);
+const canInc = $derived(parsed == null || parsed < max);
+const hasValue = $derived(value.trim().length > 0);
 
-  function bump(direction: -1 | 1) {
-    const base = parsed ?? min - direction;
-    const next = base + direction * step;
-    if (next < min || next > max) return;
-    onChange(String(next));
-  }
+function bump(direction: -1 | 1) {
+	const base = parsed ?? min - direction;
+	const next = base + direction * step;
+	if (next < min || next > max) return;
+	onChange(String(next));
+}
 </script>
 
 <div

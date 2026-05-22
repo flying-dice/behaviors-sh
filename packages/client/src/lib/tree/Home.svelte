@@ -1,115 +1,120 @@
 <script lang="ts">
-  import { makeTid, errorMessage } from "$lib/utils";
-  import type { BehaviourNode } from '@behaviors-sh/spec';
-  import { Card, CardContent } from '$lib/components/ui/card';
-  import { Badge } from '$lib/components/ui/badge';
-  import { Button } from '$lib/components/ui/button';
-  import { ScrollArea } from '$lib/components/ui/scroll-area';
-  import Search from '@lucide/svelte/icons/search';
-  import PlusIcon from '@lucide/svelte/icons/plus';
-  import Boxes from '@lucide/svelte/icons/boxes';
-  import FolderPlus from '@lucide/svelte/icons/folder-plus';
-  import HardDrive from '@lucide/svelte/icons/hard-drive';
-  import Globe from '@lucide/svelte/icons/globe';
-  import FileUp from '@lucide/svelte/icons/file-up';
-  import Sparkles from '@lucide/svelte/icons/sparkles';
-  import TreeCard from './components/TreeCard.svelte';
-  import NewWorkspaceDialog from './components/NewWorkspaceDialog.svelte';
-  import ImportTreeDialog from './components/ImportTreeDialog.svelte';
-  import NewTreeDialog from './components/NewTreeDialog.svelte';
-  import RenameTreeDialog from './components/RenameTreeDialog.svelte';
-  import DeleteTreeDialog from './components/DeleteTreeDialog.svelte';
-  import QuickStartDialog from './components/QuickStartDialog.svelte';
-  import Kbd from './components/Kbd.svelte';
-  import { QUICK_START_EXAMPLES } from './quickstart-examples';
-  import * as ws from '$lib/workspace/store.svelte';
+import type { BehaviourNode } from "@behaviors-sh/spec";
+import Boxes from "@lucide/svelte/icons/boxes";
+import FileUp from "@lucide/svelte/icons/file-up";
+import FolderPlus from "@lucide/svelte/icons/folder-plus";
+import Globe from "@lucide/svelte/icons/globe";
+import HardDrive from "@lucide/svelte/icons/hard-drive";
+import PlusIcon from "@lucide/svelte/icons/plus";
+import Search from "@lucide/svelte/icons/search";
+import Sparkles from "@lucide/svelte/icons/sparkles";
+import { Badge } from "$lib/components/ui/badge";
+import { Button } from "$lib/components/ui/button";
+import { Card, CardContent } from "$lib/components/ui/card";
+import { ScrollArea } from "$lib/components/ui/scroll-area";
+import { errorMessage, makeTid } from "$lib/utils";
+import * as ws from "$lib/workspace/store.svelte";
+import DeleteTreeDialog from "./components/DeleteTreeDialog.svelte";
+import type ImportTreeDialog from "./components/ImportTreeDialog.svelte";
+import Kbd from "./components/Kbd.svelte";
+import NewTreeDialog from "./components/NewTreeDialog.svelte";
+import NewWorkspaceDialog from "./components/NewWorkspaceDialog.svelte";
+import QuickStartDialog from "./components/QuickStartDialog.svelte";
+import RenameTreeDialog from "./components/RenameTreeDialog.svelte";
+import TreeCard from "./components/TreeCard.svelte";
+import { QUICK_START_EXAMPLES } from "./quickstart-examples";
 
-  interface Props {
-    onOpenTree: (id: string) => void;
-    onMarketplace: () => void;
-    testid?: string;
-  }
-  let { onOpenTree, onMarketplace, testid }: Props = $props();
-  const tid = $derived(makeTid(testid));
+interface Props {
+	onOpenTree: (id: string) => void;
+	onMarketplace: () => void;
+	testid?: string;
+}
+let { onOpenTree, onMarketplace, testid }: Props = $props();
+const tid = $derived(makeTid(testid));
 
-  const workspace = $derived(ws.getWorkspace());
-  const trees = $derived(ws.listTrees());
-  const slots = $derived(ws.listBrowserSlots());
+const workspace = $derived(ws.getWorkspace());
+const trees = $derived(ws.listTrees());
+const slots = $derived(ws.listBrowserSlots());
 
-  const stats = $derived([
-    { label: 'Trees', value: trees.length },
-    { label: 'Composites', value: trees.filter((t) => t.kind === 'sequence' || t.kind === 'selector' || t.kind === 'parallel').length },
-    { label: 'Actions', value: trees.filter((t) => t.kind === 'action').length },
-    { label: 'Links', value: trees.filter((t) => t.kind === 'ref').length },
-  ]);
+const stats = $derived([
+	{ label: "Trees", value: trees.length },
+	{
+		label: "Composites",
+		value: trees.filter(
+			(t) =>
+				t.kind === "sequence" || t.kind === "selector" || t.kind === "parallel",
+		).length,
+	},
+	{ label: "Actions", value: trees.filter((t) => t.kind === "action").length },
+	{ label: "Links", value: trees.filter((t) => t.kind === "ref").length },
+]);
 
-  let filter = $state('');
-  const filtered = $derived(
-    trees.filter(
-      (t) =>
-        t.name.toLowerCase().includes(filter.toLowerCase()) ||
-        t.id.toLowerCase().includes(filter.toLowerCase()),
-    ),
-  );
+let filter = $state("");
+const filtered = $derived(
+	trees.filter(
+		(t) =>
+			t.name.toLowerCase().includes(filter.toLowerCase()) ||
+			t.id.toLowerCase().includes(filter.toLowerCase()),
+	),
+);
 
-  // ---- Landing page (no workspace) --------------------------------------
+// ---- Landing page (no workspace) --------------------------------------
 
-  let wsDialogOpen = $state(false);
+let wsDialogOpen = $state(false);
 
-  function submitWs(name: string, version: string) {
-    ws.newWorkspace(name, version);
-  }
+function submitWs(name: string, version: string) {
+	ws.newWorkspace(name, version);
+}
 
+function formatTime(ts: number): string {
+	const diff = Date.now() - ts;
+	const mins = Math.floor(diff / 60000);
+	if (mins < 1) return "just now";
+	if (mins < 60) return `${mins}m ago`;
+	const hours = Math.floor(mins / 60);
+	if (hours < 24) return `${hours}h ago`;
+	const days = Math.floor(hours / 24);
+	return `${days}d ago`;
+}
 
-  function formatTime(ts: number): string {
-    const diff = Date.now() - ts;
-    const mins = Math.floor(diff / 60000);
-    if (mins < 1) return 'just now';
-    if (mins < 60) return `${mins}m ago`;
-    const hours = Math.floor(mins / 60);
-    if (hours < 24) return `${hours}h ago`;
-    const days = Math.floor(hours / 24);
-    return `${days}d ago`;
-  }
+let importDialog: ReturnType<typeof ImportTreeDialog>;
 
-  let importDialog: ReturnType<typeof ImportTreeDialog>;
+// ---- New tree dialog --------------------------------------------------
 
-  // ---- New tree dialog --------------------------------------------------
+let newOpen = $state(false);
+let newError = $state("");
 
-  let newOpen = $state(false);
-  let newError = $state('');
+function submitNewTree(id: string, node: BehaviourNode) {
+	try {
+		ws.createTree(id, node);
+		newOpen = false;
+		newError = "";
+		onOpenTree(id);
+	} catch (err) {
+		newError = errorMessage(err);
+	}
+}
 
-  function submitNewTree(id: string, node: BehaviourNode) {
-    try {
-      ws.createTree(id, node);
-      newOpen = false;
-      newError = '';
-      onOpenTree(id);
-    } catch (err) {
-      newError = errorMessage(err);
-    }
-  }
+// ---- Rename / Delete dialogs -------------------------------------------
 
-  // ---- Rename / Delete dialogs -------------------------------------------
+let renameOpen = $state(false);
+let renameTarget = $state("");
+let deleteOpen = $state(false);
+let deleteTarget = $state("");
 
-  let renameOpen = $state(false);
-  let renameTarget = $state('');
-  let deleteOpen = $state(false);
-  let deleteTarget = $state('');
+function askRename(id: string) {
+	renameTarget = id;
+	renameOpen = true;
+}
 
-  function askRename(id: string) {
-    renameTarget = id;
-    renameOpen = true;
-  }
+function askDelete(id: string) {
+	deleteTarget = id;
+	deleteOpen = true;
+}
 
-  function askDelete(id: string) {
-    deleteTarget = id;
-    deleteOpen = true;
-  }
+// ---- Quick start ------------------------------------------------------
 
-  // ---- Quick start ------------------------------------------------------
-
-  let quickStartOpen = $state(false);
+let quickStartOpen = $state(false);
 </script>
 
 <ScrollArea class="h-full" data-testid={testid}>

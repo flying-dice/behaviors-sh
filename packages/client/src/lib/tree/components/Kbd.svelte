@@ -1,5 +1,5 @@
 <script lang="ts">
-  let { children, testid }: { children: any; testid?: string } = $props();
+let { children, testid }: { children: any; testid?: string } = $props();
 </script>
 
 <kbd

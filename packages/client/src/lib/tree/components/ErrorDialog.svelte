@@ -1,16 +1,16 @@
 <script lang="ts">
-  import { makeTid } from "$lib/utils";
-  import { Button } from '$lib/components/ui/button';
-  import * as Dialog from '$lib/components/ui/dialog';
+import { Button } from "$lib/components/ui/button";
+import * as Dialog from "$lib/components/ui/dialog";
+import { makeTid } from "$lib/utils";
 
-  interface Props {
-    open: boolean;
-    title: string;
-    message: string;
-    testid?: string;
-  }
-  let { open = $bindable(), title, message, testid }: Props = $props();
-  const tid = $derived(makeTid(testid));
+interface Props {
+	open: boolean;
+	title: string;
+	message: string;
+	testid?: string;
+}
+let { open = $bindable(), title, message, testid }: Props = $props();
+const tid = $derived(makeTid(testid));
 </script>
 
 <Dialog.Root bind:open>

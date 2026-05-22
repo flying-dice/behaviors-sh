@@ -1,44 +1,44 @@
 <script lang="ts">
-  import { makeTid } from '$lib/utils';
-  import * as Tooltip from '$lib/components/ui/tooltip';
-  import { kindOf, splitNamespacedKey, type ScopeRef } from '../scope';
+import * as Tooltip from "$lib/components/ui/tooltip";
+import { makeTid } from "$lib/utils";
+import { kindOf, type ScopeRef, splitNamespacedKey } from "../scope";
 
-  interface Props {
-    ref: ScopeRef;
-    exists: boolean;
-    value: unknown;
-    testid?: string;
-  }
-  let { ref, exists, value, testid }: Props = $props();
+interface Props {
+	ref: ScopeRef;
+	exists: boolean;
+	value: unknown;
+	testid?: string;
+}
+let { ref, exists, value, testid }: Props = $props();
 
-  const tid = $derived(makeTid(testid));
-  const split = $derived(splitNamespacedKey(ref.key));
-  const valueKind = $derived(kindOf(value));
+const tid = $derived(makeTid(testid));
+const split = $derived(splitNamespacedKey(ref.key));
+const valueKind = $derived(kindOf(value));
 
-  // Short, single-line preview used inside the tooltip. Long strings
-  // and JSON-y values are truncated; tooltips aren't the place for
-  // wholesale value inspection (that's the State tab).
-  const valuePreview = $derived.by<string>(() => {
-    if (!exists) return 'no such key';
-    if (valueKind === 'null') return '— not set';
-    if (valueKind === 'boolean') return String(value);
-    if (valueKind === 'number') return String(value);
-    if (valueKind === 'string') {
-      const s = value as string;
-      return s.length > 220 ? `${s.slice(0, 220)}…` : s;
-    }
-    const json = JSON.stringify(value);
-    return json.length > 220 ? `${json.slice(0, 220)}…` : json;
-  });
+// Short, single-line preview used inside the tooltip. Long strings
+// and JSON-y values are truncated; tooltips aren't the place for
+// wholesale value inspection (that's the State tab).
+const valuePreview = $derived.by<string>(() => {
+	if (!exists) return "no such key";
+	if (valueKind === "null") return "— not set";
+	if (valueKind === "boolean") return String(value);
+	if (valueKind === "number") return String(value);
+	if (valueKind === "string") {
+		const s = value as string;
+		return s.length > 220 ? `${s.slice(0, 220)}…` : s;
+	}
+	const json = JSON.stringify(value);
+	return json.length > 220 ? `${json.slice(0, 220)}…` : json;
+});
 
-  // Scope colors mirror the spec colour layer used elsewhere (var =
-  // active/foreground, const = locked/muted). Kept subtle so the badge
-  // reads as inline punctuation rather than a CTA.
-  const scopeClasses = $derived(
-    ref.scope === 'var'
-      ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-500/15'
-      : 'border-blue-500/30 bg-blue-500/10 text-blue-700 dark:text-blue-300 hover:bg-blue-500/15',
-  );
+// Scope colors mirror the spec colour layer used elsewhere (var =
+// active/foreground, const = locked/muted). Kept subtle so the badge
+// reads as inline punctuation rather than a CTA.
+const scopeClasses = $derived(
+	ref.scope === "var"
+		? "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-500/15"
+		: "border-blue-500/30 bg-blue-500/10 text-blue-700 dark:text-blue-300 hover:bg-blue-500/15",
+);
 </script>
 
 <Tooltip.Provider delayDuration={150}>

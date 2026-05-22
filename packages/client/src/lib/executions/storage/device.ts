@@ -4,14 +4,14 @@
 // the execution is running) and falls back to a hidden `<input type=file>`
 // on browsers that don't support it.
 
-import { pickFile } from '$lib/workspace/storage/dom-io';
-import type { ExecutionDocument } from '@behaviors-sh/spec';
-import { parseExecutionDoc } from '../serialize';
+import type { ExecutionDocument } from "@behaviors-sh/spec";
+import { pickFile } from "$lib/workspace/storage/dom-io";
+import { parseExecutionDoc } from "../serialize";
 
 const PICKER_TYPES = [
 	{
-		description: 'Behaviour Execution Trace',
-		accept: { 'application/json': ['.json'] as `.${string}`[] },
+		description: "Behaviour Execution Trace",
+		accept: { "application/json": [".json"] as `.${string}`[] },
 	},
 ];
 
@@ -48,7 +48,7 @@ export async function openExecutionFromDevice(): Promise<OpenedExecution | null>
 			filename: file.name,
 		};
 	}
-	return pickFile('.json,application/json', async (file) => ({
+	return pickFile(".json,application/json", async (file) => ({
 		doc: parseExecutionDoc(await file.text()),
 		filename: file.name,
 	}));

@@ -7,10 +7,10 @@
 // `{ $ref: "..." }` objects so a cycle can't blow the stack at validate
 // time; the runtime fails cleanly if it ever ticks the preserved ref.
 
-import $RefParser from "@apidevtools/json-schema-ref-parser";
 import { existsSync, statSync } from "node:fs";
 import { isAbsolute, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import $RefParser from "@apidevtools/json-schema-ref-parser";
 import type { LoadedTree, TreeReader } from "../ports/tree-reader.ts";
 import { sanitiseSlug } from "../tree-arg.ts";
 import type { ParsedTree } from "../types.ts";

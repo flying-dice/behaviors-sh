@@ -1,186 +1,189 @@
 <script lang="ts">
-  import { makeTid } from '$lib/utils';
-  import type { BehaviourNode, NodeStatus } from '@behaviors-sh/spec';
-  import {
-    KIND_META,
-    ZOOM_MAX,
-    ZOOM_MIN,
-    computeLayout,
-    computeWires,
-    nodeColor,
-    pathKey,
-    type LayoutItem,
-  } from '$lib/tree/behaviour-layout';
-  import type { Path } from '$lib/tree/tree-ops';
-  import { pathsEqual } from '$lib/tree/tree-ops';
-  import Kbd from '$lib/tree/components/Kbd.svelte';
-  import { canvasKeyForPath } from '../cursor';
+import type { BehaviourNode, NodeStatus } from "@behaviors-sh/spec";
+import {
+	computeLayout,
+	computeWires,
+	KIND_META,
+	type LayoutItem,
+	nodeColor,
+	pathKey,
+	ZOOM_MAX,
+	ZOOM_MIN,
+} from "$lib/tree/behaviour-layout";
+import Kbd from "$lib/tree/components/Kbd.svelte";
+import type { Path } from "$lib/tree/tree-ops";
+import { pathsEqual } from "$lib/tree/tree-ops";
+import { makeTid } from "$lib/utils";
+import { canvasKeyForPath } from "../cursor";
 
-  interface Props {
-    root: BehaviourNode;
-    selected: Path | null;
-    pan: { x: number; y: number };
-    zoom: number;
-    // Map of `pathKey(path)` → status. Drives the colored border + dot
-    // overlay on each node. Unstatused nodes render with the default
-    // border (faded muted-foreground).
-    statusByPath: Record<string, NodeStatus>;
-    // Path of the action currently in flight (cursor.path while phase
-    // is evaluating/performing). Renders with a pulsing ring so the
-    // user can spot live activity at a glance.
-    inFlightPath: Path | null;
-    // Monotonically-increasing counter. Whenever it changes we
-    // re-fit the tree to the viewport. The parent owns the value so it
-    // can wire it to a toolbar button (`token++`) and to a tree-change
-    // effect (auto-fit on open).
-    fitToken: number;
-    onSelect: (path: Path | null) => void;
-    onPan: (pan: { x: number; y: number }) => void;
-    onZoom: (zoom: number) => void;
-    testid?: string;
-  }
+interface Props {
+	root: BehaviourNode;
+	selected: Path | null;
+	pan: { x: number; y: number };
+	zoom: number;
+	// Map of `pathKey(path)` → status. Drives the colored border + dot
+	// overlay on each node. Unstatused nodes render with the default
+	// border (faded muted-foreground).
+	statusByPath: Record<string, NodeStatus>;
+	// Path of the action currently in flight (cursor.path while phase
+	// is evaluating/performing). Renders with a pulsing ring so the
+	// user can spot live activity at a glance.
+	inFlightPath: Path | null;
+	// Monotonically-increasing counter. Whenever it changes we
+	// re-fit the tree to the viewport. The parent owns the value so it
+	// can wire it to a toolbar button (`token++`) and to a tree-change
+	// effect (auto-fit on open).
+	fitToken: number;
+	onSelect: (path: Path | null) => void;
+	onPan: (pan: { x: number; y: number }) => void;
+	onZoom: (zoom: number) => void;
+	testid?: string;
+}
 
-  let {
-    root,
-    selected,
-    pan,
-    zoom,
-    statusByPath,
-    inFlightPath,
-    fitToken,
-    onSelect,
-    onPan,
-    onZoom,
-    testid,
-  }: Props = $props();
+let {
+	root,
+	selected,
+	pan,
+	zoom,
+	statusByPath,
+	inFlightPath,
+	fitToken,
+	onSelect,
+	onPan,
+	onZoom,
+	testid,
+}: Props = $props();
 
-  const tid = $derived(makeTid(testid));
+const tid = $derived(makeTid(testid));
 
-  const layout = $derived(computeLayout(root));
-  const wires = $derived(computeWires(layout));
+const layout = $derived(computeLayout(root));
+const wires = $derived(computeWires(layout));
 
-  let wrap = $state<HTMLDivElement | null>(null);
-  let drag = $state<{ x: number; y: number; ox: number; oy: number } | null>(
-    null,
-  );
+let wrap = $state<HTMLDivElement | null>(null);
+let drag = $state<{ x: number; y: number; ox: number; oy: number } | null>(
+	null,
+);
 
-  // Auto-fit when `fitToken` ticks. We measure the viewport, compute a
-  // zoom that frames the whole tree with a padding margin, and centre
-  // the layout in the viewport. Bumping the token is how the parent
-  // requests a fit (toolbar click + tree-change effect).
-  $effect(() => {
-    void fitToken;
-    queueMicrotask(() => {
-      if (!wrap) return;
-      const vw = wrap.clientWidth;
-      const vh = wrap.clientHeight;
-      if (!vw || !vh || !layout.width || !layout.height) return;
-      const padding = 48;
-      const zx = (vw - padding * 2) / layout.width;
-      const zy = (vh - padding * 2) / layout.height;
-      // Mirrors TreeEditor's behaviour: clamp the "fit" zoom so a tiny
-      // tree doesn't blow up to 2.5× and so a huge tree still fits.
-      const FIT_MAX = 2.0;
-      const next = Math.max(ZOOM_MIN, Math.min(FIT_MAX, Math.min(zx, zy)));
-      const contentW = layout.width * next;
-      const contentH = layout.height * next;
-      onZoom(next);
-      onPan({ x: (vw - contentW) / 2, y: (vh - contentH) / 2 });
-    });
-  });
+// Auto-fit when `fitToken` ticks. We measure the viewport, compute a
+// zoom that frames the whole tree with a padding margin, and centre
+// the layout in the viewport. Bumping the token is how the parent
+// requests a fit (toolbar click + tree-change effect).
+$effect(() => {
+	void fitToken;
+	queueMicrotask(() => {
+		if (!wrap) return;
+		const vw = wrap.clientWidth;
+		const vh = wrap.clientHeight;
+		if (!vw || !vh || !layout.width || !layout.height) return;
+		const padding = 48;
+		const zx = (vw - padding * 2) / layout.width;
+		const zy = (vh - padding * 2) / layout.height;
+		// Mirrors TreeEditor's behaviour: clamp the "fit" zoom so a tiny
+		// tree doesn't blow up to 2.5× and so a huge tree still fits.
+		const FIT_MAX = 2.0;
+		const next = Math.max(ZOOM_MIN, Math.min(FIT_MAX, Math.min(zx, zy)));
+		const contentW = layout.width * next;
+		const contentH = layout.height * next;
+		onZoom(next);
+		onPan({ x: (vw - contentW) / 2, y: (vh - contentH) / 2 });
+	});
+});
 
-  function onMouseDown(e: MouseEvent) {
-    const t = e.target as HTMLElement | null;
-    if (!t) return;
-    if (t === wrap || t.tagName === 'svg' || t.classList.contains('canvas-bg')) {
-      drag = { x: e.clientX, y: e.clientY, ox: pan.x, oy: pan.y };
-    }
-  }
+function onMouseDown(e: MouseEvent) {
+	const t = e.target as HTMLElement | null;
+	if (!t) return;
+	if (t === wrap || t.tagName === "svg" || t.classList.contains("canvas-bg")) {
+		drag = { x: e.clientX, y: e.clientY, ox: pan.x, oy: pan.y };
+	}
+}
 
-  function onMouseMove(e: MouseEvent) {
-    if (!drag) return;
-    onPan({ x: drag.ox + (e.clientX - drag.x), y: drag.oy + (e.clientY - drag.y) });
-  }
+function onMouseMove(e: MouseEvent) {
+	if (!drag) return;
+	onPan({
+		x: drag.ox + (e.clientX - drag.x),
+		y: drag.oy + (e.clientY - drag.y),
+	});
+}
 
-  function onMouseUp() {
-    drag = null;
-  }
+function onMouseUp() {
+	drag = null;
+}
 
-  function onWheel(e: WheelEvent) {
-    if (e.ctrlKey || e.metaKey) {
-      e.preventDefault();
-      const delta = -e.deltaY * 0.0015;
-      onZoom(Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, zoom * (1 + delta))));
-    } else {
-      onPan({ x: pan.x - e.deltaX, y: pan.y - e.deltaY });
-    }
-  }
+function onWheel(e: WheelEvent) {
+	if (e.ctrlKey || e.metaKey) {
+		e.preventDefault();
+		const delta = -e.deltaY * 0.0015;
+		onZoom(Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, zoom * (1 + delta))));
+	} else {
+		onPan({ x: pan.x - e.deltaX, y: pan.y - e.deltaY });
+	}
+}
 
-  function onCanvasClick(e: MouseEvent) {
-    const t = e.target as Element | null;
-    if (!t) return;
-    if (t.closest('.node-hit')) return;
-    onSelect(null);
-  }
+function onCanvasClick(e: MouseEvent) {
+	const t = e.target as Element | null;
+	if (!t) return;
+	if (t.closest(".node-hit")) return;
+	onSelect(null);
+}
 
-  function nodePath(it: LayoutItem) {
-    const { x, y, w, h } = it;
-    const chamfer = 12;
-    return `M${x + chamfer} ${y} H${x + w - chamfer} L${x + w} ${y + h / 2} L${x + w - chamfer} ${y + h} H${
-      x + chamfer
-    } L${x} ${y + h / 2} Z`;
-  }
+function nodePath(it: LayoutItem) {
+	const { x, y, w, h } = it;
+	const chamfer = 12;
+	return `M${x + chamfer} ${y} H${x + w - chamfer} L${x + w} ${y + h / 2} L${x + w - chamfer} ${y + h} H${
+		x + chamfer
+	} L${x} ${y + h / 2} Z`;
+}
 
-  function wirePath(from: LayoutItem, to: LayoutItem) {
-    const x1 = from.x + from.w / 2;
-    const y1 = from.y + from.h;
-    const x2 = to.x + to.w / 2;
-    const y2 = to.y;
-    const midY = y1 + (y2 - y1) / 2;
-    return `M${x1} ${y1} V${midY} H${x2} V${y2}`;
-  }
+function wirePath(from: LayoutItem, to: LayoutItem) {
+	const x1 = from.x + from.w / 2;
+	const y1 = from.y + from.h;
+	const x2 = to.x + to.w / 2;
+	const y2 = to.y;
+	const midY = y1 + (y2 - y1) / 2;
+	return `M${x1} ${y1} V${midY} H${x2} V${y2}`;
+}
 
-  function preview(text: string | undefined, n = 28) {
-    if (!text) return '';
-    const t = text.replace(/\s+/g, ' ');
-    return t.length > n ? `${t.slice(0, n - 1)}…` : t;
-  }
+function preview(text: string | undefined, n = 28) {
+	if (!text) return "";
+	const t = text.replace(/\s+/g, " ");
+	return t.length > n ? `${t.slice(0, n - 1)}…` : t;
+}
 
-  // Normalised-tree preview. The execution document stores the
-  // post-normalize shape (`{kind, expression|instruction}`), not the
-  // input shape (`{evaluate|instruct}`) that `leafPreview` in
-  // behaviour-layout expects. Replicating the logic locally instead of
-  // teaching the layout helper two formats.
-  function leafPreviewNormalized(node: BehaviourNode): string | undefined {
-    if ('$ref' in node) return undefined;
-    if (node.type !== 'action') return undefined;
-    const step = node.steps[0] as
-      | { kind: 'evaluate'; expression: string }
-      | { kind: 'instruct'; instruction: string }
-      | undefined;
-    if (!step) return undefined;
-    const prefix = step.kind === 'evaluate' ? '⌘ ' : '▸ ';
-    const body = step.kind === 'evaluate' ? step.expression : step.instruction;
-    return prefix + body;
-  }
+// Normalised-tree preview. The execution document stores the
+// post-normalize shape (`{kind, expression|instruction}`), not the
+// input shape (`{evaluate|instruct}`) that `leafPreview` in
+// behaviour-layout expects. Replicating the logic locally instead of
+// teaching the layout helper two formats.
+function leafPreviewNormalized(node: BehaviourNode): string | undefined {
+	if ("$ref" in node) return undefined;
+	if (node.type !== "action") return undefined;
+	const step = node.steps[0] as
+		| { kind: "evaluate"; expression: string }
+		| { kind: "instruct"; instruction: string }
+		| undefined;
+	if (!step) return undefined;
+	const prefix = step.kind === "evaluate" ? "⌘ " : "▸ ";
+	const body = step.kind === "evaluate" ? step.expression : step.instruction;
+	return prefix + body;
+}
 
-  // The runtime stores `node_status` under `path.join('.')` with `""`
-  // for root; behaviour-layout's `pathKey` returns `"root"` for root.
-  // The store layer normalises this difference for us, so we look up
-  // status using `canvasKeyForPath` for everything except root.
-  function statusOf(it: LayoutItem): NodeStatus | undefined {
-    const flat = it.path.join('.');
-    // runtime key (empty string for root) is the source of truth.
-    return statusByPath[flat] ?? statusByPath[canvasKeyForPath(it.path)];
-  }
+// The runtime stores `node_status` under `path.join('.')` with `""`
+// for root; behaviour-layout's `pathKey` returns `"root"` for root.
+// The store layer normalises this difference for us, so we look up
+// status using `canvasKeyForPath` for everything except root.
+function statusOf(it: LayoutItem): NodeStatus | undefined {
+	const flat = it.path.join(".");
+	// runtime key (empty string for root) is the source of truth.
+	return statusByPath[flat] ?? statusByPath[canvasKeyForPath(it.path)];
+}
 
-  function strokeFor(status: NodeStatus | undefined, isLive: boolean): string {
-    if (isLive) return 'rgb(245 158 11)'; // amber-500
-    if (status === 'success') return 'rgb(16 185 129)'; // emerald-500
-    if (status === 'failure') return 'rgb(239 68 68)'; // red-500
-    if (status === 'running') return 'rgb(245 158 11)';
-    return 'hsl(var(--border))';
-  }
+function strokeFor(status: NodeStatus | undefined, isLive: boolean): string {
+	if (isLive) return "rgb(245 158 11)"; // amber-500
+	if (status === "success") return "rgb(16 185 129)"; // emerald-500
+	if (status === "failure") return "rgb(239 68 68)"; // red-500
+	if (status === "running") return "rgb(245 158 11)";
+	return "hsl(var(--border))";
+}
 </script>
 
 <svelte:window onmousemove={onMouseMove} onmouseup={onMouseUp} />

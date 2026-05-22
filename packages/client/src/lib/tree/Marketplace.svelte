@@ -1,70 +1,71 @@
 <script lang="ts">
-  import { makeTid } from "$lib/utils";
-  import { Card, CardContent } from '$lib/components/ui/card';
-  import { Button } from '$lib/components/ui/button';
-  import { ScrollArea } from '$lib/components/ui/scroll-area';
-  import * as Select from '$lib/components/ui/select';
-  import Search from '@lucide/svelte/icons/search';
-  import GitBranch from '@lucide/svelte/icons/git-branch';
-  import Rocket from '@lucide/svelte/icons/rocket';
-  import Layers from '@lucide/svelte/icons/layers';
-  import Cpu from '@lucide/svelte/icons/cpu';
-  import X from '@lucide/svelte/icons/x';
-  import Sparkles from '@lucide/svelte/icons/sparkles';
-  import ExternalLink from '@lucide/svelte/icons/external-link';
-  import { MARKETPLACE, type MarketItem } from './marketplace-data';
-  import MarketCard from './components/MarketCard.svelte';
-  import MarketDetail from './components/MarketDetail.svelte';
+import Cpu from "@lucide/svelte/icons/cpu";
+import ExternalLink from "@lucide/svelte/icons/external-link";
+import GitBranch from "@lucide/svelte/icons/git-branch";
+import Layers from "@lucide/svelte/icons/layers";
+import Rocket from "@lucide/svelte/icons/rocket";
+import Search from "@lucide/svelte/icons/search";
+import Sparkles from "@lucide/svelte/icons/sparkles";
+import X from "@lucide/svelte/icons/x";
+import { Button } from "$lib/components/ui/button";
+import { Card, CardContent } from "$lib/components/ui/card";
+import { ScrollArea } from "$lib/components/ui/scroll-area";
+import * as Select from "$lib/components/ui/select";
+import { makeTid } from "$lib/utils";
+import MarketCard from "./components/MarketCard.svelte";
+import MarketDetail from "./components/MarketDetail.svelte";
+import { MARKETPLACE, type MarketItem } from "./marketplace-data";
 
-  const INTEREST_URL = 'https://github.com/anthropics/behaviors-sh/issues/1';
+const INTEREST_URL = "https://github.com/anthropics/behaviors-sh/issues/1";
 
-  interface Props {
-    onInstall: (item: MarketItem) => void;
-    testid?: string;
-  }
-  let { onInstall, testid }: Props = $props();
-  const tid = $derived(makeTid(testid));
+interface Props {
+	onInstall: (item: MarketItem) => void;
+	testid?: string;
+}
+let { onInstall, testid }: Props = $props();
+const tid = $derived(makeTid(testid));
 
-  let q = $state('');
-  let tag = $state<string>('all');
-  let sort = $state<'popular' | 'stars' | 'recent'>('popular');
-  let detail = $state<MarketItem | null>(null);
+let q = $state("");
+let tag = $state<string>("all");
+let sort = $state<"popular" | "stars" | "recent">("popular");
+let detail = $state<MarketItem | null>(null);
 
-  const allTags = $derived.by(() => {
-    const m = new Map<string, number>();
-    for (const it of MARKETPLACE) for (const t of it.tags) m.set(t, (m.get(t) ?? 0) + 1);
-    return [...m.entries()].sort((a, b) => b[1] - a[1]);
-  });
+const allTags = $derived.by(() => {
+	const m = new Map<string, number>();
+	for (const it of MARKETPLACE)
+		for (const t of it.tags) m.set(t, (m.get(t) ?? 0) + 1);
+	return [...m.entries()].sort((a, b) => b[1] - a[1]);
+});
 
-  const filtered = $derived.by(() => {
-    const ql = q.toLowerCase();
-    let list = MARKETPLACE.filter((it) => {
-      if (tag !== 'all' && !it.tags.includes(tag)) return false;
-      if (!ql) return true;
-      return (
-        it.name.toLowerCase().includes(ql) ||
-        it.author.toLowerCase().includes(ql) ||
-        it.tags.some((t) => t.includes(ql))
-      );
-    });
-    if (sort === 'popular') list = list.sort((a, b) => b.downloads - a.downloads);
-    else if (sort === 'stars') list = list.sort((a, b) => b.stars - a.stars);
-    else list = list.sort((a, b) => a.updated.localeCompare(b.updated));
-    return list;
-  });
+const filtered = $derived.by(() => {
+	const ql = q.toLowerCase();
+	let list = MARKETPLACE.filter((it) => {
+		if (tag !== "all" && !it.tags.includes(tag)) return false;
+		if (!ql) return true;
+		return (
+			it.name.toLowerCase().includes(ql) ||
+			it.author.toLowerCase().includes(ql) ||
+			it.tags.some((t) => t.includes(ql))
+		);
+	});
+	if (sort === "popular") list = list.sort((a, b) => b.downloads - a.downloads);
+	else if (sort === "stars") list = list.sort((a, b) => b.stars - a.stars);
+	else list = list.sort((a, b) => a.updated.localeCompare(b.updated));
+	return list;
+});
 
-  const categories = [
-    { id: 'all', label: 'All trees', icon: GitBranch },
-    { id: 'games', label: 'Games', icon: Cpu },
-    { id: 'deploy', label: 'Deploy & ops', icon: Rocket },
-    { id: 'data', label: 'Data', icon: Layers },
-  ];
+const categories = [
+	{ id: "all", label: "All trees", icon: GitBranch },
+	{ id: "games", label: "Games", icon: Cpu },
+	{ id: "deploy", label: "Deploy & ops", icon: Rocket },
+	{ id: "data", label: "Data", icon: Layers },
+];
 
-  const sortLabels = {
-    popular: 'Most downloads',
-    stars: 'Most stars',
-    recent: 'Recently updated',
-  } as const;
+const sortLabels = {
+	popular: "Most downloads",
+	stars: "Most stars",
+	recent: "Recently updated",
+} as const;
 </script>
 
 {#if detail}

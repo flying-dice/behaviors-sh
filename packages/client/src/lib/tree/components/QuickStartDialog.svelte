@@ -1,83 +1,118 @@
 <script lang="ts">
-  import { makeTid, errorMessage, cn } from "$lib/utils";
-  import * as Dialog from '$lib/components/ui/dialog';
-  import { Button } from '$lib/components/ui/button';
-  import { Input } from '$lib/components/ui/input';
-  import { Label } from '$lib/components/ui/label';
-  import Sparkles from '@lucide/svelte/icons/sparkles';
-  import ArrowRight from '@lucide/svelte/icons/arrow-right';
-  import * as ws from '$lib/workspace/store.svelte';
-  import {
-    QUICK_START_EXAMPLES,
-    exampleNodeCount,
-    exampleShape,
-    type ExampleAccent,
-    type QuickStartExample,
-  } from '../quickstart-examples';
+import ArrowRight from "@lucide/svelte/icons/arrow-right";
+import Sparkles from "@lucide/svelte/icons/sparkles";
+import { Button } from "$lib/components/ui/button";
+import * as Dialog from "$lib/components/ui/dialog";
+import { Input } from "$lib/components/ui/input";
+import { Label } from "$lib/components/ui/label";
+import { cn, errorMessage, makeTid } from "$lib/utils";
+import * as ws from "$lib/workspace/store.svelte";
+import {
+	type ExampleAccent,
+	exampleNodeCount,
+	exampleShape,
+	QUICK_START_EXAMPLES,
+	type QuickStartExample,
+} from "../quickstart-examples";
 
-  interface Props {
-    open: boolean;
-    onClose: () => void;
-    onCreated: (id: string) => void;
-    testid?: string;
-  }
-  let { open = $bindable(), onClose, onCreated, testid }: Props = $props();
-  const tid = $derived(makeTid(testid));
+interface Props {
+	open: boolean;
+	onClose: () => void;
+	onCreated: (id: string) => void;
+	testid?: string;
+}
+let { open = $bindable(), onClose, onCreated, testid }: Props = $props();
+const tid = $derived(makeTid(testid));
 
-  let selectedIndex = $state(0);
-  let treeId = $state(QUICK_START_EXAMPLES[0]!.id);
-  let error = $state('');
+let selectedIndex = $state(0);
+let treeId = $state(QUICK_START_EXAMPLES[0]!.id);
+let error = $state("");
 
-  const selected = $derived<QuickStartExample>(QUICK_START_EXAMPLES[selectedIndex]!);
-  const shape = $derived(exampleShape(selected.node));
-  const nodeCount = $derived(exampleNodeCount(selected));
+const selected = $derived<QuickStartExample>(
+	QUICK_START_EXAMPLES[selectedIndex]!,
+);
+const shape = $derived(exampleShape(selected.node));
+const nodeCount = $derived(exampleNodeCount(selected));
 
-  $effect(() => {
-    if (open) {
-      selectedIndex = 0;
-      treeId = QUICK_START_EXAMPLES[0]!.id;
-      error = '';
-    }
-  });
+$effect(() => {
+	if (open) {
+		selectedIndex = 0;
+		treeId = QUICK_START_EXAMPLES[0]!.id;
+		error = "";
+	}
+});
 
-  function select(i: number) {
-    selectedIndex = i;
-    treeId = QUICK_START_EXAMPLES[i]!.id;
-    error = '';
-  }
+function select(i: number) {
+	selectedIndex = i;
+	treeId = QUICK_START_EXAMPLES[i]!.id;
+	error = "";
+}
 
-  function submit() {
-    const id = treeId.trim();
-    if (!id) return;
-    try {
-      // Auto-create a workspace if none is open yet — quick start should
-      // be a one-click moment from the empty state.
-      if (!ws.isOpen()) ws.newWorkspace(`${id}-workspace`);
-      ws.createTree(id, selected.node);
-      open = false;
-      onCreated(id);
-    } catch (err) {
-      error = errorMessage(err);
-    }
-  }
+function submit() {
+	const id = treeId.trim();
+	if (!id) return;
+	try {
+		// Auto-create a workspace if none is open yet — quick start should
+		// be a one-click moment from the empty state.
+		if (!ws.isOpen()) ws.newWorkspace(`${id}-workspace`);
+		ws.createTree(id, selected.node);
+		open = false;
+		onCreated(id);
+	} catch (err) {
+		error = errorMessage(err);
+	}
+}
 
-  // Accent palette. Kept local — these aren't tokens in the design system,
-  // they're an editorial flourish unique to this surface.
-  const ACCENTS: Record<ExampleAccent, { dot: string; stripe: string; halo: string; chip: string; text: string }> = {
-    amber:   { dot: 'bg-amber-400',   stripe: 'from-amber-400/70',   halo: 'from-amber-500/20',   chip: 'bg-amber-400/10 text-amber-300 ring-amber-400/30',   text: 'text-amber-300' },
-    emerald: { dot: 'bg-emerald-400', stripe: 'from-emerald-400/70', halo: 'from-emerald-500/20', chip: 'bg-emerald-400/10 text-emerald-300 ring-emerald-400/30', text: 'text-emerald-300' },
-    sky:     { dot: 'bg-sky-400',     stripe: 'from-sky-400/70',     halo: 'from-sky-500/20',     chip: 'bg-sky-400/10 text-sky-300 ring-sky-400/30',         text: 'text-sky-300' },
-    rose:    { dot: 'bg-rose-400',    stripe: 'from-rose-400/70',    halo: 'from-rose-500/20',    chip: 'bg-rose-400/10 text-rose-300 ring-rose-400/30',       text: 'text-rose-300' },
-    violet:  { dot: 'bg-violet-400',  stripe: 'from-violet-400/70',  halo: 'from-violet-500/20',  chip: 'bg-violet-400/10 text-violet-300 ring-violet-400/30', text: 'text-violet-300' },
-  };
+// Accent palette. Kept local — these aren't tokens in the design system,
+// they're an editorial flourish unique to this surface.
+const ACCENTS: Record<
+	ExampleAccent,
+	{ dot: string; stripe: string; halo: string; chip: string; text: string }
+> = {
+	amber: {
+		dot: "bg-amber-400",
+		stripe: "from-amber-400/70",
+		halo: "from-amber-500/20",
+		chip: "bg-amber-400/10 text-amber-300 ring-amber-400/30",
+		text: "text-amber-300",
+	},
+	emerald: {
+		dot: "bg-emerald-400",
+		stripe: "from-emerald-400/70",
+		halo: "from-emerald-500/20",
+		chip: "bg-emerald-400/10 text-emerald-300 ring-emerald-400/30",
+		text: "text-emerald-300",
+	},
+	sky: {
+		dot: "bg-sky-400",
+		stripe: "from-sky-400/70",
+		halo: "from-sky-500/20",
+		chip: "bg-sky-400/10 text-sky-300 ring-sky-400/30",
+		text: "text-sky-300",
+	},
+	rose: {
+		dot: "bg-rose-400",
+		stripe: "from-rose-400/70",
+		halo: "from-rose-500/20",
+		chip: "bg-rose-400/10 text-rose-300 ring-rose-400/30",
+		text: "text-rose-300",
+	},
+	violet: {
+		dot: "bg-violet-400",
+		stripe: "from-violet-400/70",
+		halo: "from-violet-500/20",
+		chip: "bg-violet-400/10 text-violet-300 ring-violet-400/30",
+		text: "text-violet-300",
+	},
+};
 
-  const KIND_GLYPH: Record<string, string> = {
-    sequence: '→',
-    selector: '?',
-    parallel: '∥',
-    action: '▸',
-    ref: '↪',
-  };
+const KIND_GLYPH: Record<string, string> = {
+	sequence: "→",
+	selector: "?",
+	parallel: "∥",
+	action: "▸",
+	ref: "↪",
+};
 </script>
 
 <Dialog.Root bind:open>

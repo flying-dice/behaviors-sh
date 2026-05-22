@@ -1,2 +1,1 @@
-export type NodeType = 'sequence' | 'selector' | 'parallel' | 'instruct';
-
+export type NodeType = "sequence" | "selector" | "parallel" | "instruct";

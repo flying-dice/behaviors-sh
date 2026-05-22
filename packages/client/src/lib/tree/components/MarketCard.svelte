@@ -1,23 +1,23 @@
 <script lang="ts">
-  import { makeTid } from "$lib/utils";
-  import { Card, CardContent } from '$lib/components/ui/card';
-  import { Button } from '$lib/components/ui/button';
-  import Download from '@lucide/svelte/icons/download';
-  import Star from '@lucide/svelte/icons/star';
-  import Check from '@lucide/svelte/icons/check';
-  import { formatCount, type MarketItem } from '../marketplace-data';
-  import ShapeThumb from './ShapeThumb.svelte';
+import Check from "@lucide/svelte/icons/check";
+import Download from "@lucide/svelte/icons/download";
+import Star from "@lucide/svelte/icons/star";
+import { Button } from "$lib/components/ui/button";
+import { Card, CardContent } from "$lib/components/ui/card";
+import { makeTid } from "$lib/utils";
+import { formatCount, type MarketItem } from "../marketplace-data";
+import ShapeThumb from "./ShapeThumb.svelte";
 
-  interface Props {
-    item: MarketItem;
-    onOpen: () => void;
-    onInstall: () => void;
-    testid?: string;
-  }
-  let { item, onOpen, onInstall, testid }: Props = $props();
-  const tid = $derived(makeTid(testid));
+interface Props {
+	item: MarketItem;
+	onOpen: () => void;
+	onInstall: () => void;
+	testid?: string;
+}
+let { item, onOpen, onInstall, testid }: Props = $props();
+const tid = $derived(makeTid(testid));
 
-  const accent = $derived(`hsl(var(--abtree-${item.colorHint}))`);
+const accent = $derived(`hsl(var(--abtree-${item.colorHint}))`);
 </script>
 
 <Card

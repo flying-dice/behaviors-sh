@@ -1,21 +1,21 @@
 {
-  "name": "@behaviors-sh/tree-clean-code-review",
-  "private": true,
-  "version": "0.1.0",
-  "description": "Review the working tree against the five clean-code principles: single responsibility, loose coupling, testability, naming, and openness to extension.",
-  "type": "module",
-  "exports": {
-    ".": "./src/index.ts"
-  },
-  "files": [
-    "src"
-  ],
-  "dependencies": {
-    "@behaviors-sh/spec": "workspace:*",
-    "@behaviors-sh/dsl": "workspace:*"
-  },
-  "devDependencies": {
-    "@types/bun": "latest",
-    "typescript": "~6.0.2"
-  }
+	"name": "@behaviors-sh/tree-clean-code-review",
+	"private": true,
+	"version": "0.1.0",
+	"description": "Review the working tree against the five clean-code principles: single responsibility, loose coupling, testability, naming, and openness to extension.",
+	"type": "module",
+	"exports": {
+		".": "./src/index.ts"
+	},
+	"files": [
+		"src"
+	],
+	"dependencies": {
+		"@behaviors-sh/spec": "workspace:*",
+		"@behaviors-sh/dsl": "workspace:*"
+	},
+	"devDependencies": {
+		"@types/bun": "latest",
+		"typescript": "~6.0.2"
+	}
 }

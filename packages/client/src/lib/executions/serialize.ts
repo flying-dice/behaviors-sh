@@ -2,12 +2,12 @@
 // `parseWorkspace` / `parseTreeFile` in style — minimal duck-type
 // validation, plain errors that the UI can surface.
 
-import type { ExecutionDocument } from '@behaviors-sh/spec';
+import type { ExecutionDocument } from "@behaviors-sh/spec";
 
 export class ParseExecutionError extends Error {
 	constructor(message: string) {
 		super(message);
-		this.name = 'ParseExecutionError';
+		this.name = "ParseExecutionError";
 	}
 }
 
@@ -22,17 +22,17 @@ export function parseExecutionDoc(text: string): ExecutionDocument {
 	}
 
 	if (!isRecord(raw)) {
-		throw new ParseExecutionError('Execution document must be a JSON object.');
+		throw new ParseExecutionError("Execution document must be a JSON object.");
 	}
 
-	requireField(raw, 'uri', 'string');
-	requireField(raw, 'tree_uri', 'string');
-	requireField(raw, 'status', 'string');
-	requireField(raw, 'phase', 'string');
-	requireField(raw, 'cursor', 'string');
-	requireField(raw, 'created_at', 'string');
-	requireField(raw, 'updated_at', 'string');
-	requireField(raw, 'schema_version', 'number');
+	requireField(raw, "uri", "string");
+	requireField(raw, "tree_uri", "string");
+	requireField(raw, "status", "string");
+	requireField(raw, "phase", "string");
+	requireField(raw, "cursor", "string");
+	requireField(raw, "created_at", "string");
+	requireField(raw, "updated_at", "string");
+	requireField(raw, "schema_version", "number");
 
 	if (raw.schema_version !== 1) {
 		throw new ParseExecutionError(
@@ -41,26 +41,32 @@ export function parseExecutionDoc(text: string): ExecutionDocument {
 	}
 
 	if (!Array.isArray(raw.trace)) {
-		throw new ParseExecutionError('Execution document is missing `trace` array.');
+		throw new ParseExecutionError(
+			"Execution document is missing `trace` array.",
+		);
 	}
 	if (!isRecord(raw.tree)) {
-		throw new ParseExecutionError('Execution document is missing `tree` object.');
+		throw new ParseExecutionError(
+			"Execution document is missing `tree` object.",
+		);
 	}
 	if (!isRecord(raw.runtime)) {
-		throw new ParseExecutionError('Execution document is missing `runtime` object.');
+		throw new ParseExecutionError(
+			"Execution document is missing `runtime` object.",
+		);
 	}
 
 	return raw as unknown as ExecutionDocument;
 }
 
 function isRecord(v: unknown): v is Record<string, unknown> {
-	return typeof v === 'object' && v !== null && !Array.isArray(v);
+	return typeof v === "object" && v !== null && !Array.isArray(v);
 }
 
 function requireField(
 	obj: Record<string, unknown>,
 	key: string,
-	type: 'string' | 'number',
+	type: "string" | "number",
 ): void {
 	if (typeof obj[key] !== type) {
 		throw new ParseExecutionError(

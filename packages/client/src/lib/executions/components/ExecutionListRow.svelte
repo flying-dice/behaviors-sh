@@ -1,21 +1,21 @@
 <script lang="ts">
-  import { makeTid } from '$lib/utils';
-  import X from '@lucide/svelte/icons/x';
-  import type { OpenedExecution } from '../store.svelte';
-  import { formatRelativeTime, shortenUri } from '../format';
-  import StatusPill from './StatusPill.svelte';
+import X from "@lucide/svelte/icons/x";
+import { makeTid } from "$lib/utils";
+import { formatRelativeTime, shortenUri } from "../format";
+import type { OpenedExecution } from "../store.svelte";
+import StatusPill from "./StatusPill.svelte";
 
-  interface Props {
-    entry: OpenedExecution;
-    selected: boolean;
-    onSelect: () => void;
-    onClose: () => void;
-    testid?: string;
-  }
-  let { entry, selected, onSelect, onClose, testid }: Props = $props();
+interface Props {
+	entry: OpenedExecution;
+	selected: boolean;
+	onSelect: () => void;
+	onClose: () => void;
+	testid?: string;
+}
+let { entry, selected, onSelect, onClose, testid }: Props = $props();
 
-  const tid = $derived(makeTid(testid));
-  const name = $derived(shortenUri(entry.doc.uri));
+const tid = $derived(makeTid(testid));
+const name = $derived(shortenUri(entry.doc.uri));
 </script>
 
 <div

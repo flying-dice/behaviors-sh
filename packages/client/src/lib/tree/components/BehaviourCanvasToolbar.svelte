@@ -1,51 +1,43 @@
 <script lang="ts">
-  import { makeTid } from "$lib/utils";
-  import { downloadBlob } from '$lib/workspace/storage/dom-io';
-  import { ZOOM_MAX, ZOOM_MIN } from '../behaviour-layout';
-  import { Button } from '$lib/components/ui/button';
-  import { Badge } from '$lib/components/ui/badge';
-  import * as Tooltip from '$lib/components/ui/tooltip';
-  import Plus from '@lucide/svelte/icons/plus';
-  import Minus from '@lucide/svelte/icons/minus';
-  import Maximize from '@lucide/svelte/icons/maximize';
-  import Check from '@lucide/svelte/icons/check';
-  import AlertTriangle from '@lucide/svelte/icons/alert-triangle';
-  import ClipboardCopy from '@lucide/svelte/icons/clipboard-copy';
-  import Download from '@lucide/svelte/icons/download';
+import AlertTriangle from "@lucide/svelte/icons/alert-triangle";
+import Check from "@lucide/svelte/icons/check";
+import ClipboardCopy from "@lucide/svelte/icons/clipboard-copy";
+import Download from "@lucide/svelte/icons/download";
+import Maximize from "@lucide/svelte/icons/maximize";
+import Minus from "@lucide/svelte/icons/minus";
+import Plus from "@lucide/svelte/icons/plus";
+import { Badge } from "$lib/components/ui/badge";
+import { Button } from "$lib/components/ui/button";
+import * as Tooltip from "$lib/components/ui/tooltip";
+import { makeTid } from "$lib/utils";
+import { downloadBlob } from "$lib/workspace/storage/dom-io";
+import { ZOOM_MAX, ZOOM_MIN } from "../behaviour-layout";
 
-  interface Props {
-    treeId: string;
-    treeName: string;
-    zoom: number;
-    valid: boolean;
-    yaml: string;
-    onZoom: (z: number) => void;
-    onFit: () => void;
-    testid?: string;
-  }
-  let {
-    treeId,
-    treeName,
-    zoom,
-    valid,
-    yaml,
-    onZoom,
-    onFit,
-    testid,
-  }: Props = $props();
-  const tid = $derived(makeTid(testid));
+interface Props {
+	treeId: string;
+	treeName: string;
+	zoom: number;
+	valid: boolean;
+	yaml: string;
+	onZoom: (z: number) => void;
+	onFit: () => void;
+	testid?: string;
+}
+let { treeId, treeName, zoom, valid, yaml, onZoom, onFit, testid }: Props =
+	$props();
+const tid = $derived(makeTid(testid));
 
-  let copied = $state(false);
+let copied = $state(false);
 
-  function copyYaml() {
-    navigator.clipboard?.writeText(yaml);
-    copied = true;
-    setTimeout(() => (copied = false), 1500);
-  }
+function copyYaml() {
+	navigator.clipboard?.writeText(yaml);
+	copied = true;
+	setTimeout(() => (copied = false), 1500);
+}
 
-  function downloadYaml() {
-    downloadBlob(yaml, `${treeId}.yaml`, 'text/yaml');
-  }
+function downloadYaml() {
+	downloadBlob(yaml, `${treeId}.yaml`, "text/yaml");
+}
 </script>
 
 <div

@@ -1,5 +1,5 @@
-import { BehaviourNodeSchema } from "@behaviors-sh/spec";
 import { beforeEach, describe, expect, test } from "bun:test";
+import { BehaviourNodeSchema } from "@behaviors-sh/spec";
 import {
 	type ActionNode,
 	action,
@@ -242,6 +242,8 @@ describe("BehaviourNodeSchema round-trip", () => {
 			});
 		});
 
-		expect(() => BehaviourNodeSchema.parse(JSON.parse(root.toJson()))).not.toThrow();
+		expect(() =>
+			BehaviourNodeSchema.parse(JSON.parse(root.toJson())),
+		).not.toThrow();
 	});
 });

@@ -1,10 +1,10 @@
 <script lang="ts">
-  interface Props {
-    count: number;
-    treeId: string;
-    testid?: string;
-  }
-  let { count, treeId, testid }: Props = $props();
+interface Props {
+	count: number;
+	treeId: string;
+	testid?: string;
+}
+let { count, treeId, testid }: Props = $props();
 </script>
 
 {#if count > 0}

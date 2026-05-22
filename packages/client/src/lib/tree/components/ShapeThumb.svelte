@@ -1,40 +1,40 @@
 <script lang="ts">
-  import type { Shape } from '../marketplace-data';
-  import { miniLayout } from '../mini-layout';
+import type { Shape } from "../marketplace-data";
+import { miniLayout } from "../mini-layout";
 
-  interface Props {
-    shape: Shape;
-    width?: number;
-    height?: number;
-    accent?: string;
-    testid?: string;
-  }
-  let {
-    shape,
-    width = 220,
-    height = 84,
-    accent = 'var(--color-abtree-cyan)',
-    testid,
-  }: Props = $props();
+interface Props {
+	shape: Shape;
+	width?: number;
+	height?: number;
+	accent?: string;
+	testid?: string;
+}
+let {
+	shape,
+	width = 220,
+	height = 84,
+	accent = "var(--color-abtree-cyan)",
+	testid,
+}: Props = $props();
 
-  const NW = 18;
-  const NH = 10;
-  const GAP = 8;
-  const VGAP = 18;
+const NW = 18;
+const NH = 10;
+const GAP = 8;
+const VGAP = 18;
 
-  const layout = $derived(
-    miniLayout(shape, {
-      children: (s) => s.children ?? [],
-      nodeW: NW,
-      nodeH: NH,
-      hGap: GAP,
-      vGap: VGAP,
-    }),
-  );
+const layout = $derived(
+	miniLayout(shape, {
+		children: (s) => s.children ?? [],
+		nodeW: NW,
+		nodeH: NH,
+		hGap: GAP,
+		vGap: VGAP,
+	}),
+);
 
-  const scale = $derived(Math.min(width / layout.width, height / layout.height));
-  const tx = $derived((width - layout.width * scale) / 2);
-  const ty = $derived((height - layout.height * scale) / 2);
+const scale = $derived(Math.min(width / layout.width, height / layout.height));
+const tx = $derived((width - layout.width * scale) / 2);
+const ty = $derived((height - layout.height * scale) / 2);
 </script>
 
 <svg {width} {height} class="block" data-testid={testid}>

@@ -1,39 +1,39 @@
 <script lang="ts">
-  import { makeTid } from "$lib/utils";
-  import { Card, CardContent } from '$lib/components/ui/card';
-  import { Badge } from '$lib/components/ui/badge';
-  import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
-  import { shapeFromTree } from '../marketplace-data';
-  import { nodeColor, type NodeKind } from '../behaviour-layout';
-  import { getTree, type TreeSummary } from '$lib/workspace/store.svelte';
-  import ShapeThumb from './ShapeThumb.svelte';
-  import MoreHorizontal from '@lucide/svelte/icons/more-horizontal';
-  import Pencil from '@lucide/svelte/icons/pencil';
-  import Trash2 from '@lucide/svelte/icons/trash-2';
+import MoreHorizontal from "@lucide/svelte/icons/more-horizontal";
+import Pencil from "@lucide/svelte/icons/pencil";
+import Trash2 from "@lucide/svelte/icons/trash-2";
+import { Badge } from "$lib/components/ui/badge";
+import { Card, CardContent } from "$lib/components/ui/card";
+import * as DropdownMenu from "$lib/components/ui/dropdown-menu";
+import { makeTid } from "$lib/utils";
+import { getTree, type TreeSummary } from "$lib/workspace/store.svelte";
+import { type NodeKind, nodeColor } from "../behaviour-layout";
+import { shapeFromTree } from "../marketplace-data";
+import ShapeThumb from "./ShapeThumb.svelte";
 
-  interface Props {
-    tree: TreeSummary;
-    onOpen: () => void;
-    onRename: () => void;
-    onDelete: () => void;
-    testid?: string;
-  }
-  let { tree, onOpen, onRename, onDelete, testid }: Props = $props();
-  const tid = $derived(makeTid(testid));
+interface Props {
+	tree: TreeSummary;
+	onOpen: () => void;
+	onRename: () => void;
+	onDelete: () => void;
+	testid?: string;
+}
+let { tree, onOpen, onRename, onDelete, testid }: Props = $props();
+const tid = $derived(makeTid(testid));
 
-  const shape = $derived.by(() => {
-    const node = getTree(tree.id);
-    return node ? shapeFromTree(node) : { type: 'instruct' as const };
-  });
+const shape = $derived.by(() => {
+	const node = getTree(tree.id);
+	return node ? shapeFromTree(node) : { type: "instruct" as const };
+});
 
-  const dotColor = $derived(nodeColor(tree.kind as NodeKind));
+const dotColor = $derived(nodeColor(tree.kind as NodeKind));
 
-  function onCardKey(e: KeyboardEvent) {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      onOpen();
-    }
-  }
+function onCardKey(e: KeyboardEvent) {
+	if (e.key === "Enter" || e.key === " ") {
+		e.preventDefault();
+		onOpen();
+	}
+}
 </script>
 
 <div

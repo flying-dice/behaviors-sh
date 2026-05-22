@@ -3,20 +3,20 @@
 // mutations, and verify the engine reaches `done` / `failure` at the
 // right points.
 
+import { afterEach, beforeEach, describe, expect, test } from "bun:test";
 import { mkdirSync, mkdtempSync, realpathSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
-import { afterEach, beforeEach, describe, expect, test } from "bun:test";
 import {
+	buildRuntime,
 	FileSystemExecutionReader,
 	FileSystemExecutionWriter,
 	FileSystemTreeReader,
 	INITIAL_CURSOR,
 	type NormalizedNode,
-	type Runtime,
-	buildRuntime,
 	normalizeNode,
+	type Runtime,
 } from "../src/index.ts";
 
 // Each test runs in its own temp dir and gets its own runtime so files

@@ -1,49 +1,49 @@
 <script lang="ts">
-  import { makeTid, errorMessage } from "$lib/utils";
-  import type { BehaviourNode } from '@behaviors-sh/spec';
-  import * as Dialog from '$lib/components/ui/dialog';
-  import { Button } from '$lib/components/ui/button';
-  import { Input } from '$lib/components/ui/input';
-  import { Label } from '$lib/components/ui/label';
-  import * as ws from '$lib/workspace/store.svelte';
-  import { pickAndParseTree } from '$lib/workspace/serialize';
+import type { BehaviourNode } from "@behaviors-sh/spec";
+import { Button } from "$lib/components/ui/button";
+import * as Dialog from "$lib/components/ui/dialog";
+import { Input } from "$lib/components/ui/input";
+import { Label } from "$lib/components/ui/label";
+import { errorMessage, makeTid } from "$lib/utils";
+import { pickAndParseTree } from "$lib/workspace/serialize";
+import * as ws from "$lib/workspace/store.svelte";
 
-  interface Props {
-    onCreated?: (id: string) => void;
-    testid?: string;
-  }
-  let { onCreated, testid }: Props = $props();
-  const tid = $derived(makeTid(testid));
+interface Props {
+	onCreated?: (id: string) => void;
+	testid?: string;
+}
+let { onCreated, testid }: Props = $props();
+const tid = $derived(makeTid(testid));
 
-  let open = $state(false);
-  let importId = $state('');
-  let importNode = $state<BehaviourNode | null>(null);
-  let error = $state('');
+let open = $state(false);
+let importId = $state("");
+let importNode = $state<BehaviourNode | null>(null);
+let error = $state("");
 
-  export async function start() {
-    try {
-      const result = await pickAndParseTree();
-      if (!result) return;
-      importNode = result.node;
-      importId = result.id;
-      error = '';
-      open = true;
-    } catch (err) {
-      console.error('Import failed', err);
-    }
-  }
+export async function start() {
+	try {
+		const result = await pickAndParseTree();
+		if (!result) return;
+		importNode = result.node;
+		importId = result.id;
+		error = "";
+		open = true;
+	} catch (err) {
+		console.error("Import failed", err);
+	}
+}
 
-  function submit() {
-    const id = importId.trim();
-    if (!id || !importNode) return;
-    try {
-      ws.createTree(id, importNode);
-      open = false;
-      onCreated?.(id);
-    } catch (err) {
-      error = errorMessage(err);
-    }
-  }
+function submit() {
+	const id = importId.trim();
+	if (!id || !importNode) return;
+	try {
+		ws.createTree(id, importNode);
+		open = false;
+		onCreated?.(id);
+	} catch (err) {
+		error = errorMessage(err);
+	}
+}
 </script>
 
 <Dialog.Root bind:open>

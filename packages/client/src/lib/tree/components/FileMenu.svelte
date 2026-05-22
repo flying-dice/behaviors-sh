@@ -1,111 +1,122 @@
 <script lang="ts">
-  import { makeTid, errorMessage } from "$lib/utils";
-  import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
-  import ChevronsUpDown from '@lucide/svelte/icons/chevrons-up-down';
-  import FolderKanban from '@lucide/svelte/icons/folder-kanban';
-  import FilePlus from '@lucide/svelte/icons/file-plus';
-  import FolderOpen from '@lucide/svelte/icons/folder-open';
-  import Save from '@lucide/svelte/icons/save';
-  import HardDrive from '@lucide/svelte/icons/hard-drive';
-  import Globe from '@lucide/svelte/icons/globe';
-  import X from '@lucide/svelte/icons/x';
-  import Settings from '@lucide/svelte/icons/settings';
-  import Trash2 from '@lucide/svelte/icons/trash-2';
-  import * as ws from '$lib/workspace/store.svelte';
-  import FileUp from '@lucide/svelte/icons/file-up';
-  import NewWorkspaceDialog from './NewWorkspaceDialog.svelte';
-  import ImportTreeDialog from './ImportTreeDialog.svelte';
-  import WorkspaceSettingsDialog from './WorkspaceSettingsDialog.svelte';
-  import DeleteSlotDialog from './DeleteSlotDialog.svelte';
-  import ErrorDialog from './ErrorDialog.svelte';
+import ChevronsUpDown from "@lucide/svelte/icons/chevrons-up-down";
+import FilePlus from "@lucide/svelte/icons/file-plus";
+import FileUp from "@lucide/svelte/icons/file-up";
+import FolderKanban from "@lucide/svelte/icons/folder-kanban";
+import FolderOpen from "@lucide/svelte/icons/folder-open";
+import Globe from "@lucide/svelte/icons/globe";
+import HardDrive from "@lucide/svelte/icons/hard-drive";
+import Save from "@lucide/svelte/icons/save";
+import Settings from "@lucide/svelte/icons/settings";
+import Trash2 from "@lucide/svelte/icons/trash-2";
+import X from "@lucide/svelte/icons/x";
+import * as DropdownMenu from "$lib/components/ui/dropdown-menu";
+import { errorMessage, makeTid } from "$lib/utils";
+import * as ws from "$lib/workspace/store.svelte";
+import DeleteSlotDialog from "./DeleteSlotDialog.svelte";
+import ErrorDialog from "./ErrorDialog.svelte";
+import type ImportTreeDialog from "./ImportTreeDialog.svelte";
+import NewWorkspaceDialog from "./NewWorkspaceDialog.svelte";
+import WorkspaceSettingsDialog from "./WorkspaceSettingsDialog.svelte";
 
-  interface Props {
-    testid?: string;
-  }
-  let { testid }: Props = $props();
-  const tid = $derived(makeTid(testid));
+interface Props {
+	testid?: string;
+}
+let { testid }: Props = $props();
+const tid = $derived(makeTid(testid));
 
-  let newOpen = $state(false);
+let newOpen = $state(false);
 
-  let settingsOpen = $state(false);
+let settingsOpen = $state(false);
 
-  let deleteSlotOpen = $state(false);
-  let deleteSlotTarget = $state<{ id: string; name: string } | null>(null);
+let deleteSlotOpen = $state(false);
+let deleteSlotTarget = $state<{ id: string; name: string } | null>(null);
 
-  let importDialog: ReturnType<typeof ImportTreeDialog>;
+let importDialog: ReturnType<typeof ImportTreeDialog>;
 
-  let errorOpen = $state(false);
-  let errorTitle = $state('');
-  let errorMsg = $state('');
+let errorOpen = $state(false);
+let errorTitle = $state("");
+let errorMsg = $state("");
 
-  function reportError(title: string, err: unknown) {
-    console.error(title, err);
-    errorTitle = title;
-    errorMsg = errorMessage(err);
-    errorOpen = true;
-  }
+function reportError(title: string, err: unknown) {
+	console.error(title, err);
+	errorTitle = title;
+	errorMsg = errorMessage(err);
+	errorOpen = true;
+}
 
-  function withError(title: string, fn: () => void | Promise<void>) {
-    return async () => {
-      try { await fn(); } catch (err) { reportError(title, err); }
-    };
-  }
+function withError(title: string, fn: () => void | Promise<void>) {
+	return async () => {
+		try {
+			await fn();
+		} catch (err) {
+			reportError(title, err);
+		}
+	};
+}
 
-  const slots = $derived(ws.listBrowserSlots());
-  const current = $derived(ws.getWorkspace());
-  const source = $derived(ws.getSource());
-  const dirty = $derived(ws.isDirty());
+const slots = $derived(ws.listBrowserSlots());
+const current = $derived(ws.getWorkspace());
+const source = $derived(ws.getSource());
+const dirty = $derived(ws.isDirty());
 
-  const sourceLabel = $derived.by(() => {
-    if (source.kind === 'browser') return `browser · ${source.slotName}`;
-    if (source.kind === 'device') return `device · ${source.filename}`;
-    if (current) return 'unsaved';
-    return 'no workspace';
-  });
+const sourceLabel = $derived.by(() => {
+	if (source.kind === "browser") return `browser · ${source.slotName}`;
+	if (source.kind === "device") return `device · ${source.filename}`;
+	if (current) return "unsaved";
+	return "no workspace";
+});
 
-  function submitNew(name: string, version: string) {
-    ws.newWorkspace(name, version);
-  }
+function submitNew(name: string, version: string) {
+	ws.newWorkspace(name, version);
+}
 
-  const openFromDevice = withError('Open from device failed', () => ws.openFromDevice());
-  const saveBrowserNew = withError('Save failed', () => ws.saveAsNewBrowserSlot());
-  const saveAsDevice = withError('Save to device failed', () => ws.saveAsToDevice());
-  const save = withError('Save failed', () => ws.save());
+const openFromDevice = withError("Open from device failed", () =>
+	ws.openFromDevice(),
+);
+const saveBrowserNew = withError("Save failed", () =>
+	ws.saveAsNewBrowserSlot(),
+);
+const saveAsDevice = withError("Save to device failed", () =>
+	ws.saveAsToDevice(),
+);
+const save = withError("Save failed", () => ws.save());
 
-  function openBrowserSlot(slotId: string) {
-    withError('Could not open workspace', () => ws.openFromBrowser(slotId))();
-  }
+function openBrowserSlot(slotId: string) {
+	withError("Could not open workspace", () => ws.openFromBrowser(slotId))();
+}
 
-  function saveBrowserToSlot(slotId: string) {
-    withError('Save failed', () => ws.saveToBrowser(slotId))();
-  }
+function saveBrowserToSlot(slotId: string) {
+	withError("Save failed", () => ws.saveToBrowser(slotId))();
+}
 
-  function closeWorkspace() {
-    ws.closeWorkspace();
-  }
+function closeWorkspace() {
+	ws.closeWorkspace();
+}
 
+function openSettings() {
+	if (!current) return;
+	settingsOpen = true;
+}
 
-  function openSettings() {
-    if (!current) return;
-    settingsOpen = true;
-  }
+function submitSettings(name: string, version: string) {
+	ws.setName(name);
+	ws.setVersion(version);
+}
 
-  function submitSettings(name: string, version: string) {
-    ws.setName(name);
-    ws.setVersion(version);
-  }
+function askDeleteSlot(slot: { id: string; name: string }) {
+	deleteSlotTarget = slot;
+	deleteSlotOpen = true;
+}
 
-  function askDeleteSlot(slot: { id: string; name: string }) {
-    deleteSlotTarget = slot;
-    deleteSlotOpen = true;
-  }
-
-  function confirmDeleteSlot() {
-    if (!deleteSlotTarget) return;
-    withError('Delete failed', () => ws.deleteBrowserSlot(deleteSlotTarget!.id))();
-    deleteSlotTarget = null;
-    deleteSlotOpen = false;
-  }
+function confirmDeleteSlot() {
+	if (!deleteSlotTarget) return;
+	withError("Delete failed", () =>
+		ws.deleteBrowserSlot(deleteSlotTarget!.id),
+	)();
+	deleteSlotTarget = null;
+	deleteSlotOpen = false;
+}
 </script>
 
 <DropdownMenu.Root>

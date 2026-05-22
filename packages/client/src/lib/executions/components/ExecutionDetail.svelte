@@ -1,116 +1,116 @@
 <script lang="ts">
-  import { untrack } from 'svelte';
-  import { makeTid } from '$lib/utils';
-  import type { ExecutionDocument } from '@behaviors-sh/spec';
-  import { Badge } from '$lib/components/ui/badge';
-  import Activity from '@lucide/svelte/icons/activity';
-  import Copy from '@lucide/svelte/icons/copy';
-  import GitBranch from '@lucide/svelte/icons/git-branch';
-  import Clock from '@lucide/svelte/icons/clock';
-  import Radio from '@lucide/svelte/icons/radio';
-  import type { Path } from '$lib/tree/tree-ops';
-  import {
-    classifyStatus,
-    formatExactTime,
-    formatRelativeTime,
-    shortenUri,
-  } from '../format';
-  import { inFlightPath as resolveInFlight } from '../cursor';
-  import StatusPill from './StatusPill.svelte';
-  import ExecutionCanvas from './ExecutionCanvas.svelte';
-  import ExecutionCanvasOverlay from './ExecutionCanvasOverlay.svelte';
-  import ExecutionInspectorPane from './ExecutionInspectorPane.svelte';
+import type { ExecutionDocument } from "@behaviors-sh/spec";
+import Activity from "@lucide/svelte/icons/activity";
+import Clock from "@lucide/svelte/icons/clock";
+import Copy from "@lucide/svelte/icons/copy";
+import GitBranch from "@lucide/svelte/icons/git-branch";
+import Radio from "@lucide/svelte/icons/radio";
+import { untrack } from "svelte";
+import { Badge } from "$lib/components/ui/badge";
+import type { Path } from "$lib/tree/tree-ops";
+import { makeTid } from "$lib/utils";
+import { inFlightPath as resolveInFlight } from "../cursor";
+import {
+	classifyStatus,
+	formatExactTime,
+	formatRelativeTime,
+	shortenUri,
+} from "../format";
+import ExecutionCanvas from "./ExecutionCanvas.svelte";
+import ExecutionCanvasOverlay from "./ExecutionCanvasOverlay.svelte";
+import ExecutionInspectorPane from "./ExecutionInspectorPane.svelte";
+import StatusPill from "./StatusPill.svelte";
 
-  interface Props {
-    doc: ExecutionDocument | null;
-    isLive: boolean;
-    onCopyUri: (uri: string) => void;
-    testid?: string;
-  }
-  let { doc, isLive, onCopyUri, testid }: Props = $props();
+interface Props {
+	doc: ExecutionDocument | null;
+	isLive: boolean;
+	onCopyUri: (uri: string) => void;
+	testid?: string;
+}
+let { doc, isLive, onCopyUri, testid }: Props = $props();
 
-  const tid = $derived(makeTid(testid));
+const tid = $derived(makeTid(testid));
 
-  // Local view state — reset whenever the open execution changes so
-  // pan/zoom/selection/inspector-open don't leak between traces.
-  let selected = $state<Path | null>(null);
-  let pan = $state({ x: 0, y: 0 });
-  let zoom = $state(1);
-  let inspectorOpen = $state(true);
-  let inspectorWidth = $state(400);
-  let fitToken = $state(0);
-  let prevUri = $state<string | null>(null);
+// Local view state — reset whenever the open execution changes so
+// pan/zoom/selection/inspector-open don't leak between traces.
+let selected = $state<Path | null>(null);
+let pan = $state({ x: 0, y: 0 });
+let zoom = $state(1);
+let inspectorOpen = $state(true);
+let inspectorWidth = $state(400);
+let fitToken = $state(0);
+let prevUri = $state<string | null>(null);
 
-  // Resize drag — track the original pointer X + width so deltas are
-  // computed off the drag start (not the previous frame). Width is
-  // clamped to keep the inspector usable and the canvas non-trivial.
-  const INSPECTOR_MIN = 280;
-  const INSPECTOR_MAX = 720;
-  let dragStart = $state<{ x: number; w: number } | null>(null);
-  const dragging = $derived(dragStart !== null);
+// Resize drag — track the original pointer X + width so deltas are
+// computed off the drag start (not the previous frame). Width is
+// clamped to keep the inspector usable and the canvas non-trivial.
+const INSPECTOR_MIN = 280;
+const INSPECTOR_MAX = 720;
+let dragStart = $state<{ x: number; w: number } | null>(null);
+const dragging = $derived(dragStart !== null);
 
-  $effect(() => {
-    const uri = doc?.uri ?? null;
-    // Use `untrack` on the bookkeeping write so this effect doesn't
-    // re-subscribe to `prevUri` and double-fire — only `doc.uri`
-    // should be the dependency.
-    untrack(() => {
-      if (uri !== prevUri) {
-        selected = null;
-        pan = { x: 0, y: 0 };
-        zoom = 1;
-        inspectorOpen = true;
-        fitToken++;
-        prevUri = uri;
-      }
-    });
-  });
+$effect(() => {
+	const uri = doc?.uri ?? null;
+	// Use `untrack` on the bookkeeping write so this effect doesn't
+	// re-subscribe to `prevUri` and double-fire — only `doc.uri`
+	// should be the dependency.
+	untrack(() => {
+		if (uri !== prevUri) {
+			selected = null;
+			pan = { x: 0, y: 0 };
+			zoom = 1;
+			inspectorOpen = true;
+			fitToken++;
+			prevUri = uri;
+		}
+	});
+});
 
-  // After the toolbar toggle expands the inspector back open we want
-  // a fresh fit, otherwise the canvas keeps the zoom it had at the
-  // wider viewport and the tree looks off-centre. `untrack` keeps the
-  // bookkeeping write out of the effect's dependency set so it fires
-  // exactly once per toggle.
-  let prevInspectorOpen = $state(true);
-  $effect(() => {
-    const open = inspectorOpen;
-    untrack(() => {
-      if (open !== prevInspectorOpen) {
-        fitToken++;
-        prevInspectorOpen = open;
-      }
-    });
-  });
+// After the toolbar toggle expands the inspector back open we want
+// a fresh fit, otherwise the canvas keeps the zoom it had at the
+// wider viewport and the tree looks off-centre. `untrack` keeps the
+// bookkeeping write out of the effect's dependency set so it fires
+// exactly once per toggle.
+let prevInspectorOpen = $state(true);
+$effect(() => {
+	const open = inspectorOpen;
+	untrack(() => {
+		if (open !== prevInspectorOpen) {
+			fitToken++;
+			prevInspectorOpen = open;
+		}
+	});
+});
 
-  function onHandleMouseDown(e: MouseEvent) {
-    if (!inspectorOpen) return;
-    e.preventDefault();
-    dragStart = { x: e.clientX, w: inspectorWidth };
-  }
+function onHandleMouseDown(e: MouseEvent) {
+	if (!inspectorOpen) return;
+	e.preventDefault();
+	dragStart = { x: e.clientX, w: inspectorWidth };
+}
 
-  function onWindowMouseMove(e: MouseEvent) {
-    if (!dragStart) return;
-    // Dragging left grows the inspector; rightward shrinks it.
-    const delta = dragStart.x - e.clientX;
-    inspectorWidth = Math.max(
-      INSPECTOR_MIN,
-      Math.min(INSPECTOR_MAX, dragStart.w + delta),
-    );
-  }
+function onWindowMouseMove(e: MouseEvent) {
+	if (!dragStart) return;
+	// Dragging left grows the inspector; rightward shrinks it.
+	const delta = dragStart.x - e.clientX;
+	inspectorWidth = Math.max(
+		INSPECTOR_MIN,
+		Math.min(INSPECTOR_MAX, dragStart.w + delta),
+	);
+}
 
-  function onWindowMouseUp() {
-    if (!dragStart) return;
-    dragStart = null;
-    // Refit after the resize so the tree re-centres into the new
-    // canvas viewport.
-    fitToken++;
-  }
+function onWindowMouseUp() {
+	if (!dragStart) return;
+	dragStart = null;
+	// Refit after the resize so the tree re-centres into the new
+	// canvas viewport.
+	fitToken++;
+}
 
-  const inFlight = $derived(doc ? resolveInFlight(doc) : null);
+const inFlight = $derived(doc ? resolveInFlight(doc) : null);
 
-  const showLiveBadge = $derived(
-    !!doc && classifyStatus(doc.status) === 'running',
-  );
+const showLiveBadge = $derived(
+	!!doc && classifyStatus(doc.status) === "running",
+);
 </script>
 
 <svelte:window onmousemove={onWindowMouseMove} onmouseup={onWindowMouseUp} />

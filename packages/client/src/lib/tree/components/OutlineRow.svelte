@@ -1,41 +1,41 @@
 <script lang="ts">
-  import type { BehaviourNode } from '@behaviors-sh/spec';
-  import type { Path } from '../tree-ops';
-  import { pathsEqual } from '../tree-ops';
-  import { kindOf, KIND_META, nodeColor } from '../behaviour-layout';
-  import { refToTreeId } from '../ref';
-  import type { TreeSummary } from '$lib/workspace/store.svelte';
-  import Self from './OutlineRow.svelte';
+import type { BehaviourNode } from "@behaviors-sh/spec";
+import type { TreeSummary } from "$lib/workspace/store.svelte";
+import { KIND_META, kindOf, nodeColor } from "../behaviour-layout";
+import { refToTreeId } from "../ref";
+import type { Path } from "../tree-ops";
+import { pathsEqual } from "../tree-ops";
+import Self from "./OutlineRow.svelte";
 
-  interface Props {
-    node: BehaviourNode;
-    path: Path;
-    selected: Path | null;
-    trees: TreeSummary[];
-    onSelect: (path: Path) => void;
-    testid?: string;
-  }
-  let { node, path, selected, trees, onSelect, testid }: Props = $props();
-  // Use the path as a unique suffix so nested rows get distinct testids.
-  const rowId = $derived(path.length === 0 ? 'root' : path.join('-'));
+interface Props {
+	node: BehaviourNode;
+	path: Path;
+	selected: Path | null;
+	trees: TreeSummary[];
+	onSelect: (path: Path) => void;
+	testid?: string;
+}
+let { node, path, selected, trees, onSelect, testid }: Props = $props();
+// Use the path as a unique suffix so nested rows get distinct testids.
+const rowId = $derived(path.length === 0 ? "root" : path.join("-"));
 
-  const depth = $derived(path.length);
-  const isSelected = $derived(selected != null && pathsEqual(path, selected));
+const depth = $derived(path.length);
+const isSelected = $derived(selected != null && pathsEqual(path, selected));
 
-  const kind = $derived(kindOf(node));
-  const meta = $derived(KIND_META[kind]);
-  const color = $derived(nodeColor(kind));
+const kind = $derived(kindOf(node));
+const meta = $derived(KIND_META[kind]);
+const color = $derived(nodeColor(kind));
 
-  const label = $derived.by(() => {
-    if ('$ref' in node) {
-      const id = refToTreeId(node.$ref);
-      if (!id) return '(pick a tree)';
-      return trees.find((t) => t.id === id)?.name ?? id;
-    }
-    return node.name;
-  });
+const label = $derived.by(() => {
+	if ("$ref" in node) {
+		const id = refToTreeId(node.$ref);
+		if (!id) return "(pick a tree)";
+		return trees.find((t) => t.id === id)?.name ?? id;
+	}
+	return node.name;
+});
 
-  const typeLabel = $derived(meta.label);
+const typeLabel = $derived(meta.label);
 </script>
 
 <button

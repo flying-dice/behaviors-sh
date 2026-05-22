@@ -1,3 +1,4 @@
+import { afterEach, beforeEach, describe, expect, test } from "bun:test";
 import {
 	mkdirSync,
 	mkdtempSync,
@@ -8,7 +9,6 @@ import {
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
-import { afterEach, beforeEach, describe, expect, test } from "bun:test";
 import { FileSystemTreeReader, type TreeReader } from "../src/index.ts";
 
 let tmp: string;

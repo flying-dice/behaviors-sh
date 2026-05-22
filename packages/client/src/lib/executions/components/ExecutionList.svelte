@@ -1,52 +1,46 @@
 <script lang="ts">
-  import { makeTid } from '$lib/utils';
-  import { ScrollArea } from '$lib/components/ui/scroll-area';
-  import { Badge } from '$lib/components/ui/badge';
-  import { Button } from '$lib/components/ui/button';
-  import Search from '@lucide/svelte/icons/search';
-  import FileUp from '@lucide/svelte/icons/file-up';
-  import type { OpenedExecution } from '../store.svelte';
-  import { classifyStatus } from '../format';
-  import ExecutionListRow from './ExecutionListRow.svelte';
+import FileUp from "@lucide/svelte/icons/file-up";
+import Search from "@lucide/svelte/icons/search";
+import { Badge } from "$lib/components/ui/badge";
+import { Button } from "$lib/components/ui/button";
+import { ScrollArea } from "$lib/components/ui/scroll-area";
+import { makeTid } from "$lib/utils";
+import { classifyStatus } from "../format";
+import type { OpenedExecution } from "../store.svelte";
+import ExecutionListRow from "./ExecutionListRow.svelte";
 
-  interface Props {
-    entries: OpenedExecution[];
-    selectedId: string | null;
-    loading: boolean;
-    onOpen: () => void;
-    onSelect: (id: string) => void;
-    onClose: (id: string) => void;
-    testid?: string;
-  }
-  let {
-    entries,
-    selectedId,
-    loading,
-    onOpen,
-    onSelect,
-    onClose,
-    testid,
-  }: Props = $props();
+interface Props {
+	entries: OpenedExecution[];
+	selectedId: string | null;
+	loading: boolean;
+	onOpen: () => void;
+	onSelect: (id: string) => void;
+	onClose: (id: string) => void;
+	testid?: string;
+}
+let { entries, selectedId, loading, onOpen, onSelect, onClose, testid }: Props =
+	$props();
 
-  const tid = $derived(makeTid(testid));
+const tid = $derived(makeTid(testid));
 
-  let filter = $state('');
-  const filtered = $derived(
-    entries.filter((e) => {
-      if (!filter) return true;
-      const f = filter.toLowerCase();
-      return (
-        e.doc.uri.toLowerCase().includes(f) ||
-        e.filename.toLowerCase().includes(f) ||
-        (e.doc.tree.type !== 'ref' && e.doc.tree.name.toLowerCase().includes(f)) ||
-        e.doc.status.toLowerCase().includes(f)
-      );
-    }),
-  );
+let filter = $state("");
+const filtered = $derived(
+	entries.filter((e) => {
+		if (!filter) return true;
+		const f = filter.toLowerCase();
+		return (
+			e.doc.uri.toLowerCase().includes(f) ||
+			e.filename.toLowerCase().includes(f) ||
+			(e.doc.tree.type !== "ref" &&
+				e.doc.tree.name.toLowerCase().includes(f)) ||
+			e.doc.status.toLowerCase().includes(f)
+		);
+	}),
+);
 
-  const runningCount = $derived(
-    entries.filter((e) => classifyStatus(e.doc.status) === 'running').length,
-  );
+const runningCount = $derived(
+	entries.filter((e) => classifyStatus(e.doc.status) === "running").length,
+);
 </script>
 
 <aside

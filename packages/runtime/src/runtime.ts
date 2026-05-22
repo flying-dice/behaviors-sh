@@ -8,8 +8,8 @@
 // at scale they can use different consistency models.
 
 import {
-	type ExecutionStore,
 	createExecutionStore,
+	type ExecutionStore,
 } from "./execution-store.ts";
 import {
 	createDocAccessor,
@@ -18,11 +18,8 @@ import {
 import type { ExecutionReader } from "./ports/execution-reader.ts";
 import type { ExecutionWriter } from "./ports/execution-writer.ts";
 import type { LoadedTree, TreeReader } from "./ports/tree-reader.ts";
-import {
-	type RuntimeStore,
-	createRuntimeStore,
-} from "./runtime-store.ts";
-import { type Tick, createTick } from "./tree.ts";
+import { createRuntimeStore, type RuntimeStore } from "./runtime-store.ts";
+import { createTick, type Tick } from "./tree.ts";
 
 export interface RuntimeDeps {
 	trees: TreeReader;

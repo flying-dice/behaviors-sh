@@ -19,18 +19,6 @@
 // against a different backend, construct your own adapters and call
 // `buildRuntime(deps)`.
 
-// --- entrypoint ---
-export {
-	type Runtime,
-	type RuntimeDeps,
-	buildRuntime,
-} from "./runtime.ts";
-
-// --- ports ---
-export type { ExecutionReader } from "./ports/execution-reader.ts";
-export type { ExecutionWriter } from "./ports/execution-writer.ts";
-export type { LoadedTree, TreeReader } from "./ports/tree-reader.ts";
-
 // --- adapters ---
 export {
 	FileSystemExecutionReader,
@@ -46,27 +34,34 @@ export {
 	FileSystemTreeReader,
 	type FileSystemTreeReaderOptions,
 } from "./adapters/fs-tree-reader.ts";
-
+// --- pure helpers / types ---
+export * from "./cursor.ts";
 // --- domain service factories + their interfaces ---
 export {
+	createExecutionStore,
 	type ExecutionSeed,
 	type ExecutionStore,
 	type ExecutionStoreDeps,
-	createExecutionStore,
 } from "./execution-store.ts";
 export type { MutationListener } from "./internal/doc-accessor.ts";
+export { getNodeAtPath, getPathForNode } from "./node-path.ts";
+// --- ports ---
+export type { ExecutionReader } from "./ports/execution-reader.ts";
+export type { ExecutionWriter } from "./ports/execution-writer.ts";
+export type { LoadedTree, TreeReader } from "./ports/tree-reader.ts";
+// --- entrypoint ---
 export {
+	buildRuntime,
+	type Runtime,
+	type RuntimeDeps,
+} from "./runtime.ts";
+export {
+	createRuntimeStore,
 	type RuntimeStore,
 	type RuntimeStoreDeps,
-	createRuntimeStore,
 } from "./runtime-store.ts";
-export { type Tick, createTick } from "./tree.ts";
-
-// --- pure helpers / types ---
-export * from "./cursor.ts";
-export { getNodeAtPath, getPathForNode } from "./node-path.ts";
+export { createTick, type Tick } from "./tree.ts";
 export { sanitiseSlug } from "./tree-arg.ts";
-export { EXECUTION_SCHEMA_VERSION } from "./types.ts";
 export type {
 	ActionNode,
 	BehaviourNode,
@@ -89,6 +84,7 @@ export type {
 	TraceEntry,
 	TraceKind,
 } from "./types.ts";
+export { EXECUTION_SCHEMA_VERSION } from "./types.ts";
 export { die, out } from "./utils.ts";
 export {
 	AbtNodeSchema,

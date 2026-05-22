@@ -1,146 +1,148 @@
 <script lang="ts">
-  import { makeTid } from '$lib/utils';
-  import type { TraceEntry } from '@behaviors-sh/spec';
-  import * as Tooltip from '$lib/components/ui/tooltip';
-  import CheckCircle2 from '@lucide/svelte/icons/check-circle-2';
-  import XCircle from '@lucide/svelte/icons/x-circle';
-  import Loader2 from '@lucide/svelte/icons/loader-2';
-  import ShieldCheck from '@lucide/svelte/icons/shield-check';
-  import Brain from '@lucide/svelte/icons/brain';
-  import ChevronRight from '@lucide/svelte/icons/chevron-right';
-  import Sparkles from '@lucide/svelte/icons/sparkles';
-  import { formatExactTime, formatRelativeTime } from '../format';
-  import TextWithRefs from './TextWithRefs.svelte';
+import type { TraceEntry } from "@behaviors-sh/spec";
+import Brain from "@lucide/svelte/icons/brain";
+import CheckCircle2 from "@lucide/svelte/icons/check-circle-2";
+import ChevronRight from "@lucide/svelte/icons/chevron-right";
+import Loader2 from "@lucide/svelte/icons/loader-2";
+import ShieldCheck from "@lucide/svelte/icons/shield-check";
+import Sparkles from "@lucide/svelte/icons/sparkles";
+import XCircle from "@lucide/svelte/icons/x-circle";
+import * as Tooltip from "$lib/components/ui/tooltip";
+import { makeTid } from "$lib/utils";
+import { formatExactTime, formatRelativeTime } from "../format";
+import TextWithRefs from "./TextWithRefs.svelte";
 
-  interface Props {
-    entry: TraceEntry;
-    index: number;
-    isLatest: boolean;
-    isLive: boolean;
-    // The original instruction (for `instruct` entries) or evaluate
-    // expression (for `evaluate` entries) the agent was responding to.
-    // Looked up from the embedded tree by the parent.
-    prompt?: string;
-    // Live scopes from the execution doc. Threaded down so inline
-    // `$VAR.X` / `$CONST.Y` references in the prompt / submitted /
-    // note text can be swapped for hoverable badges.
-    varScope: Record<string, unknown>;
-    constScope: Record<string, unknown>;
-    testid?: string;
-  }
-  let {
-    entry,
-    index,
-    isLatest,
-    isLive,
-    prompt,
-    varScope,
-    constScope,
-    testid,
-  }: Props = $props();
+interface Props {
+	entry: TraceEntry;
+	index: number;
+	isLatest: boolean;
+	isLive: boolean;
+	// The original instruction (for `instruct` entries) or evaluate
+	// expression (for `evaluate` entries) the agent was responding to.
+	// Looked up from the embedded tree by the parent.
+	prompt?: string;
+	// Live scopes from the execution doc. Threaded down so inline
+	// `$VAR.X` / `$CONST.Y` references in the prompt / submitted /
+	// note text can be swapped for hoverable badges.
+	varScope: Record<string, unknown>;
+	constScope: Record<string, unknown>;
+	testid?: string;
+}
+let {
+	entry,
+	index,
+	isLatest,
+	isLive,
+	prompt,
+	varScope,
+	constScope,
+	testid,
+}: Props = $props();
 
-  const tid = $derived(makeTid(testid));
+const tid = $derived(makeTid(testid));
 
-  // Classify the entry's outcome into a small visual vocabulary. We
-  // map every lifecycle word the runtime emits to one of these so the
-  // card can lead with a single status icon.
-  type IconKind = 'success' | 'failure' | 'live' | 'protocol' | 'think';
-  const iconKind = $derived<IconKind>(
-    isLatest && isLive
-      ? 'live'
-      : entry.kind === 'protocol'
-        ? 'protocol'
-        : entry.kind === 'think'
-          ? 'think'
-          : isFailureOutcome(entry.outcome)
-            ? 'failure'
-            : 'success',
-  );
+// Classify the entry's outcome into a small visual vocabulary. We
+// map every lifecycle word the runtime emits to one of these so the
+// card can lead with a single status icon.
+type IconKind = "success" | "failure" | "live" | "protocol" | "think";
+const iconKind = $derived<IconKind>(
+	isLatest && isLive
+		? "live"
+		: entry.kind === "protocol"
+			? "protocol"
+			: entry.kind === "think"
+				? "think"
+				: isFailureOutcome(entry.outcome)
+					? "failure"
+					: "success",
+);
 
-  function isFailureOutcome(outcome: string): boolean {
-    const o = outcome.toLowerCase();
-    return (
-      o === 'failure' ||
-      o === 'failed' ||
-      o === 'action_failed' ||
-      o === 'evaluation_failed' ||
-      o === 'protocol_rejected'
-    );
-  }
+function isFailureOutcome(outcome: string): boolean {
+	const o = outcome.toLowerCase();
+	return (
+		o === "failure" ||
+		o === "failed" ||
+		o === "action_failed" ||
+		o === "evaluation_failed" ||
+		o === "protocol_rejected"
+	);
+}
 
-  // The status-coloured palette is small and intentional — every entry
-  // pulls its left edge, icon color, and faint background tint from the
-  // same row.
-  const PALETTE: Record<
-    IconKind,
-    { ring: string; bar: string; tint: string; iconClass: string }
-  > = {
-    success: {
-      ring: 'ring-emerald-500/30',
-      bar: 'bg-emerald-500',
-      tint: 'bg-emerald-500/[0.04]',
-      iconClass: 'text-emerald-500',
-    },
-    failure: {
-      ring: 'ring-red-500/30',
-      bar: 'bg-red-500',
-      tint: 'bg-red-500/[0.04]',
-      iconClass: 'text-red-500',
-    },
-    live: {
-      ring: 'ring-amber-500/30',
-      bar: 'bg-amber-500',
-      tint: 'bg-amber-500/[0.05]',
-      iconClass: 'text-amber-500',
-    },
-    protocol: {
-      ring: 'ring-blue-500/30',
-      bar: 'bg-blue-500',
-      tint: 'bg-blue-500/[0.04]',
-      iconClass: 'text-blue-500',
-    },
-    think: {
-      ring: 'ring-border',
-      bar: 'bg-muted-foreground/40',
-      tint: 'bg-muted/30',
-      iconClass: 'text-muted-foreground',
-    },
-  };
-  const palette = $derived(PALETTE[iconKind]);
+// The status-coloured palette is small and intentional — every entry
+// pulls its left edge, icon color, and faint background tint from the
+// same row.
+const PALETTE: Record<
+	IconKind,
+	{ ring: string; bar: string; tint: string; iconClass: string }
+> = {
+	success: {
+		ring: "ring-emerald-500/30",
+		bar: "bg-emerald-500",
+		tint: "bg-emerald-500/[0.04]",
+		iconClass: "text-emerald-500",
+	},
+	failure: {
+		ring: "ring-red-500/30",
+		bar: "bg-red-500",
+		tint: "bg-red-500/[0.04]",
+		iconClass: "text-red-500",
+	},
+	live: {
+		ring: "ring-amber-500/30",
+		bar: "bg-amber-500",
+		tint: "bg-amber-500/[0.05]",
+		iconClass: "text-amber-500",
+	},
+	protocol: {
+		ring: "ring-blue-500/30",
+		bar: "bg-blue-500",
+		tint: "bg-blue-500/[0.04]",
+		iconClass: "text-blue-500",
+	},
+	think: {
+		ring: "ring-border",
+		bar: "bg-muted-foreground/40",
+		tint: "bg-muted/30",
+		iconClass: "text-muted-foreground",
+	},
+};
+const palette = $derived(PALETTE[iconKind]);
 
-  // Human-readable label for the outcome — shown on hover of the icon.
-  // Translates the runtime lifecycle vocabulary into something a
-  // non-developer can interpret without reading source.
-  const OUTCOME_LABEL: Record<string, string> = {
-    action_complete: 'Action complete',
-    step_complete: 'Step complete',
-    action_failed: 'Action failed',
-    evaluation_passed: 'Condition true',
-    evaluation_failed: 'Condition false',
-    protocol_accepted: 'Protocol accepted',
-    protocol_rejected: 'Protocol rejected',
-    recorded: 'Thought recorded',
-    running: 'Still running',
-    success: 'Success',
-    failure: 'Failure',
-  };
-  const outcomeLabel = $derived(
-    OUTCOME_LABEL[entry.outcome] ?? entry.outcome,
-  );
+// Human-readable label for the outcome — shown on hover of the icon.
+// Translates the runtime lifecycle vocabulary into something a
+// non-developer can interpret without reading source.
+const OUTCOME_LABEL: Record<string, string> = {
+	action_complete: "Action complete",
+	step_complete: "Step complete",
+	action_failed: "Action failed",
+	evaluation_passed: "Condition true",
+	evaluation_failed: "Condition false",
+	protocol_accepted: "Protocol accepted",
+	protocol_rejected: "Protocol rejected",
+	recorded: "Thought recorded",
+	running: "Still running",
+	success: "Success",
+	failure: "Failure",
+};
+const outcomeLabel = $derived(OUTCOME_LABEL[entry.outcome] ?? entry.outcome);
 
-  // For evaluate entries the agent's `submitted` is just "true" / "false";
-  // we represent that with a dedicated chip in the header to free up
-  // the body for the actual reasoning. For everything else the
-  // `submitted` text is the agent's narration of what it did.
-  const isEvalEntry = $derived(entry.kind === 'evaluate');
-  const evalAnswer = $derived(
-    isEvalEntry ? (entry.submitted.trim().toLowerCase() === 'true' ? 'true' : 'false') : null,
-  );
+// For evaluate entries the agent's `submitted` is just "true" / "false";
+// we represent that with a dedicated chip in the header to free up
+// the body for the actual reasoning. For everything else the
+// `submitted` text is the agent's narration of what it did.
+const isEvalEntry = $derived(entry.kind === "evaluate");
+const evalAnswer = $derived(
+	isEvalEntry
+		? entry.submitted.trim().toLowerCase() === "true"
+			? "true"
+			: "false"
+		: null,
+);
 
-  // Think entries store the thought in `note`, not `submitted`.
-  const thoughtBody = $derived(entry.kind === 'think' ? entry.note : null);
+// Think entries store the thought in `note`, not `submitted`.
+const thoughtBody = $derived(entry.kind === "think" ? entry.note : null);
 
-  const hasNote = $derived(entry.kind !== 'think' && !!entry.note);
+const hasNote = $derived(entry.kind !== "think" && !!entry.note);
 </script>
 
 <article

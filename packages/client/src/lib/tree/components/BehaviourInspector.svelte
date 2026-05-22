@@ -1,138 +1,148 @@
 <script lang="ts">
-  import { makeTid } from "$lib/utils";
-  import { stepBody, stepKind, type BehaviourNode } from '@behaviors-sh/spec';
-  import { Button } from '$lib/components/ui/button';
-  import { Input } from '$lib/components/ui/input';
-  import { Label } from '$lib/components/ui/label';
-  import { Textarea } from '$lib/components/ui/textarea';
-  import * as Select from '$lib/components/ui/select';
-  import PlusIcon from '@lucide/svelte/icons/plus';
-  import Trash2 from '@lucide/svelte/icons/trash-2';
-  import ArrowUp from '@lucide/svelte/icons/arrow-up';
-  import ArrowDown from '@lucide/svelte/icons/arrow-down';
-  import GripVertical from '@lucide/svelte/icons/grip-vertical';
-  import GitBranchPlus from '@lucide/svelte/icons/git-branch-plus';
-  import ExternalLink from '@lucide/svelte/icons/external-link';
-  import NumberStepper from './NumberStepper.svelte';
-  import type { TreeSummary } from '$lib/workspace/store.svelte';
-  import { refToTreeId, treeIdToRef } from '../ref';
-  import type { CompositeType } from '../tree-ops';
-  import { COMPOSITE_TYPES, kindOf, KIND_META, nodeColor } from '../behaviour-layout';
+import { type BehaviourNode, stepBody, stepKind } from "@behaviors-sh/spec";
+import ArrowDown from "@lucide/svelte/icons/arrow-down";
+import ArrowUp from "@lucide/svelte/icons/arrow-up";
+import ExternalLink from "@lucide/svelte/icons/external-link";
+import GitBranchPlus from "@lucide/svelte/icons/git-branch-plus";
+import GripVertical from "@lucide/svelte/icons/grip-vertical";
+import PlusIcon from "@lucide/svelte/icons/plus";
+import Trash2 from "@lucide/svelte/icons/trash-2";
+import { Button } from "$lib/components/ui/button";
+import { Input } from "$lib/components/ui/input";
+import { Label } from "$lib/components/ui/label";
+import * as Select from "$lib/components/ui/select";
+import { Textarea } from "$lib/components/ui/textarea";
+import { makeTid } from "$lib/utils";
+import type { TreeSummary } from "$lib/workspace/store.svelte";
+import {
+	COMPOSITE_TYPES,
+	KIND_META,
+	kindOf,
+	nodeColor,
+} from "../behaviour-layout";
+import { refToTreeId, treeIdToRef } from "../ref";
+import type { CompositeType } from "../tree-ops";
+import NumberStepper from "./NumberStepper.svelte";
 
-  interface Props {
-    node: BehaviourNode | null;
-    trees: TreeSummary[];
-    currentTreeId: string;
-    onSetName: (v: string) => void;
-    onSetDescription: (v: string) => void;
-    onSetRetries: (text: string) => void;
-    onSetCompositeType: (t: CompositeType) => void;
-    onSetRef: (v: string) => void;
-    onAddStep: (kind: 'evaluate' | 'instruct') => void;
-    onRemoveStep: (idx: number) => void;
-    onMoveStep: (from: number, to: number) => void;
-    onSetStepBody: (idx: number, value: string) => void;
-    onWrap: (t: CompositeType) => void;
-    onConvertToRef: () => void;
-    onConvertRefToAction: () => void;
-    onOpenLinkedTree: (id: string) => void;
-    testid?: string;
-  }
+interface Props {
+	node: BehaviourNode | null;
+	trees: TreeSummary[];
+	currentTreeId: string;
+	onSetName: (v: string) => void;
+	onSetDescription: (v: string) => void;
+	onSetRetries: (text: string) => void;
+	onSetCompositeType: (t: CompositeType) => void;
+	onSetRef: (v: string) => void;
+	onAddStep: (kind: "evaluate" | "instruct") => void;
+	onRemoveStep: (idx: number) => void;
+	onMoveStep: (from: number, to: number) => void;
+	onSetStepBody: (idx: number, value: string) => void;
+	onWrap: (t: CompositeType) => void;
+	onConvertToRef: () => void;
+	onConvertRefToAction: () => void;
+	onOpenLinkedTree: (id: string) => void;
+	testid?: string;
+}
 
-  let {
-    node,
-    trees,
-    currentTreeId,
-    onSetName,
-    onSetDescription,
-    onSetRetries,
-    onSetCompositeType,
-    onSetRef,
-    onAddStep,
-    onRemoveStep,
-    onMoveStep,
-    onSetStepBody,
-    onWrap,
-    onConvertToRef,
-    onConvertRefToAction,
-    onOpenLinkedTree,
-    testid,
-  }: Props = $props();
-  const tid = $derived(makeTid(testid));
+let {
+	node,
+	trees,
+	currentTreeId,
+	onSetName,
+	onSetDescription,
+	onSetRetries,
+	onSetCompositeType,
+	onSetRef,
+	onAddStep,
+	onRemoveStep,
+	onMoveStep,
+	onSetStepBody,
+	onWrap,
+	onConvertToRef,
+	onConvertRefToAction,
+	onOpenLinkedTree,
+	testid,
+}: Props = $props();
+const tid = $derived(makeTid(testid));
 
-  const nodeKind = $derived.by(() => node ? kindOf(node) : null);
-  const accentColor = $derived(nodeKind ? nodeColor(nodeKind) : undefined);
+const nodeKind = $derived.by(() => (node ? kindOf(node) : null));
+const accentColor = $derived(nodeKind ? nodeColor(nodeKind) : undefined);
 
-  const isRef = $derived(!!node && '$ref' in node);
-  const isAction = $derived(!!node && !('$ref' in node) && node.type === 'action');
-  const isComposite = $derived(
-    !!node && !('$ref' in node) && node.type !== 'action',
-  );
+const isRef = $derived(!!node && "$ref" in node);
+const isAction = $derived(
+	!!node && !("$ref" in node) && node.type === "action",
+);
+const isComposite = $derived(
+	!!node && !("$ref" in node) && node.type !== "action",
+);
 
-  const selName = $derived.by(() =>
-    node && !('$ref' in node) ? node.name : '',
-  );
-  const selDescription = $derived.by(() =>
-    node && !('$ref' in node) ? (node.description ?? '') : '',
-  );
-  const selRetries = $derived.by(() =>
-    node && !('$ref' in node) && node.retries != null ? String(node.retries) : '',
-  );
-  const selLinkedTreeId = $derived.by(() =>
-    node && '$ref' in node ? refToTreeId(node.$ref) : null,
-  );
-  const linkableTrees = $derived(trees.filter((t) => t.id !== currentTreeId));
-  const selLinkedTreeName = $derived.by(() => {
-    const id = selLinkedTreeId;
-    if (!id) return null;
-    return trees.find((t) => t.id === id)?.name ?? id;
-  });
-  const selCompositeType = $derived.by<CompositeType | null>(() => {
-    if (!node || '$ref' in node || node.type === 'action') return null;
-    return node.type;
-  });
+const selName = $derived.by(() => (node && !("$ref" in node) ? node.name : ""));
+const selDescription = $derived.by(() =>
+	node && !("$ref" in node) ? (node.description ?? "") : "",
+);
+const selRetries = $derived.by(() =>
+	node && !("$ref" in node) && node.retries != null ? String(node.retries) : "",
+);
+const selLinkedTreeId = $derived.by(() =>
+	node && "$ref" in node ? refToTreeId(node.$ref) : null,
+);
+const linkableTrees = $derived(trees.filter((t) => t.id !== currentTreeId));
+const selLinkedTreeName = $derived.by(() => {
+	const id = selLinkedTreeId;
+	if (!id) return null;
+	return trees.find((t) => t.id === id)?.name ?? id;
+});
+const selCompositeType = $derived.by<CompositeType | null>(() => {
+	if (!node || "$ref" in node || node.type === "action") return null;
+	return node.type;
+});
 
-  let dragIdx = $state<number | null>(null);
-  let dropIdx = $state<number | null>(null);
+let dragIdx = $state<number | null>(null);
+let dropIdx = $state<number | null>(null);
 
-  function onDragStart(e: PointerEvent, idx: number) {
-    e.preventDefault();
-    dragIdx = idx;
-    dropIdx = idx;
-    const container = (e.currentTarget as HTMLElement).closest('[data-testid$="steps-section"]')!;
-    const cards = [...container.querySelectorAll<HTMLElement>('[data-step-idx]')];
+function onDragStart(e: PointerEvent, idx: number) {
+	e.preventDefault();
+	dragIdx = idx;
+	dropIdx = idx;
+	const container = (e.currentTarget as HTMLElement).closest(
+		'[data-testid$="steps-section"]',
+	)!;
+	const cards = [...container.querySelectorAll<HTMLElement>("[data-step-idx]")];
 
-    document.body.style.cursor = 'grabbing';
-    document.body.style.userSelect = 'none';
+	document.body.style.cursor = "grabbing";
+	document.body.style.userSelect = "none";
 
-    const onMove = (ev: PointerEvent) => {
-      for (let c = 0; c < cards.length; c++) {
-        const rect = cards[c]!.getBoundingClientRect();
-        const mid = rect.top + rect.height / 2;
-        if (ev.clientY < mid) { dropIdx = c; return; }
-      }
-      dropIdx = cards.length - 1;
-    };
+	const onMove = (ev: PointerEvent) => {
+		for (let c = 0; c < cards.length; c++) {
+			const rect = cards[c]!.getBoundingClientRect();
+			const mid = rect.top + rect.height / 2;
+			if (ev.clientY < mid) {
+				dropIdx = c;
+				return;
+			}
+		}
+		dropIdx = cards.length - 1;
+	};
 
-    const onUp = () => {
-      document.body.style.cursor = '';
-      document.body.style.userSelect = '';
-      if (dragIdx != null && dropIdx != null && dragIdx !== dropIdx) {
-        onMoveStep(dragIdx, dropIdx);
-      }
-      dragIdx = null;
-      dropIdx = null;
-      window.removeEventListener('pointermove', onMove);
-      window.removeEventListener('pointerup', onUp);
-    };
+	const onUp = () => {
+		document.body.style.cursor = "";
+		document.body.style.userSelect = "";
+		if (dragIdx != null && dropIdx != null && dragIdx !== dropIdx) {
+			onMoveStep(dragIdx, dropIdx);
+		}
+		dragIdx = null;
+		dropIdx = null;
+		window.removeEventListener("pointermove", onMove);
+		window.removeEventListener("pointerup", onUp);
+	};
 
-    window.addEventListener('pointermove', onMove);
-    window.addEventListener('pointerup', onUp);
-  }
+	window.addEventListener("pointermove", onMove);
+	window.addEventListener("pointerup", onUp);
+}
 
-  function pickLinkedTree(id: string) {
-    onSetRef(treeIdToRef(id));
-  }
+function pickLinkedTree(id: string) {
+	onSetRef(treeIdToRef(id));
+}
 </script>
 
 {#if !node}

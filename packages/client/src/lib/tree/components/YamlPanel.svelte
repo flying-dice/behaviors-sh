@@ -1,45 +1,54 @@
 <script lang="ts">
-  import { makeTid } from "$lib/utils";
-  interface Props {
-    yaml: string;
-    testid?: string;
-  }
-  let { yaml, testid }: Props = $props();
-  const tid = $derived(makeTid(testid));
+import { makeTid } from "$lib/utils";
 
-  type Token = { text: string; color?: string };
+interface Props {
+	yaml: string;
+	testid?: string;
+}
+let { yaml, testid }: Props = $props();
+const tid = $derived(makeTid(testid));
 
-  function tokenizeValue(raw: string): Token[] {
-    if (!raw) return [];
-    if (/^("|').*\1$/.test(raw)) return [{ text: raw, color: 'var(--color-abtree-yellow)' }];
-    if (/^-?\d+(\.\d+)?$/.test(raw)) return [{ text: raw, color: 'var(--color-abtree-purple)' }];
-    if (raw === 'true' || raw === 'false' || raw === 'null')
-      return [{ text: raw, color: 'var(--color-abtree-orange)' }];
-    if (raw === '|' || raw === '>') return [{ text: raw, color: 'var(--color-abtree-cyan)' }];
-    if (/^\[.*\]$|^\{.*\}$/.test(raw))
-      return [{ text: raw, color: 'var(--color-abtree-cyan)' }];
-    return [{ text: raw }];
-  }
+type Token = { text: string; color?: string };
 
-  function tokenizeLine(line: string): Token[] {
-    if (line.startsWith('#')) return [{ text: line, color: 'hsl(var(--muted-foreground))' }];
-    const m = line.match(/^(\s*)(-\s+)?([A-Za-z_][\w$.-]*)(\s*:\s*)(.*)$/);
-    if (m) {
-      const [, ws, dash, key, sep, val] = m;
-      return [
-        { text: ws },
-        ...(dash ? [{ text: dash, color: 'var(--color-abtree-purple)' }] : []),
-        { text: key, color: 'hsl(var(--primary))' },
-        { text: sep },
-        ...tokenizeValue(val),
-      ];
-    }
-    const m2 = line.match(/^(\s*-\s+)(.*)$/);
-    if (m2) return [{ text: m2[1], color: 'var(--color-abtree-purple)' }, { text: m2[2] }];
-    return [{ text: line }];
-  }
+function tokenizeValue(raw: string): Token[] {
+	if (!raw) return [];
+	if (/^("|').*\1$/.test(raw))
+		return [{ text: raw, color: "var(--color-abtree-yellow)" }];
+	if (/^-?\d+(\.\d+)?$/.test(raw))
+		return [{ text: raw, color: "var(--color-abtree-purple)" }];
+	if (raw === "true" || raw === "false" || raw === "null")
+		return [{ text: raw, color: "var(--color-abtree-orange)" }];
+	if (raw === "|" || raw === ">")
+		return [{ text: raw, color: "var(--color-abtree-cyan)" }];
+	if (/^\[.*\]$|^\{.*\}$/.test(raw))
+		return [{ text: raw, color: "var(--color-abtree-cyan)" }];
+	return [{ text: raw }];
+}
 
-  const lines = $derived(yaml.split('\n'));
+function tokenizeLine(line: string): Token[] {
+	if (line.startsWith("#"))
+		return [{ text: line, color: "hsl(var(--muted-foreground))" }];
+	const m = line.match(/^(\s*)(-\s+)?([A-Za-z_][\w$.-]*)(\s*:\s*)(.*)$/);
+	if (m) {
+		const [, ws, dash, key, sep, val] = m;
+		return [
+			{ text: ws },
+			...(dash ? [{ text: dash, color: "var(--color-abtree-purple)" }] : []),
+			{ text: key, color: "hsl(var(--primary))" },
+			{ text: sep },
+			...tokenizeValue(val),
+		];
+	}
+	const m2 = line.match(/^(\s*-\s+)(.*)$/);
+	if (m2)
+		return [
+			{ text: m2[1], color: "var(--color-abtree-purple)" },
+			{ text: m2[2] },
+		];
+	return [{ text: line }];
+}
+
+const lines = $derived(yaml.split("\n"));
 </script>
 
 <div class="relative" data-testid={testid}>

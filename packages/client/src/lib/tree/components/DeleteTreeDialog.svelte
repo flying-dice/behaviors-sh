@@ -1,28 +1,28 @@
 <script lang="ts">
-  import { makeTid } from "$lib/utils";
-  import { Button } from '$lib/components/ui/button';
-  import * as Dialog from '$lib/components/ui/dialog';
-  import Trash2 from '@lucide/svelte/icons/trash-2';
-  import DanglingRefsWarning from './DanglingRefsWarning.svelte';
-  import * as ws from '$lib/workspace/store.svelte';
+import Trash2 from "@lucide/svelte/icons/trash-2";
+import { Button } from "$lib/components/ui/button";
+import * as Dialog from "$lib/components/ui/dialog";
+import { makeTid } from "$lib/utils";
+import * as ws from "$lib/workspace/store.svelte";
+import DanglingRefsWarning from "./DanglingRefsWarning.svelte";
 
-  interface Props {
-    open: boolean;
-    treeId: string;
-    testid?: string;
-  }
-  let { open = $bindable(), treeId, testid }: Props = $props();
-  const tid = $derived(makeTid(testid));
+interface Props {
+	open: boolean;
+	treeId: string;
+	testid?: string;
+}
+let { open = $bindable(), treeId, testid }: Props = $props();
+const tid = $derived(makeTid(testid));
 
-  const refHits = $derived(treeId ? ws.findTreeRefs(treeId) : ([] as string[]));
+const refHits = $derived(treeId ? ws.findTreeRefs(treeId) : ([] as string[]));
 
-  function submit() {
-    try {
-      ws.deleteTree(treeId);
-    } finally {
-      open = false;
-    }
-  }
+function submit() {
+	try {
+		ws.deleteTree(treeId);
+	} finally {
+		open = false;
+	}
+}
 </script>
 
 <Dialog.Root bind:open>
