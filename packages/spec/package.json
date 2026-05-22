@@ -3,21 +3,26 @@
 	"version": "0.0.0",
 	"description": "Behaviour-tree spec: zod schemas + JSON Schemas for behaviors-sh trees and workspaces.",
 	"type": "module",
-	"main": "./dist/index.js",
-	"types": "./dist/index.d.ts",
 	"exports": {
-		".": {
-			"types": "./dist/index.d.ts",
-			"default": "./dist/index.js"
-		},
-		"./tree.schema.json": "./dist/tree.schema.json",
-		"./workspace.schema.json": "./dist/workspace.schema.json"
+		".": "./src/index.ts"
 	},
 	"files": [
 		"dist"
 	],
 	"engines": {
 		"node": ">=18"
+	},
+	"publishConfig": {
+		"main": "./dist/index.js",
+		"types": "./dist/index.d.ts",
+		"exports": {
+			".": {
+				"types": "./dist/index.d.ts",
+				"default": "./dist/index.js"
+			},
+			"./tree.schema.json": "./dist/tree.schema.json",
+			"./workspace.schema.json": "./dist/workspace.schema.json"
+		}
 	},
 	"scripts": {
 		"build": "bun scripts/build.ts",
