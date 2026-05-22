@@ -71,17 +71,17 @@ Publish to npm, share through GitHub or bring your own tooling.
 
 ## Hand over to your agent
 
-Claude Code, ChatGPT, or any agent that speaks MCP — the brief is the same. Paste it. The agent understands and walks the tree until the end.
+With the MCP server registered once, every workflow is a single brief. Paste it.
 
 ```text
-Register the @behaviors-sh/cli MCP server, then drive the workflow against this repo:
-
-  start_execution(tree_uri: "file:///path/to/srp-refactor.json",
-                  trace_output: "file:///path/to/run.json")
-  next_step → eval / submit until status: done
+Refactor the worst SRP violation in src/ using the tree at
+./.behaviors-sh/trees/srp-refactor.json.
+Trace to ./.behaviors-sh/runs/srp.json.
 ```
 
-> For the long-form walkthrough — register the MCP server, add a tree, drive it from your agent — see [Get started](/getting-started).
+The agent resolves the tree, walks the loop to completion, and writes the trace to disk. Re-open it in the [executions viewer](/guide/inspecting-executions) when it's done.
+
+> First time? See [Get started](/getting-started) — register the MCP server, materialise your first tree, drive it.
 
 ## From local to fleet
 
