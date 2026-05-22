@@ -7,7 +7,11 @@
       {
         "preset": "angular",
         "releaseRules": [
-          { "breaking": true, "release": "minor" }
+          { "breaking": true, "release": "minor" },
+          { "type": "feat",  "release": "minor" },
+          { "type": "fix",   "release": "minor" },
+          { "type": "perf",  "release": "minor" },
+          { "type": "revert", "release": "minor" }
         ]
       }
     ],
@@ -23,7 +27,7 @@
       "@semantic-release/exec",
       {
         "prepareCmd": "set -e; for f in packages/spec/package.json packages/dsl/package.json packages/cli/package.json; do sed -i.bak -E 's/\"version\": \"[^\"]+\"/\"version\": \"${nextRelease.version}\"/' \"$f\"; done && rm -f packages/*/package.json.bak && bun --filter @behaviors-sh/spec build && bun --filter @behaviors-sh/dsl build && bun --filter @behaviors-sh/cli build",
-        "publishCmd": "set -e; (cd packages/spec && bun publish --access=public); (cd packages/dsl && bun publish --access=public); (cd packages/cli && bun publish --access=public); git add CHANGELOG.md packages/spec/package.json packages/dsl/package.json packages/cli/package.json; git commit -m 'chore(release): ${nextRelease.version} [skip ci]'; git tag -a 'v${nextRelease.version}' -m 'v${nextRelease.version}'; git push origin HEAD:main --follow-tags; git push github HEAD:main --follow-tags"
+        "publishCmd": "set -e; (cd packages/spec && bun publish --access=public); (cd packages/dsl && bun publish --access=public); (cd packages/cli && bun publish --access=public); git add CHANGELOG.md packages/spec/package.json packages/dsl/package.json packages/cli/package.json; git commit -m 'chore(release): ${nextRelease.version} [skip ci]'; git tag -fa 'v${nextRelease.version}' -m 'v${nextRelease.version}'; git push origin HEAD:main --follow-tags; git push github HEAD:main --follow-tags"
       }
     ],
     [
