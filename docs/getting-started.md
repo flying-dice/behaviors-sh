@@ -31,18 +31,20 @@ Verify by listing tools in your client; you should see `next_step`, `eval`, `sub
 
 ## 2. Get a tree
 
-Materialise the bundled `hello-world` tree to disk:
+Open [app.behaviors.sh](https://app.behaviors.sh) and pick a tree from the **Quick start** panel:
 
-```sh
-git clone https://github.com/flying-dice/behaviors-sh.git
-cd behaviors-sh && bun install
-bun -e 'import {helloWorld} from "./trees/hello-world/src"; \
-  import {mkdirSync, writeFileSync} from "node:fs"; \
-  mkdirSync(".behaviors-sh/trees", {recursive: true}); \
-  writeFileSync(".behaviors-sh/trees/hello-world.json", helloWorld.toJson());'
+- `hello-world` — classify the time of day, pick the matching greeting from a three-way selector. Smallest of the four; exercises `sequence`, `selector`, and `action`.
+- `code-review` — review a diff against a project's conventions.
+- `clean-code-review` — review for clean-code principles.
+- `refine-plan-workflow` — iterate a plan until it converges.
+
+Each loads into a workspace where you can browse, edit, or extend. When you're happy with it, save the tree as JSON to a path your agent can read — for example:
+
+```text
+./.behaviors-sh/trees/hello-world.json
 ```
 
-`hello-world` is a small tree: classify the time of day, then pick the matching greeting from a three-way selector. It exercises three of the four behaviour-tree primitives — `sequence`, `selector`, and `action` — in a few dozen lines. The JSON lands at `.behaviors-sh/trees/hello-world.json`.
+Don't want to leave the terminal? Materialise the same trees from the cloned repo instead — see [Writing trees](/guide/writing-trees).
 
 ## 3. Hand it off to your agent
 
