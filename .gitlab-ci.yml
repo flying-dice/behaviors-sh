@@ -79,7 +79,11 @@ pages:
 # the GitHub side. `git push --mirror` keeps refs + tags in sync so the
 # GitHub repo always represents the GitLab head.
 mirror:github:
-  image: alpine/git:latest
+  image:
+    name: alpine/git:latest
+    # `alpine/git` runs `git` as its entrypoint; override so the
+    # shell can run our multi-line script verbatim.
+    entrypoint: [""]
   stage: mirror
   rules:
     - if: $CI_COMMIT_BRANCH == "main"
