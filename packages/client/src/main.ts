@@ -14,7 +14,8 @@ let app: ReturnType<typeof mount> | null = null;
 try {
 	app = mount(App, { target });
 } catch (err) {
-	const message = err instanceof Error ? err.stack ?? err.message : String(err);
+	const message =
+		err instanceof Error ? (err.stack ?? err.message) : String(err);
 	target.innerHTML = `
 		<div style="
 			padding: 32px;
