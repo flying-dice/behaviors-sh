@@ -10,13 +10,11 @@ A **tick** is one evaluation pass through the tree by the runtime: the cursor vi
 
 ## Branches
 
-Branches define the **flow of control**. They have children. Their job is to coordinate which children run, in what order, and what counts as success.
+Branches coordinate **flow of control** — which children run, in what order, what counts as success. They have children but do no work themselves.
 
 ### Sequence
 
-Run children in order. **All must succeed.** If any child fails, the sequence fails.
-
-Use a sequence for linear workflows where each step depends on the previous one.
+Run children in order. **All must succeed.** If any child fails, the sequence fails. Use it for linear workflows where each step depends on the previous.
 
 ```yaml
 type: sequence
@@ -114,64 +112,10 @@ children:
   - { type: action, name: Review, steps: [...] }
 ```
 
-## Putting it together
-
-A tree with all four primitives:
-
-```yaml
-type: sequence              # do these in order
-children:
-  - type: action            # step 1: figure out the time
-    name: Determine_Time
-    steps:
-      - instruct: ...
-
-  - type: selector          # step 2: pick a branch by time of day
-    name: Choose_Greeting
-    children:
-      - type: action
-        name: Morning_Greeting
-        steps:
-          - evaluate: $VAR.time_of_day is "morning"
-          - instruct: ...
-      - type: action
-        name: Afternoon_Greeting
-        steps:
-          - evaluate: $VAR.time_of_day is "afternoon"
-          - instruct: ...
-      - type: action
-        name: Evening_Greeting
-        steps:
-          - evaluate: $VAR.time_of_day is "evening"
-          - instruct: ...
-      - type: action
-        name: Default_Greeting
-        steps:
-          - instruct: ...
-
-  - type: parallel          # step 3: gather context concurrently
-    name: Gather_Context
-    children:
-      - type: action
-        name: Check_Weather
-        steps:
-          - instruct: ...
-      - type: action
-        name: Check_News
-        steps:
-          - instruct: ...
-
-  - type: action            # step 4: compose the final response
-    name: Compose_Response
-    steps:
-      - evaluate: $VAR.weather is set and $VAR.news is set
-      - instruct: ...
-```
-
-The bundled `hello-world` tree covers the first three primitives (sequence, selector, action).
+The bundled `hello-world` tree covers the first three primitives (sequence, selector, action) end-to-end.
 
 ## Next
 
 - [State](/concepts/state) — the two scopes the primitives read and write.
-- [Writing trees](/guide/writing-trees) — turn this into a working tree.
+- [Writing trees](/guide/writing-trees) — turn the primitives into a working tree.
 - [Inspecting executions](/guide/inspecting-executions) — how the runtime walks the tree at tick time.
