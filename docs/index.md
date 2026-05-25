@@ -12,6 +12,9 @@ hero:
     alt: behaviors-sh
   actions:
     - theme: brand
+      text: Open the builder
+      link: https://app.behaviors.sh
+    - theme: alt
       text: Get started
       link: /getting-started
     - theme: alt
@@ -57,6 +60,8 @@ Never guess where your agent got stuck. The runtime shows the tree in real time,
 
 <TreeSvg src="/example.svg" :height="520" />
 
+Build, edit, and replay your trees on this same canvas at **[app.behaviors.sh](https://app.behaviors.sh)** — no install, nothing to clone.
+
 ## YAML. JSON. TypeScript.
 
 Whether you prefer code first or plain text, the TypeScript DSL gives composability and IDE support; YAML and JSON give a no tooling approach.
@@ -96,4 +101,4 @@ Whether running locally or with a fleet of agents, the engine, DSL, and protocol
 
 ## Dive in
 
-[Get started](/getting-started) · [Drive over MCP](/guide/mcp) · [View on GitHub](https://github.com/flying-dice/behaviors-sh)
+[Open the builder](https://app.behaviors.sh) · [Get started](/getting-started) · [Drive over MCP](/guide/mcp) · [View on GitHub](https://github.com/flying-dice/behaviors-sh)

@@ -6,6 +6,10 @@ description: Five-minute walkthrough to register the behaviors-sh MCP server, ha
 
 A five-minute walkthrough: register behaviors-sh, hand a tree to your agent, and watch it drive. For the vocabulary behind the moving parts, see [Why behaviour trees?](/concepts/).
 
+::: info Start in the browser → [app.behaviors.sh](https://app.behaviors.sh)
+You don't need to clone or install anything to begin. Open **[app.behaviors.sh](https://app.behaviors.sh)**, grab a ready-made tree from the **Quick start** panel, and edit it on the canvas. It's also where you'll replay your runs in [step 5](#_5-open-the-trace-in-the-viewer). The steps below assume you have it open.
+:::
+
 ::: tip Terms used below
 `$VAR` is the per-execution blackboard, `instruct` is an action step that asks the agent to do work, and `evaluate` is an action step that asks the agent to judge a precondition. All three are defined in the [Concepts](/concepts/) tier.
 :::
